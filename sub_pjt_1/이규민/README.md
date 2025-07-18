@@ -1,5 +1,3 @@
-[media pointer="file-service://file-CEQMEWVnHAf4mQ5qrDkzZC"]
-[media pointer="file-service://file-Uos8BGETL5Feywnmqowmmr"]
 # 기획
 
 > 좋은 기획에서 좋은 개발이 나온다고 생각한다.
