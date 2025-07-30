@@ -81,6 +81,12 @@ function App() {
           <Badge variant="neutral" size="small">
             풍랑주의보
           </Badge>
+          <Badge variant="neutral" size="small" style={{ borderRadius: theme.borderRadius.xl }}>
+            <MapMarker size="small" />
+            <Text size="xs" style={{ marginLeft: theme.spacing.xs }}>
+              채집 금지구역
+            </Text>
+          </Badge>
         </div>
       </section>
 
