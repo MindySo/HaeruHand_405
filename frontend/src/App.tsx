@@ -1,6 +1,6 @@
 import './App.css';
 import { theme } from './theme';
-import { Button, Badge, Text, Icon, MapMarker } from './components/atoms';
+import { Button, Badge, Text } from './components/atoms';
 
 function App() {
   return (
@@ -78,49 +78,18 @@ function App() {
           <Badge variant="error" size="small">
             풍랑주의보
           </Badge>
-          <Badge variant="neutral" size="small">
-            풍랑주의보
+          <Badge variant="neutral" size="small" style={{ borderRadius: '100px' }}>
+            <div
+              style={{
+                width: '8px',
+                height: '8px',
+                backgroundColor: theme.colors.warning,
+                borderRadius: '50%',
+                marginRight: theme.spacing.xs,
+              }}
+            />
+            채집금지구역
           </Badge>
-          <Badge variant="neutral" size="small" style={{ borderRadius: theme.borderRadius.xl }}>
-            <MapMarker size="small" />
-            <Text size="xs" style={{ marginLeft: theme.spacing.xs }}>
-              채집 금지구역
-            </Text>
-          </Badge>
-        </div>
-      </section>
-
-      {/* Icon Section */}
-      <section style={{ marginBottom: theme.spacing.xxxl }}>
-        <Text size="xxxl" color="white" style={{ marginBottom: theme.spacing.lg }}>
-          아이콘
-        </Text>
-        <div
-          style={{
-            display: 'flex',
-            gap: theme.spacing.md,
-            alignItems: 'center',
-          }}
-        >
-          <Icon size="large" color="main">
-            ⛏️
-          </Icon>
-        </div>
-      </section>
-
-      {/* Map Marker Section */}
-      <section style={{ marginBottom: theme.spacing.xxxl }}>
-        <Text size="xxxl" color="white" style={{ marginBottom: theme.spacing.lg }}>
-          맵마커
-        </Text>
-        <div
-          style={{
-            display: 'flex',
-            gap: theme.spacing.md,
-            alignItems: 'center',
-          }}
-        >
-          <MapMarker size="medium" color="warning" />
         </div>
       </section>
     </div>
