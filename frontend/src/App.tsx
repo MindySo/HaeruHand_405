@@ -15,7 +15,7 @@ function App() {
       }}
     >
       <div style={{ display: 'flex', gap: theme.spacing.md }}>
-        <Link to="/chaeun">Chaeun</Link>
+        <Link to="/chaeeun">Chaeeun</Link>
         <Link to="/kyumin">Kyumin</Link>
       </div>
       {/* Header */}

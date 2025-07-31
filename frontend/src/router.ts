@@ -1,6 +1,6 @@
 import { createRootRoute, createRoute, createRouter } from '@tanstack/react-router';
 import Kyumin from './pages/Kyumin';
-import Chaeun from './pages/Chaeun';
+import Chaeeun from './pages/Chaeeun';
 import App from './App';
 
 const rootRoute = createRootRoute();
@@ -19,8 +19,8 @@ const kyuminRoute = createRoute({
 
 const chaeunRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/chaeun',
-  component: Chaeun,
+  path: '/chaeeun',
+  component: Chaeeun,
 });
 
 const routeTree = rootRoute.addChildren([homeRoute, kyuminRoute, chaeunRoute]);
