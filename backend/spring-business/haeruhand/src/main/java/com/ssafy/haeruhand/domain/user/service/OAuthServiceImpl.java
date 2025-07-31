@@ -24,10 +24,8 @@ public class OAuthServiceImpl implements OAuthService {
                 .orElseGet(() -> {
                     User newUser = User.builder()
                             .kakaoSub(userInfo.getKakaoSub())
-                            .email(userInfo.getEmail())
                             .nickname(userInfo.getNickname())
                             .profileImage(userInfo.getProfile_image())
-                            .provider("kakao")
                             .build();
                     return userRepository.save(newUser);
                 });

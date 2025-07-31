@@ -15,8 +15,6 @@ public class User {
     private Long id;
 
     private String kakaoSub;
-    private String email;
     private String nickname;
     private String profileImage;
-    private String provider;
 }
