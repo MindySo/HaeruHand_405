@@ -85,78 +85,16 @@ export const typography = {
 } as const;
 
 export const colors = {
-  // 기본 컬러 (이미지의 컬러 팔레트 기반)
   dark: '#000000',
   white: '#FFFFFF',
   gray: '#ABABAB',
   lightGray: '#E7E9EC',
-  middleGray: '#CDCDCD',
-
-  // 메인 컬러 (Primary)
   main: '#20AEEA',
   lightMain: '#EFFAFF',
-
-  // 경고 컬러 (Error/Warning)
   warning: '#FF0000',
   warningLight: '#FFD5D5',
-
-  // 성공 컬러
+  middleGray: '#CDCDCD',
   green: '#6EDF74',
-
-  // 시맨틱 컬러 매핑
-  primary: {
-    main: '#20AEEA',
-    light: '#EFFAFF',
-    dark: '#1A8BC7',
-  },
-  error: {
-    main: '#FF0000',
-    light: '#FFD5D5',
-    dark: '#CC0000',
-  },
-  success: {
-    main: '#6EDF74',
-    light: '#E8F8E9',
-    dark: '#5BCB61',
-  },
-  neutral: {
-    black: '#000000',
-    white: '#FFFFFF',
-    gray: {
-      100: '#E7E9EC', // lightGray
-      200: '#CDCDCD', // middleGray
-      300: '#ABABAB', // gray
-      400: '#8A8A8A',
-      500: '#666666',
-      600: '#444444',
-      700: '#222222',
-      800: '#111111',
-      900: '#000000', // dark
-    },
-  },
-
-  // 배경 컬러
-  background: {
-    primary: '#FFFFFF',
-    secondary: '#F8F9FA',
-    tertiary: '#E7E9EC',
-  },
-
-  // 텍스트 컬러
-  text: {
-    primary: '#000000',
-    secondary: '#666666',
-    tertiary: '#ABABAB',
-    disabled: '#CDCDCD',
-    inverse: '#FFFFFF',
-  },
-
-  // 보더 컬러
-  border: {
-    primary: '#CDCDCD',
-    secondary: '#E7E9EC',
-    focus: '#20AEEA',
-  },
 } as const;
 
 // 스페이싱 토큰
