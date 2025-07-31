@@ -26,9 +26,33 @@ repositories {
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
+	
+	// WebClient 사용을 위한 WebFlux (RestClientConfig, WebClientConfig에서 사용)
+	implementation 'org.springframework.boot:spring-boot-starter-webflux'
+
+	// Validation (API 요청 검증용)
+	implementation 'org.springframework.boot:spring-boot-starter-validation'
+
+	// Swagger/OpenAPI 3.0 - 취약점 CVE-2025-48924 해결을 위한 최신 버전 사용
+	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.7.0'
+
+	// Apache Commons Lang3 취약점 해결 - Uncontrolled Recursion 방지
+	implementation 'org.apache.commons:commons-lang3:3.18.0'
+
+	// JSON 처리 향상 - 취약점 방지를 위한 최신 버전
+	implementation 'com.fasterxml.jackson.core:jackson-databind:2.18.2'
+	implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.18.2'
+
+	// MySQL Connector 최신 보안 버전
+	runtimeOnly 'com.mysql:mysql-connector-j:9.1.0'
+
+	// JWT 토큰 처리 (Swagger에서 JWT 인증 설정이 있음)
+	implementation 'io.jsonwebtoken:jjwt-api:0.12.5'
+	runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.12.5'
+	runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.12.5'
+
 	compileOnly 'org.projectlombok:lombok'
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
-	runtimeOnly 'com.mysql:mysql-connector-j'
 	annotationProcessor 'org.projectlombok:lombok'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
