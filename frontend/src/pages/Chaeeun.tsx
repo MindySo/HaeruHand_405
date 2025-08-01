@@ -1,5 +1,12 @@
+import { InfoModal } from '../components/molecules/InfoModal/InfoModal';
+
 const Chaeeun = () => {
-  return <div>Chaeeun</div>;
+  return (
+    <div>
+      <div>Chaeeun</div>
+      <InfoModal />
+    </div>
+  );
 };
 
 export default Chaeeun;
