@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 
 @RestController
-@RequestMapping("/api/user")
+@RequestMapping("/api/v1/user")
 @RequiredArgsConstructor
 public class UserController {
 

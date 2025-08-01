@@ -14,11 +14,11 @@ public class SecurityConfig {
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/user/login/success").permitAll()
+                        .requestMatchers("/api/v1/user/login/success").permitAll()
                         .anyRequest().authenticated()
                 )
                 .oauth2Login(oauth2 -> oauth2
-                        .defaultSuccessUrl("/api/user/login/success", true)
+                        .defaultSuccessUrl("/api/v1/user/login/success", true)
                 );
 
         return http.build();
