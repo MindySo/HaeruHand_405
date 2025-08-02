@@ -79,4 +79,14 @@ public class JwtProvider {
         JwtParser parser = Jwts.parser().verifyWith(key).build();
         return parser.parseSignedClaims(token).getPayload();
     }
+
+    public String getSubject(String token) {
+        return Jwts.parser()
+                .verifyWith(key)
+                .build()
+                .parseSignedClaims(token)
+                .getPayload()
+                .getSubject();
+    }
+
 }

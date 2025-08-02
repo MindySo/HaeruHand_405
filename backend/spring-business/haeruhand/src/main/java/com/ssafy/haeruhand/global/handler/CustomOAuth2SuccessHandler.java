@@ -3,10 +3,10 @@ package com.ssafy.haeruhand.global.handler;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ssafy.haeruhand.domain.user.dto.LoginResponseDto;
 import com.ssafy.haeruhand.domain.user.entity.User;
+import com.ssafy.haeruhand.domain.user.repository.RefreshTokenRepository;
 import com.ssafy.haeruhand.domain.user.repository.UserRepository;
 import com.ssafy.haeruhand.domain.user.service.OAuthService;
 import com.ssafy.haeruhand.global.jwt.JwtProvider;
-import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -26,13 +26,14 @@ import java.io.IOException;
 public class CustomOAuth2SuccessHandler implements AuthenticationSuccessHandler {
 
     private final OAuthService oAuthService;
-    private final UserRepository userRepository;
     private final JwtProvider jwtProvider;
     private final ObjectMapper objectMapper;
+    private final UserRepository userRepository;
+    private final RefreshTokenRepository refreshTokenRepository;
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
-                                        Authentication authentication) throws IOException, ServletException {
+                                        Authentication authentication) throws IOException {
 
         if (authentication instanceof OAuth2AuthenticationToken token) {
             oAuthService.processOAuthPostLogin(token);
@@ -45,28 +46,29 @@ public class CustomOAuth2SuccessHandler implements AuthenticationSuccessHandler 
         User user = userRepository.findByKakaoSub(kakaoSub)
                 .orElseThrow(() -> new RuntimeException("로그인 후 사용자 정보를 찾을 수 없습니다."));
 
-        String accessToken = jwtProvider.createAccessToken(user.getId());
         String refreshToken = jwtProvider.createRefreshToken(user.getId());
+        String accessToken = jwtProvider.createAccessToken(user.getId());
+        long refreshTokenExpiresIn = jwtProvider.getRefreshTokenExpirationMillis();
         long accessTokenExpiresIn = jwtProvider.getAccessTokenExpirationMillis();
 
         log.info("JWT issued - userId: {}, accessTokenExpiresIn: {}", user.getId(), accessTokenExpiresIn);
 
-        // Optional: HttpOnly 쿠키에 accessToken, refreshToken 담기
-        Cookie accessTokenCookie = new Cookie("accessToken", accessToken);
-        accessTokenCookie.setHttpOnly(true);
-        accessTokenCookie.setSecure(true); // HTTPS 환경일 경우
-        accessTokenCookie.setPath("/");
-        accessTokenCookie.setMaxAge((int) (accessTokenExpiresIn / 1000));
-        response.addCookie(accessTokenCookie);
+        refreshTokenRepository.save(String.valueOf(kakaoSub), refreshToken);
 
-        Cookie refreshTokenCookie = new Cookie("refreshToken", refreshToken);
+        Cookie refreshTokenCookie = new Cookie("refresh_token", refreshToken);
         refreshTokenCookie.setHttpOnly(true);
         refreshTokenCookie.setSecure(true);
         refreshTokenCookie.setPath("/");
-        refreshTokenCookie.setMaxAge((int) (jwtProvider.getRefreshTokenExpirationMillis() / 1000));
+        refreshTokenCookie.setMaxAge((int)refreshTokenExpiresIn);
         response.addCookie(refreshTokenCookie);
 
-        // JSON 응답
+        Cookie accessTokenCookie = new Cookie("access_token", accessToken);
+        accessTokenCookie.setHttpOnly(true);
+        accessTokenCookie.setSecure(true);
+        accessTokenCookie.setPath("/");
+        accessTokenCookie.setMaxAge((int)accessTokenExpiresIn);
+        response.addCookie(accessTokenCookie);
+
         LoginResponseDto.UserInfo userInfo = LoginResponseDto.UserInfo.builder()
                 .userId(user.getId())
                 .kakaoSub(user.getKakaoSub())
