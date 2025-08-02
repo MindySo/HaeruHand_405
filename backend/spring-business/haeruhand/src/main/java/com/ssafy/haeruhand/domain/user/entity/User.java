@@ -14,7 +14,7 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String kakaoSub;
+    private Long kakaoSub;
     private String nickname;
     private String profileImage;
 }

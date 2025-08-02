@@ -6,7 +6,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class KakaoUserInfoDto {
-    private String kakaoSub;
+    private Long kakaoSub;
     private String nickname;
     private String profile_image;
 }

@@ -34,7 +34,7 @@ public class OAuthServiceImpl implements OAuthService {
     private KakaoUserInfoDto extractKakaoUserInfo(Map<String, Object> attributes) {
         KakaoUserInfoDto dto = new KakaoUserInfoDto();
 
-        dto.setKakaoSub(String.valueOf(attributes.get("id")));
+        dto.setKakaoSub((Long) attributes.get("id"));
 
         Map<String, Object> kakaoAccount = (Map<String, Object>) attributes.get("kakao_account");
         Map<String, Object> profile = (Map<String, Object>) kakaoAccount.get("profile");

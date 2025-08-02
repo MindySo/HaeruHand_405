@@ -15,6 +15,6 @@ public class UserController {
     @GetMapping("/login/success")
     public String loginSuccess(OAuth2AuthenticationToken token) {
         oAuthService.processOAuthPostLogin(token);
-        return "로그인 성공!";
+        return "로그인 성공";
     }
 }
