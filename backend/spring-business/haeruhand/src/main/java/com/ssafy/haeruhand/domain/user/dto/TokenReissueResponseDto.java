@@ -6,5 +6,5 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public class TokenReissueResponseDto {
-    private String accessToken;
+    private Long accessTokenExpiresIn;
 }

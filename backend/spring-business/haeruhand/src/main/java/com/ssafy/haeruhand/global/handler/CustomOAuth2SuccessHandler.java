@@ -2,6 +2,7 @@ package com.ssafy.haeruhand.global.handler;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ssafy.haeruhand.domain.user.dto.LoginResponseDto;
+import com.ssafy.haeruhand.domain.user.dto.UserInfoDto;
 import com.ssafy.haeruhand.domain.user.entity.User;
 import com.ssafy.haeruhand.domain.user.repository.RefreshTokenRepository;
 import com.ssafy.haeruhand.domain.user.repository.UserRepository;
@@ -53,7 +54,7 @@ public class CustomOAuth2SuccessHandler implements AuthenticationSuccessHandler 
 
         log.info("JWT issued - userId: {}, accessTokenExpiresIn: {}", user.getId(), accessTokenExpiresIn);
 
-        refreshTokenRepository.save(String.valueOf(kakaoSub), refreshToken);
+        refreshTokenRepository.save(String.valueOf(user.getId()), refreshToken);
 
         Cookie refreshTokenCookie = new Cookie("refresh_token", refreshToken);
         refreshTokenCookie.setHttpOnly(true);
@@ -69,7 +70,7 @@ public class CustomOAuth2SuccessHandler implements AuthenticationSuccessHandler 
         accessTokenCookie.setMaxAge((int)accessTokenExpiresIn);
         response.addCookie(accessTokenCookie);
 
-        LoginResponseDto.UserInfo userInfo = LoginResponseDto.UserInfo.builder()
+        UserInfoDto userInfo = UserInfoDto.builder()
                 .userId(user.getId())
                 .kakaoSub(user.getKakaoSub())
                 .nickname(user.getNickname())

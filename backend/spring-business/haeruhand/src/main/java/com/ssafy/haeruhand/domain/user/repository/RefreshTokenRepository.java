@@ -15,15 +15,15 @@ public class RefreshTokenRepository {
     @Value("${jwt.refresh-token-expiration}")
     private Long REFRESH_TOKEN_EXPIRATION;
 
-    public void save(String kakaoSub, String refreshToken) {
-        redisTemplate.opsForValue().set(kakaoSub, refreshToken, REFRESH_TOKEN_EXPIRATION, TimeUnit.SECONDS);
+    public void save(String userId, String refreshToken) {
+        redisTemplate.opsForValue().set(userId, refreshToken, REFRESH_TOKEN_EXPIRATION, TimeUnit.SECONDS);
     }
 
-    public String findByKakaoSub(String kakaoSub) {
-        return redisTemplate.opsForValue().get(kakaoSub);
+    public String findByUserId(String userId) {
+        return redisTemplate.opsForValue().get(userId);
     }
 
-    public void deleteByKakaoSub(String kakaoSub) {
-        redisTemplate.delete(kakaoSub);
+    public void deleteByUserId(String userId) {
+        redisTemplate.delete(userId);
     }
 }
