@@ -16,7 +16,7 @@ public class CorsConfig {
                 registry.addMapping("/api/**")
                         .allowedOrigins("http://localhost:3000")
                         .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
-                        .allowCredentials(true) // 쿠키 주고받으려면 필요
+                        .allowCredentials(true)
                         .allowedHeaders("*")
                         .exposedHeaders("*")
                         .maxAge(3600);

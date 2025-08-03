@@ -26,11 +26,11 @@ public class JwtProvider {
 
     @Getter
     @Value("${jwt.access-token-expiration}")
-    private int accessTokenExpirationSec;
+    private int accessTokenExpirationMilliSec;
 
     @Getter
     @Value("${jwt.refresh-token-expiration}")
-    private int refreshTokenExpirationSec;
+    private int refreshTokenExpirationMilliSec;
 
     private SecretKey key;
 
@@ -41,11 +41,11 @@ public class JwtProvider {
     }
 
     public String createAccessToken(Long userId) {
-        return createToken(userId, accessTokenExpirationSec);
+        return createToken(userId, accessTokenExpirationMilliSec);
     }
 
     public String createRefreshToken(Long userId) {
-        return createToken(userId, refreshTokenExpirationSec);
+        return createToken(userId, refreshTokenExpirationMilliSec);
     }
 
     private String createToken(Long userId, long expirationMillis) {
@@ -56,7 +56,7 @@ public class JwtProvider {
                 .subject(String.valueOf(userId))
                 .issuedAt(now)
                 .expiration(expiry)
-                .signWith(key, Jwts.SIG.HS256)
+                .signWith(key)
                 .compact();
     }
 
@@ -79,14 +79,4 @@ public class JwtProvider {
         JwtParser parser = Jwts.parser().verifyWith(key).build();
         return parser.parseSignedClaims(token).getPayload();
     }
-
-    public String getSubject(String token) {
-        return Jwts.parser()
-                .verifyWith(key)
-                .build()
-                .parseSignedClaims(token)
-                .getPayload()
-                .getSubject();
-    }
-
 }

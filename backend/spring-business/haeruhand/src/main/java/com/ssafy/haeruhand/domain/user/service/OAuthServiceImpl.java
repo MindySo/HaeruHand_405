@@ -58,11 +58,11 @@ public class OAuthServiceImpl implements OAuthService {
             // JWT 발급
             String accessToken = jwtProvider.createAccessToken(user.getId());
             String refreshToken = jwtProvider.createRefreshToken(user.getId());
-            long accessTokenExpiresIn = jwtProvider.getAccessTokenExpirationSec();
+            long accessTokenExpiresIn = jwtProvider.getAccessTokenExpirationMilliSec();
             refreshTokenRepository.save(String.valueOf(user.getId()), refreshToken);
 
             // 응답 구성
-            LoginResponseDto loginResponse = buildLoginResponse(user, accessTokenExpiresIn);
+            LoginResponseDto loginResponse = buildLoginResponse(user, accessTokenExpiresIn / 1000);
             return ApiResponse.successWithToken(SuccessStatus.LOGIN_SUCCESS, loginResponse, accessToken, refreshToken);
 
         } catch (Exception e) {
@@ -88,7 +88,7 @@ public class OAuthServiceImpl implements OAuthService {
             // 새로운 access token 발급
             String newAccessToken = jwtProvider.createAccessToken(userId);
             TokenReissueResponseDto responseDto =
-                    new TokenReissueResponseDto((long) jwtProvider.getAccessTokenExpirationSec());
+                    new TokenReissueResponseDto((long) jwtProvider.getAccessTokenExpirationMilliSec());
 
             return ApiResponse.successWithToken(SuccessStatus.OK, responseDto, newAccessToken);
 
@@ -99,6 +99,7 @@ public class OAuthServiceImpl implements OAuthService {
 
     @Override
     public UserInfoDto getUserInfo(String accessToken) {
+        System.out.println(accessToken);
         try {
             // atk 유효성 검사
             if (!jwtProvider.validateToken(accessToken)) {

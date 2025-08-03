@@ -16,7 +16,7 @@ public class RefreshTokenRepository {
     private Long REFRESH_TOKEN_EXPIRATION;
 
     public void save(String userId, String refreshToken) {
-        redisTemplate.opsForValue().set(userId, refreshToken, REFRESH_TOKEN_EXPIRATION, TimeUnit.SECONDS);
+        redisTemplate.opsForValue().set(userId, refreshToken, REFRESH_TOKEN_EXPIRATION / 1000, TimeUnit.SECONDS);
     }
 
     public String findByUserId(String userId) {
