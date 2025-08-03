@@ -26,11 +26,11 @@ public class JwtProvider {
 
     @Getter
     @Value("${jwt.access-token-expiration}")
-    private long accessTokenExpirationMillis;
+    private int accessTokenExpirationSec;
 
     @Getter
     @Value("${jwt.refresh-token-expiration}")
-    private long refreshTokenExpirationMillis;
+    private int refreshTokenExpirationSec;
 
     private SecretKey key;
 
@@ -41,11 +41,11 @@ public class JwtProvider {
     }
 
     public String createAccessToken(Long userId) {
-        return createToken(userId, accessTokenExpirationMillis);
+        return createToken(userId, accessTokenExpirationSec);
     }
 
     public String createRefreshToken(Long userId) {
-        return createToken(userId, refreshTokenExpirationMillis);
+        return createToken(userId, refreshTokenExpirationSec);
     }
 
     private String createToken(Long userId, long expirationMillis) {

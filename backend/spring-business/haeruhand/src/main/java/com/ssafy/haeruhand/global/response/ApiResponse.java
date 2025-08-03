@@ -33,7 +33,7 @@ public class ApiResponse<T> {
                 .body(new ApiResponse<>(true, successStatus.getCode(), successStatus.getMessage(), data));
     }
 
-    // 성공 읍답 (토큰 포함)
+    // 성공 응답 (토큰 포함)
     public static <T> ResponseEntity<ApiResponse<T>> successWithToken(
             BaseSuccessStatus status,
             T data,
@@ -42,6 +42,25 @@ public class ApiResponse<T> {
         return ResponseEntity
                 .status(status.getHttpStatus())
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
+                .body(new ApiResponse<>(
+                        true,
+                        status.getCode(),
+                        status.getMessage(),
+                        data
+                ));
+    }
+
+    // 성공 응답 (토큰 포함) : 로그인 성공 시 rtk까지 포함
+    public static <T> ResponseEntity<ApiResponse<T>> successWithToken(
+            BaseSuccessStatus status,
+            T data,
+            String accessToken,
+            String refreshToken
+    ) {
+        return ResponseEntity
+                .status(status.getHttpStatus())
+                .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken)
+                .header("X-Refresh-Token", refreshToken)
                 .body(new ApiResponse<>(
                         true,
                         status.getCode(),
