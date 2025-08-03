@@ -51,22 +51,20 @@ public class CustomOAuth2SuccessHandler implements AuthenticationSuccessHandler 
 
         log.info("JWT issued - userId: {}, accessTokenExpiresIn: {}", user.getId(), accessTokenExpiresIn);
 
-        // Optional: HttpOnly 쿠키에 accessToken, refreshToken 담기
         Cookie accessTokenCookie = new Cookie("accessToken", accessToken);
         accessTokenCookie.setHttpOnly(true);
-        accessTokenCookie.setSecure(true); // HTTPS 환경일 경우
+        accessTokenCookie.setSecure(true);
         accessTokenCookie.setPath("/");
-        accessTokenCookie.setMaxAge((int) (accessTokenExpiresIn / 1000));
+        accessTokenCookie.setMaxAge((int) (accessTokenExpiresIn));
         response.addCookie(accessTokenCookie);
 
         Cookie refreshTokenCookie = new Cookie("refreshToken", refreshToken);
         refreshTokenCookie.setHttpOnly(true);
         refreshTokenCookie.setSecure(true);
         refreshTokenCookie.setPath("/");
-        refreshTokenCookie.setMaxAge((int) (jwtProvider.getRefreshTokenExpirationMillis() / 1000));
+        refreshTokenCookie.setMaxAge((int) (jwtProvider.getRefreshTokenExpirationMillis()));
         response.addCookie(refreshTokenCookie);
 
-        // JSON 응답
         LoginResponseDto.UserInfo userInfo = LoginResponseDto.UserInfo.builder()
                 .userId(user.getId())
                 .kakaoSub(user.getKakaoSub())
