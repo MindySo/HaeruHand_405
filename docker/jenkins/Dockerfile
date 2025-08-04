@@ -2,13 +2,16 @@ FROM jenkins/jenkins:lts
 
 USER root
 
-# Docker CLI 설치
 RUN apt-get update && apt-get install -y \
     docker.io \
-    docker-compose \
     git \
     curl \
     openjdk-17-jdk \
-    && apt-get clean
+    && apt-get clean && rm -rf /var/lib/apt/lists/*
+
+RUN mkdir -p /usr/local/lib/docker/cli-plugins && \
+    curl -SL "https://github.com/docker/compose/releases/latest/download/docker-compose-linux-x86_64" \
+    -o /usr/local/lib/docker/cli-plugins/docker-compose && \
+    chmod +x /usr/local/lib/docker/cli-plugins/docker-compose
 
 ENV JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
