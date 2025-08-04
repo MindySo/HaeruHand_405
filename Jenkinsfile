@@ -11,8 +11,8 @@ pipeline {
     }
     environment {
         DOCKER_ID    = 'yeriming'              // Docker Hub ID (.env.prod와 동일)
-        COMPOSE_FILE = 'docker/docker-compose.prod.yml'
-        ENV_FILE     = 'docker/.env.prod'
+        COMPOSE_FILE = 'docker-compose.prod.yml'
+        ENV_FILE     = '.env.prod'
     }
     options {
 	skipDefaultCheckout()
@@ -90,7 +90,7 @@ pipeline {
                 withCredentials([file(credentialsId: 'env-prod',
                                       variable: 'ENV_TMP')]) {
 
-                    sh 'cp "$ENV_TMP" "$ENV_FILE"'
+                    sh 'cp "$ENV_TMP" "docker/$ENV_FILE"'
                 }
 
                 sh '''
