@@ -95,8 +95,8 @@ pipeline {
 
                 sh '''
                     cd docker
-                    docker-compose --env-file $ENV_FILE -f $COMPOSE_FILE pull
-                    docker-compose --env-file $ENV_FILE -f $COMPOSE_FILE up -d
+                    docker compose --env-file $ENV_FILE -f $COMPOSE_FILE pull
+                    docker compose --env-file $ENV_FILE -f $COMPOSE_FILE up -d --remove-orphans
                 '''
             }
         }
