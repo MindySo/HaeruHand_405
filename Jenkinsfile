@@ -15,6 +15,7 @@ pipeline {
         ENV_FILE     = 'docker/.env.prod'
     }
     options {
+	skipDefaultCheckout()
         ansiColor('xterm')
         timestamps()
     }
