@@ -23,7 +23,16 @@ pipeline {
 
         /* -------------------------------------------------- */
         stage('Checkout') {
-            steps { checkout scm }             // GitLab 레포지토리 풀링
+            steps {
+                checkout([
+                    $class: 'GitSCM',
+                    branches: [[name: '*/be-develop']],
+                    userRemoteConfigs: [[
+                        url: 'https://gitlab.ssafy.com/s13-webmobile2-sub1/S13P11A405.git',
+                        credentialsId: 'gitlab-jenkins-token'
+                    ]]
+                ])
+            }
         }
 
         /* -------------------------------------------------- */
