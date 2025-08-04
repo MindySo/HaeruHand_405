@@ -36,3 +36,9 @@ spring:
             user-name-attribute: id
 server:
   port: ${SERVER_PORT}
+jwt:
+  secret: ${JWT_SECRET}
+  access-token-expiration: 3600000
+  refresh-token-expiration: 604800000
+firebase:
+  service-account-key: ${FIREBASE_KEY_PATH}
