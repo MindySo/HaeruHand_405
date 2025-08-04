@@ -42,3 +42,6 @@ out/
 .env.*
 **/.env
 **/.env.*
+
+### Gcs 키 파일 ###
+gcs-key.json
