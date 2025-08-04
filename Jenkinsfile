@@ -6,6 +6,9 @@
 
 pipeline {
     agent any                                  // 마스터 노드(로컬 Jenkins 컨테이너)에서 실행
+    tools {
+        git 'git-default'
+    }
     environment {
         DOCKER_ID    = 'yeriming'              // Docker Hub ID (.env.prod와 동일)
         COMPOSE_FILE = 'docker/docker-compose.prod.yml'
