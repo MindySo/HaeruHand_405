@@ -25,9 +25,17 @@
   height: 25px;
 }
 
+/* .content {
+  display: flex;
+  justify-content: center;
+} */
+
 .stopButton {
   color: white;
   background-color: #ff0000;
   font-size: 16px;
   border-radius: 10px;
+  width: 90%;
+  padding: 8px 0;
+  margin-top: 8px;
 }

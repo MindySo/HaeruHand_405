@@ -20,13 +20,20 @@ export const StopModal: FC<InfoModalProps> = ({ onClose }) => {
         <img src={closeButtonImg} alt="close" style={{ display: 'block' }} />
       </div>
 
-      {/* 2. 안내 문구 */}
-      <Text className="stopGuide" style={{ margin: theme.spacing.md }} align="center" size="xxl">
-        해루질을 마무리할까요?
-      </Text>
+      <div className={styles.content}>
+        {/* 2. 안내 문구 */}
+        <Text
+          className="stopGuide"
+          style={{ margin: theme.spacing.md, paddingTop: theme.spacing.lg }}
+          align="center"
+          size="xxl"
+        >
+          해루질을 마무리할까요?
+        </Text>
 
-      {/* 3. 그만하기 버튼 */}
-      <button className={styles.stopButton}>그만하기</button>
+        {/* 3. 그만하기 버튼 */}
+        <button className={styles.stopButton}>그만하기</button>
+      </div>
     </div>
   );
 };
