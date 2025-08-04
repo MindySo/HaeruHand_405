@@ -43,4 +43,4 @@ out/
 **/.env.*
 
 ### FCM 비공개 키 ###
-*/service-account-key.json
+**/service-account-key.json
