@@ -1,0 +1,27 @@
+#############################
+#  NETWORKS & VOLUMES
+#############################
+networks:
+  backend:
+    driver: bridge
+
+volumes:
+  jenkins_home:
+
+#############################
+#  SERVICES
+#############################
+services:
+  jenkins:
+    build:
+      context: ./jenkins
+      dockerfile: Dockerfile
+    container_name: jenkins
+    ports:
+      - "9090:8080"
+    volumes:
+      - jenkins_home:/var/jenkins_home
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - backend
+    restart: always
