@@ -20,3 +20,18 @@ spring:
     open-in-view: true
 server:
   port: ${SERVER_PORT}
+cloud:
+  aws:
+    s3:
+      bucket: ${AWS_BUCKET}
+      image-path:
+        ai: ai/
+      image-url-prefix: "https://${AWS_BUCKET}.s3.${AWS_REGION}.amazonaws.com/"
+      presigned-url-expires-minutes: 10
+    region:
+      static: ${AWS_REGION}
+    stack:
+      auto: false
+    credentials:
+      access-key: ${AWS_ACCESS_KEY}
+      secret-key: ${AWS_SECRET_KEY}
