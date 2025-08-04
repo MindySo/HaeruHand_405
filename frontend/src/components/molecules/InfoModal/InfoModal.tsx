@@ -1,7 +1,7 @@
 import { useState, type FC } from 'react';
 import theme from '../../../theme';
 import { Text } from '../../atoms';
-import closeButtonImg from './closeButtonLightGray.png';
+import closeButtonImg from '../../../../public/closeButtonLightGray.png';
 
 // 모달 닫기 버튼 props
 interface InfoModalProps {
@@ -109,7 +109,7 @@ export const InfoModal: FC<InfoModalProps> = ({ onClose }) => {
             marginBottom: theme.spacing.sm,
 
             // 리스트 스크롤바를 위한 설정(높이 고정)
-            flex: '0 0 auto',
+            // flex: '0 0 auto',
           }}
         >
           {/* 채집 금지 구역 || 사용 가능 도구 */}
@@ -166,8 +166,9 @@ export const InfoModal: FC<InfoModalProps> = ({ onClose }) => {
             fontSize: theme.typography.fontSize.lg,
             marginTop: theme.spacing.xs,
             // 내부 콘텐츠가 크기를 넘으면 스크롤바 표시(높이 설정을 해주어야 가능!)
-            flexGrow: 1, // 내부 박스의 남은 공간 모두 차지
-            overflowY: 'auto',
+            // flexGrow: 1, // 내부 박스의 남은 공간 모두 차지
+            // overflowY: 'auto',
+            overflow: 'auto',
           }}
         >
           {/* 채집 금지 구역 || 사용 가능 도구 */}
