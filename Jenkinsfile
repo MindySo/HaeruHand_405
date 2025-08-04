@@ -73,6 +73,13 @@ pipeline {
         /* -------------------------------------------------- */
         stage('Deploy (docker-compose prod)') {
             steps {
+
+                withCredentials([file(credentialsId: 'env-prod',
+                                      variable: 'ENV_TMP')]) {
+
+                    sh 'cp "$ENV_TMP" "$ENV_FILE"'
+                }
+
                 sh '''
                     cd docker
                     docker compose --env-file $ENV_FILE -f $COMPOSE_FILE pull
