@@ -6,12 +6,16 @@
 
 pipeline {
     agent any                                  // 마스터 노드(로컬 Jenkins 컨테이너)에서 실행
+    tools {
+        git 'git-default'
+    }
     environment {
         DOCKER_ID    = 'yeriming'              // Docker Hub ID (.env.prod와 동일)
-        COMPOSE_FILE = 'docker/docker-compose.prod.yml'
-        ENV_FILE     = 'docker/.env.prod'
+        COMPOSE_FILE = 'docker-compose.prod.yml'
+        ENV_FILE     = '.env.prod'
     }
     options {
+	skipDefaultCheckout()
         ansiColor('xterm')
         timestamps()
     }
@@ -20,7 +24,16 @@ pipeline {
 
         /* -------------------------------------------------- */
         stage('Checkout') {
-            steps { checkout scm }             // GitLab 레포지토리 풀링
+            steps {
+                checkout([
+                    $class: 'GitSCM',
+                    branches: [[name: '*/be-develop']],
+                    userRemoteConfigs: [[
+                        url: 'https://lab.ssafy.com/s13-webmobile2-sub1/S13P11A405.git',
+                        credentialsId: 'gitlab-jenkins-token'
+                    ]]
+                ])
+            }
         }
 
         /* -------------------------------------------------- */
@@ -77,13 +90,13 @@ pipeline {
                 withCredentials([file(credentialsId: 'env-prod',
                                       variable: 'ENV_TMP')]) {
 
-                    sh 'cp "$ENV_TMP" "$ENV_FILE"'
+                    sh 'cp "$ENV_TMP" "docker/$ENV_FILE"'
                 }
 
                 sh '''
                     cd docker
                     docker compose --env-file $ENV_FILE -f $COMPOSE_FILE pull
-                    docker compose --env-file $ENV_FILE -f $COMPOSE_FILE up -d --remove-orphans
+                    docker compose --env-file $ENV_FILE -f $COMPOSE_FILE up -d
                 '''
             }
         }
