@@ -28,8 +28,13 @@ public enum ErrorStatus implements BaseErrorStatus {
     INVALID_TOKEN(HttpStatus.UNAUTHORIZED, 401, "유효하지 않은 토큰입니다."),
     OAUTH_TOKEN_ERROR(HttpStatus.BAD_REQUEST, 400, "OAuth 토큰 발급에 실패했습니다."),
     PROFILE_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, 500, "유저정보 불러오기 오류입니다."),
-    USER_CREATE_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, 500, "사용자 생성에 실패했습니다.");
+    USER_CREATE_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, 500, "사용자 생성에 실패했습니다."),
 
+    // FCM
+    FCM_TOKEN_INVALID(HttpStatus.BAD_REQUEST, 400, "유효하지 않은 FCM 토큰입니다."),
+    FCM_TOKEN_NOT_FOUND(HttpStatus.NOT_FOUND, 404, "등록되지 않은 FCM 토큰입니다."),
+    FCM_SEND_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, 500, "FCM 알림 전송에 실패했습니다."),
+    FCM_TOKEN_DUPLICATE(HttpStatus.CONFLICT, 409, "이미 등록된 FCM 토큰입니다.");
 
     private final HttpStatus httpStatus;
     private final Integer code;
