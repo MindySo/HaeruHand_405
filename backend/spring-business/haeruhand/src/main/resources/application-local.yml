@@ -50,3 +50,7 @@ gcs:
     signed-url-expires-minutes: 10
     image-path:
       ai: ai/
+
+springdoc:
+  api-docs:
+    path: /v3/api-docs
