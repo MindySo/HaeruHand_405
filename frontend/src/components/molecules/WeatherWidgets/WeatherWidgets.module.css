@@ -1,0 +1,67 @@
+.container {
+  display: flex;
+  align-items: center;
+}
+
+.divider {
+  width: 1px;
+  height: 44px;
+  background-color: #f0f0f0;
+  margin: 0 8px;
+  border-radius: 1px;
+  flex-shrink: 0;
+}
+
+.weatherWidget {
+  background: white;
+  padding: 8px 4px 8px 8px;
+  min-width: 196px;
+}
+
+.infoWidget {
+  background: white;
+  border: 1px solid #e0e0e0;
+  border-radius: 12px;
+  padding: 16px;
+  min-width: 300px;
+  display: flex;
+  align-items: center;
+}
+
+.widgetData {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  flex: 1;
+}
+
+.textSection {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.separator {
+  width: 1px;
+  height: 40px;
+  background-color: #000000;
+  flex-shrink: 0;
+}
+
+.sunIcon {
+  position: relative;
+  width: 24px;
+  height: 24px;
+}
+
+.sunCenter {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 16px;
+  height: 16px;
+  background: linear-gradient(45deg, #ffd700, #ff8c00);
+  border-radius: 50%;
+  box-shadow: 0 0 6px rgba(255, 215, 0, 0.5);
+}

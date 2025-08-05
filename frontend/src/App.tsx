@@ -1,6 +1,7 @@
 import './App.css';
 import { theme } from './theme';
 import { Button, Badge, Text } from './components/atoms';
+import { Link, Outlet } from '@tanstack/react-router';
 
 function App() {
   return (
@@ -13,6 +14,10 @@ function App() {
         fontFamily: theme.typography.fontFamily.primary,
       }}
     >
+      <div style={{ display: 'flex', gap: theme.spacing.md }}>
+        <Link to="/chaeeun">Chaeeun</Link>
+        <Link to="/kyumin">Kyumin</Link>
+      </div>
       {/* Header */}
       <div
         style={{
