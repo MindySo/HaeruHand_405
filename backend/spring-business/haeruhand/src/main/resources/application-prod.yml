@@ -40,7 +40,7 @@ server:
 gcs:
   storage:
     bucket: ${GCP_BUCKET_NAME}
-    credentials: ${GCP_CREDENTIAL}
+    credentials: gcs-key.json
     signed-url-expires-minutes: 10
     image-path:
       ai: ai/
