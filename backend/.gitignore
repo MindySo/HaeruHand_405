@@ -44,3 +44,6 @@ out/
 
 ### FCM 비공개 키 ###
 **/service-account-key.json
+
+### Gcs 키 파일 ###
+gcs-key.json

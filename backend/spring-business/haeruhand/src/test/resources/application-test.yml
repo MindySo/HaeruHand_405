@@ -45,3 +45,6 @@ jwt:
   refresh-token-expiration: 604800000
 firebase:
   service-account-key: "classpath:test-firebase-key.json"
+springdoc:
+  api-docs:
+    path: /v3/api-docs
