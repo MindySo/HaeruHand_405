@@ -36,7 +36,7 @@ public class OAuthServiceImpl implements OAuthService {
     private String clientId;
 
     // 프론트 redirectUri로 변경 필요
-    private final String redirectUri = "http://localhost:3000/oauth/kakao/callback.html";
+    private final String redirectUri = "http://localhost:3000/callback.html";
 
     @Override
     public IssueResponseDto authorizeKakaoAndIssueToken(String code, HttpServletResponse response) {
