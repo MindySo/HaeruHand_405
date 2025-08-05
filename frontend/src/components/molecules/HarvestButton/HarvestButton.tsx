@@ -16,14 +16,11 @@ const HarvestButton: React.FC<HarvestButtonProps> = ({ onClick, className = '' }
             무엇을 잡으셨나요?
           </Text>
           <Text size="sm" color="white" className={styles.subtitle}>
-            수확물 확인하기
+            수확물 확인하기 &gt;
           </Text>
         </div>
         <div className={styles.iconSection}>
-          <div className={styles.shell}>🐚</div>
-          <div className={styles.shell}>🐚</div>
-          <div className={styles.shell}>🐚</div>
-          <div className={styles.starfish}>⭐</div>
+          <img src="/shells.svg" alt="조개들" className={styles.shellsIcon} />
         </div>
       </div>
     </button>
