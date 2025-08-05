@@ -10,7 +10,7 @@ spring:
       port: ${REDIS_PORT}
   jpa:
     hibernate:
-      ddl-auto: create
+      ddl-auto: update
     properties:
       hibernate:
         format_sql: true
@@ -36,3 +36,19 @@ spring:
             user-name-attribute: id
 server:
   port: ${SERVER_PORT}
+
+gcs:
+  storage:
+    bucket: ${GCP_BUCKET_NAME}
+    credentials: gcs-key.json
+    signed-url-expires-minutes: 10
+    image-path:
+      ai: ai/
+
+jwt:
+  secret: ${JWT_SECRET}
+  access-token-expiration: 3600000
+  refresh-token-expiration: 604800000
+springdoc:
+  api-docs:
+    path: /v3/api-docs

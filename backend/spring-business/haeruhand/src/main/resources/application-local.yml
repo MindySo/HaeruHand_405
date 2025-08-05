@@ -42,3 +42,15 @@ jwt:
   secret: ${JWT_SECRET}
   access-token-expiration: 3600000
   refresh-token-expiration: 604800000
+
+gcs:
+  storage:
+    bucket: ${GCP_BUCKET_NAME}
+    credentials: gcs-key.json
+    signed-url-expires-minutes: 10
+    image-path:
+      ai: ai/
+
+springdoc:
+  api-docs:
+    path: /v3/api-docs

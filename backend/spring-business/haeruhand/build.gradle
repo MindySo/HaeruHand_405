@@ -70,6 +70,10 @@ dependencies {
 	// WebSocket & STOMP
 	implementation 'org.springframework.boot:spring-boot-starter-websocket'
 
+	// GCS
+	implementation(platform("com.google.cloud:libraries-bom:26.65.0"))
+	implementation("com.google.cloud:google-cloud-storage")
+
 }
 
 tasks.named('test') {
