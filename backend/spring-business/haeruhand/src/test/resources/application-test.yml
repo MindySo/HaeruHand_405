@@ -39,3 +39,7 @@ jwt:
   secret: dGVzdC1qd3Qtc2VjcmV0LWtleS1mb3ItdGVzdGluZy1vbmx5LW1pbmltdW0tMzItY2hhcmFjdGVycy1yZXF1aXJlZC1mb3ItaG1hYy1zaGEyNTY= # 가상 키
   access-token-expiration: 3600000
   refresh-token-expiration: 604800000
+springdoc:
+  swagger-ui:
+    path: /api/swagger-ui/index.html
+    url: /api/v3/api-docs
