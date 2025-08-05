@@ -61,18 +61,22 @@ public class LocationUpdateService {
             jdbcTemplate.batchUpdate(
                 """
                 INSERT INTO user_location_log 
-                (location_share_room_id, user_id, latitude, longitude, accuracy, timestamp) 
-                VALUES (?, ?, ?, ?, ?, ?)
+                (location_share_room_id, user_id, latitude, longitude, accuracy, timestamp, is_deleted, created_at, updated_at) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
                 """,
                 batch,
                 batch.size(),
                 (PreparedStatement ps, LocationDto location) -> {
+                    LocalDateTime now = LocalDateTime.now();
                     ps.setLong(1, location.getRoomId());
                     ps.setLong(2, location.getUserId());
                     ps.setBigDecimal(3, location.getLatitude());
                     ps.setBigDecimal(4, location.getLongitude());
                     ps.setBigDecimal(5, location.getAccuracy());
                     ps.setTimestamp(6, Timestamp.valueOf(location.getTimestamp()));
+                    ps.setBoolean(7, false); // is_deleted
+                    ps.setTimestamp(8, Timestamp.valueOf(now)); // created_at
+                    ps.setTimestamp(9, Timestamp.valueOf(now)); // updated_at
                 }
             );
             

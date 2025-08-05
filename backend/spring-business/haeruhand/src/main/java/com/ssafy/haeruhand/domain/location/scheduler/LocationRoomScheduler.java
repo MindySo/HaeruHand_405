@@ -46,41 +46,4 @@ public class LocationRoomScheduler {
         }
     }
 
-    // 5분마다 만료된 방 확인 및 정리
-    @Scheduled(fixedRate = 300000)
-    public void cleanupExpiredRooms() {
-        LocalDateTime now = LocalDateTime.now();
-        List<LocationShareRoom> expiredRooms = roomRepository
-                .findByIsActiveTrueAndExpiresAtBefore(now);
-        
-        for (LocationShareRoom room : expiredRooms) {
-            try {
-                room.close();
-                roomRepository.save(room);
-                
-                long totalDurationMin = ChronoUnit.MINUTES.between(room.getStartedAt(), now);
-                
-                // ROOM_CLOSED 브로드캐스트
-                LocationMessage roomClosedMessage = LocationMessage.builder()
-                        .type(LocationMessage.MessageType.ROOM_CLOSED)
-                        .reason(LocationMessage.CloseReason.EXPIRED)
-                        .closedAt(room.getClosedAt())
-                        .totalDurationMin(totalDurationMin)
-                        .build();
-                
-                messagingTemplate.convertAndSend(
-                        "/sub/location." + room.getRoomCode(),
-                        roomClosedMessage);
-                
-                log.info("Expired room {} closed. Total duration: {} minutes", 
-                        room.getRoomCode(), totalDurationMin);
-            } catch (Exception e) {
-                log.error("Failed to close expired room: {}", room.getRoomCode(), e);
-            }
-        }
-        
-        if (!expiredRooms.isEmpty()) {
-            log.info("Cleaned up {} expired rooms", expiredRooms.size());
-        }
-    }
 }

@@ -67,7 +67,7 @@ public class LocationMessage {
     
     public enum CloseReason {
         HOST_LEFT,
-        EXPIRED,
+        ALL_MEMBERS_LEFT,
         MANUAL
     }
 }

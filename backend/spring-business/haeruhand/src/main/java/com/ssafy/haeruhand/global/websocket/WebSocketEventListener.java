@@ -59,10 +59,10 @@ public class WebSocketEventListener {
                 long totalDurationMin = java.time.temporal.ChronoUnit.MINUTES.between(
                         room.getStartedAt(), LocalDateTime.now());
                 
-                // ROOM_CLOSED 브로드캐스트
+                // ROOM_CLOSED 브로드캐스트 (모든 멤버 퇴장으로 인한 종료)
                 LocationMessage roomClosedMessage = LocationMessage.builder()
                         .type(LocationMessage.MessageType.ROOM_CLOSED)
-                        .reason(LocationMessage.CloseReason.HOST_LEFT)
+                        .reason(LocationMessage.CloseReason.ALL_MEMBERS_LEFT)
                         .closedAt(LocalDateTime.now())
                         .totalDurationMin(totalDurationMin)
                         .build();
