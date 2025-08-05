@@ -1,0 +1,106 @@
+.container {
+  background-color: #f8f9fa;
+  border-radius: 12px;
+  padding: 16px;
+  flex: 1;
+  min-height: 120px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.title {
+  margin-bottom: 12px;
+}
+
+.guideContent {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+}
+
+.shell {
+  font-size: 24px;
+  animation: float 3s ease-in-out infinite;
+}
+
+.shell:nth-child(2) {
+  animation-delay: 0.5s;
+}
+
+.starfish {
+  font-size: 20px;
+  animation: pulse 2s ease-in-out infinite;
+}
+
+.trackingContent {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.mapIcon {
+  position: relative;
+  width: 60px;
+  height: 40px;
+  background-color: #e9ecef;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.path {
+  position: absolute;
+  width: 40px;
+  height: 2px;
+  background-color: #20aeea;
+  border-radius: 1px;
+  transform: rotate(-15deg);
+}
+
+.marker {
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  background-color: #20aeea;
+  border-radius: 50%;
+}
+
+.marker:nth-child(2) {
+  left: 15px;
+  top: 15px;
+}
+
+.marker:nth-child(3) {
+  right: 15px;
+  top: 10px;
+}
+
+.marker:nth-child(4) {
+  left: 25px;
+  bottom: 15px;
+}
+
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-3px);
+  }
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+}
