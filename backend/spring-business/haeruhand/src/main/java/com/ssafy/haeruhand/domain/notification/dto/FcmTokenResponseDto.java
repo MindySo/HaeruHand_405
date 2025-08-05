@@ -19,7 +19,6 @@ public class FcmTokenResponseDto {
         FcmTokenResponseDto dto = new FcmTokenResponseDto();
         dto.tokenId = entity.getId();
         dto.maskedToken = maskToken(entity.getFcmToken());
-        dto.isActive = entity.getIsActive();
         dto.lastUsedAt = entity.getLastUsedAt();
         return dto;
     }

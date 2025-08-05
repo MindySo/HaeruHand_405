@@ -18,7 +18,6 @@ public class FcmTokenListResponseDto {
     public static FcmTokenListResponseDto of(List<UserFcmToken> entities) {
         FcmTokenListResponseDto dto = new FcmTokenListResponseDto();
         dto.totalCount = entities.size();
-        dto.activeCount = (int) entities.stream().filter(UserFcmToken::getIsActive).count();
         dto.tokens = entities.stream()
                 .map(FcmTokenResponseDto::from)
                 .collect(java.util.stream.Collectors.toList());

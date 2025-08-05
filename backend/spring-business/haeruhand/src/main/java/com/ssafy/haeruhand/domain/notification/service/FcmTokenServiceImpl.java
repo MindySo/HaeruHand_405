@@ -31,7 +31,6 @@ public class FcmTokenServiceImpl implements FcmTokenService {
         UserFcmToken newToken = UserFcmToken.builder()
                 .userId(userId)
                 .fcmToken(request.getFcmToken())
-                .isActive(true)
                 .lastUsedAt(LocalDateTime.now())
                 .build();
 
@@ -65,7 +64,7 @@ public class FcmTokenServiceImpl implements FcmTokenService {
         UserFcmToken token = fcmTokenRepository.findById(tokenId)
                 .orElseThrow(() -> new GlobalException(ErrorStatus.FCM_TOKEN_NOT_FOUND));
 
-        token.setIsActive(false);
+        token.softDelete();
         log.info("FCM 토큰 비활성화 완료 - tokenId: {}, userId: {}", tokenId, token.getUserId());
     }
 

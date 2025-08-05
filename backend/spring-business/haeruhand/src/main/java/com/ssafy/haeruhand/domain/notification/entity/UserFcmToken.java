@@ -7,7 +7,8 @@ import lombok.*;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "user_fcm_tokens")
+@Table(name = "user_fcm_tokens",
+        uniqueConstraints = @UniqueConstraint(columnNames = "fcm_token"))
 @Getter
 @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -21,8 +22,5 @@ public class UserFcmToken extends BaseEntity {
 
     private Long userId;
     private String fcmToken;
-
-    @Builder.Default
-    private Boolean isActive = true;
     private LocalDateTime lastUsedAt;
 }

@@ -9,5 +9,4 @@ import java.util.List;
 @Repository
 public interface UserFcmTokenRepository extends JpaRepository<UserFcmToken, Long> {
 
-    List<UserFcmToken> findByUserIdAndIsActiveTrue(Long userId);
 }
