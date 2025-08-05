@@ -4,6 +4,10 @@ import { theme } from '../../../theme';
 export interface TextProps {
   children: React.ReactNode;
   size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl' | 'xxl' | 'xxxl' | 'display' | 'hero';
+  responsiveSize?: {
+    default: TextProps['size'];
+    mobile: TextProps['size'];
+  };
   color?: keyof typeof theme.colors;
   align?: 'left' | 'center' | 'right' | 'justify';
   weight?:
@@ -30,10 +34,19 @@ const Text: React.FC<TextProps> = ({
   className = '',
   as,
   style,
+  responsiveSize,
 }) => {
   const getSizeStyles = () => {
+    const screenWidth = typeof window !== 'undefined' ? window.innerWidth : 9999;
+
+    const finalSize = responsiveSize
+      ? screenWidth <= 375
+        ? responsiveSize.mobile
+        : responsiveSize.default
+      : size;
+
     return {
-      fontSize: theme.typography.fontSize[size],
+      fontSize: theme.typography.fontSize[finalSize as keyof typeof theme.typography.fontSize],
       fontWeight: theme.typography.fontWeight[weight],
       lineHeight: theme.typography.lineHeight.normal,
       fontFamily: theme.typography.fontFamily.primary,

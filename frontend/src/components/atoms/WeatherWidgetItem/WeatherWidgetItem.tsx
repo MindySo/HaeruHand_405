@@ -16,7 +16,13 @@ const WeatherWidgetItem: React.FC<WeatherWidgetItemProps> = ({ icon, subtitle, d
         <Text size="sm" color="gray" weight="semiBold" style={{ marginBottom: '4px' }}>
           {subtitle}
         </Text>
-        <Text size="xl" color="dark" weight="bold">
+        <Text
+          responsiveSize={{ default: 'xl', mobile: 'lg' }}
+          size="xl"
+          color="dark"
+          weight="bold"
+          style={{ letterSpacing: '-0.4px' }}
+        >
           {data}
         </Text>
       </div>

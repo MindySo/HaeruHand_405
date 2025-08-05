@@ -1,12 +1,12 @@
 .container {
   width: 100%;
+  max-width: 360px;
   height: 68px;
   background: #20aeea;
   border: none;
   border-radius: 12px;
   cursor: pointer;
   transition: all 0.2s ease;
-  min-width: 360px;
   overflow: hidden;
   display: flex;
   align-items: center;
@@ -38,12 +38,15 @@
 }
 
 .iconSection {
+  flex-shrink: 0;
+  width: 25%;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
 .shellsIcon {
-  width: 120px;
+  width: 100%;
+  max-width: 100px;
   height: auto;
 }
