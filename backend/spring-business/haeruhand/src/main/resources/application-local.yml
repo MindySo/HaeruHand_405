@@ -45,6 +45,3 @@ jwt:
 springdoc:
   api-docs:
     path: /v3/api-docs
-  default-produces-media-type: application/json
-  default-consumes-media-type: application/json
-  default-consumes-media-type: application/json
