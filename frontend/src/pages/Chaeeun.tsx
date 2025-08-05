@@ -1,5 +1,5 @@
 import { InfoModal } from '../components/molecules/InfoModal/InfoModal';
-import { StopModal } from '../components/molecules/InfoModal/StopModal';
+import { StopModal } from '../components/molecules/StopModal/StopModal';
 
 const Chaeeun = () => {
   return (
