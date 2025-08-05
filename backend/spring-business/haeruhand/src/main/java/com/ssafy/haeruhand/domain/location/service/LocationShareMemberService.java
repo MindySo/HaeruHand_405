@@ -33,13 +33,13 @@ public class LocationShareMemberService {
     }
 
     public boolean isMemberExists(Long roomId, Long userId) {
-        return memberRepository.existsByRoomIdAndUserId(roomId, userId);
+        return memberRepository.existsByRoomIdAndUserIdAndIsDeletedFalse(roomId, userId);
     }
 
     @Transactional
     public LocationShareMember upsertMember(Long roomId, Long userId) {
         // 기존 멤버인지 확인
-        return memberRepository.findByRoomIdAndUserId(roomId, userId)
+        return memberRepository.findByRoomIdAndUserIdAndIsDeletedFalse(roomId, userId)
                 .map(member -> {
                     // 기존 멤버면 last_active_at 업데이트
                     member.updateLastActiveAt();
@@ -68,14 +68,14 @@ public class LocationShareMemberService {
 
     @Transactional
     public void removeMember(String roomCode, Long userId) {
-        LocationShareRoom room = roomRepository.findByRoomCode(roomCode)
+        LocationShareRoom room = roomRepository.findByRoomCodeAndIsDeletedFalse(roomCode)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 방입니다."));
         
-        memberRepository.deleteByRoomIdAndUserId(room.getId(), userId);
+        memberRepository.softDeleteByRoomIdAndUserId(room.getId(), userId);
         log.info("Member removed. User: {}, Room: {}", userId, roomCode);
     }
 
     public List<LocationShareMember> getMembersByRoomId(Long roomId) {
-        return memberRepository.findByRoomId(roomId);
+        return memberRepository.findByRoomIdAndIsDeletedFalse(roomId);
     }
 }

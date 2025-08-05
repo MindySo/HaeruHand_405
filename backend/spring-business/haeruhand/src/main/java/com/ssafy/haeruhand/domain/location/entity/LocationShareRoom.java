@@ -1,5 +1,6 @@
 package com.ssafy.haeruhand.domain.location.entity;
 
+import com.ssafy.haeruhand.global.domain.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -13,7 +14,7 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder
-public class LocationShareRoom {
+public class LocationShareRoom extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -36,12 +37,7 @@ public class LocationShareRoom {
     @Column(name = "closed_at")
     private LocalDateTime closedAt;
 
-    @Column(name = "title", length = 50)
-    @Builder.Default
-    private String title = "해루 함께하기";
 
-    @Column(name = "expires_at", nullable = false)
-    private LocalDateTime expiresAt;
 
     @OneToMany(mappedBy = "room", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
@@ -56,7 +52,4 @@ public class LocationShareRoom {
         this.closedAt = LocalDateTime.now();
     }
 
-    public boolean isExpired() {
-        return LocalDateTime.now().isAfter(this.expiresAt);
-    }
 }

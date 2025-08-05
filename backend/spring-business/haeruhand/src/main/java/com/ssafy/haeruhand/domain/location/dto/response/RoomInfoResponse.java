@@ -22,11 +22,9 @@ public class RoomInfoResponse {
     public static class RoomInfo {
         private Long roomId;
         private String roomCode;
-        private String title;
         private Long hostUserId;
         private Boolean isActive;
         private LocalDateTime startedAt;
-        private LocalDateTime expiresAt;
         private Long elapsedMin;
         private Integer maxMembers;
         private Integer currentMemberCount;

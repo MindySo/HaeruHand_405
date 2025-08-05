@@ -1,6 +1,5 @@
 package com.ssafy.haeruhand.domain.location.controller;
 
-import com.ssafy.haeruhand.domain.location.dto.request.CreateRoomRequest;
 import com.ssafy.haeruhand.domain.location.dto.response.CloseRoomResponse;
 import com.ssafy.haeruhand.domain.location.dto.response.CreateRoomResponse;
 import com.ssafy.haeruhand.domain.location.dto.response.RoomInfoResponse;
@@ -24,12 +23,11 @@ public class LocationShareController {
 
     @Operation(summary = "방 생성", description = "위치 공유를 위한 방을 생성합니다")
     @PostMapping("/rooms")
-    public ResponseEntity<ApiResponse<CreateRoomResponse>> createRoom(
-            Authentication authentication,
-            @RequestBody CreateRoomRequest request) {
+    public ResponseEntity<ApiResponse<CreateRoomResponse>> createRoom() {
         
-        Long userId = Long.parseLong(authentication.getName());
-        CreateRoomResponse response = roomService.createRoom(userId, request);
+        // 테스트용 임시 사용자 ID (실제 배포 시 Authentication에서 추출)
+        Long userId = 1L;
+        CreateRoomResponse response = roomService.createRoom(userId);
         
         return ApiResponse.success(SuccessStatus.OK, response);
     }

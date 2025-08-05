@@ -1,5 +1,6 @@
 package com.ssafy.haeruhand.domain.location.entity;
 
+import com.ssafy.haeruhand.global.domain.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -14,7 +15,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder
-public class LocationShareMember {
+public class LocationShareMember extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

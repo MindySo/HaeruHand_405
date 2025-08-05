@@ -1,6 +1,5 @@
 package com.ssafy.haeruhand.domain.location.service;
 
-import com.ssafy.haeruhand.domain.location.dto.request.CreateRoomRequest;
 import com.ssafy.haeruhand.domain.location.dto.response.CloseRoomResponse;
 import com.ssafy.haeruhand.domain.location.dto.response.CreateRoomResponse;
 import com.ssafy.haeruhand.domain.location.dto.response.RoomInfoResponse;
@@ -34,11 +33,6 @@ public class LocationShareRoomService {
     private final UserRepository userRepository;
     private final JwtProvider jwtProvider;
 
-    @Value("${server.host:localhost}")
-    private String serverHost;
-
-    @Value("${server.port:8080}")
-    private String serverPort;
 
     private static final String[] MEMBER_COLORS = {
         "#FF0000", // 빨강 (호스트)
@@ -48,26 +42,19 @@ public class LocationShareRoomService {
     };
 
     private static final int MAX_MEMBERS = 4;
-    private static final int MIN_EXPIRES_MINUTES = 30;
-    private static final int MAX_EXPIRES_MINUTES = 1440; // 24시간
 
     @Transactional
-    public CreateRoomResponse createRoom(Long userId, CreateRoomRequest request) {
+    public CreateRoomResponse createRoom(Long userId) {
         // 방 코드 생성
         String roomCode = generateUniqueRoomCode();
         
-        // 만료 시간 검증
-        int expiresInMin = validateExpiresInMin(request.getExpiresInMin());
         LocalDateTime now = LocalDateTime.now();
-        LocalDateTime expiresAt = now.plusMinutes(expiresInMin);
         
         // 방 생성
         LocationShareRoom room = LocationShareRoom.builder()
                 .roomCode(roomCode)
                 .hostUserId(userId)
-                .title(request.getTitle() != null ? request.getTitle() : "해루 함께하기")
                 .startedAt(now)
-                .expiresAt(expiresAt)
                 .build();
         
         room = roomRepository.save(room);
@@ -83,37 +70,31 @@ public class LocationShareRoomService {
         
         memberRepository.save(hostMember);
         
-        // joinToken 생성 (방 만료 시간과 동일하게 설정)
-        String joinToken = jwtProvider.createJoinToken(roomCode, userId, expiresInMin);
+        // joinToken 생성 (장기간 유효하게 설정 - 24시간)
+        String joinToken = jwtProvider.createJoinToken(roomCode, userId, 1440);
         
         // 딥링크 생성
         String deepLink = String.format("seafeet://join?code=%s&token=%s", roomCode, joinToken);
-        
-        // WebSocket URL
-        String wsUrl = String.format("wss://%s:%s/api/ws", serverHost, serverPort);
         
         return CreateRoomResponse.builder()
                 .roomId(room.getId())
                 .roomCode(roomCode)
                 .deepLink(deepLink)
-                .wsUrl(wsUrl)
                 .startedAt(room.getStartedAt())
-                .expiresAt(room.getExpiresAt())
                 .build();
     }
 
     public RoomInfoResponse getRoomInfo(String roomCode) {
-        LocationShareRoom room = roomRepository.findByRoomCode(roomCode)
+        LocationShareRoom room = roomRepository.findByRoomCodeAndIsDeletedFalse(roomCode)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 방입니다."));
         
-        List<LocationShareMember> members = memberRepository.findByRoomId(room.getId());
+        List<LocationShareMember> members = memberRepository.findByRoomIdAndIsDeletedFalse(room.getId());
         
         // 경과 시간 계산
         long elapsedMin = ChronoUnit.MINUTES.between(room.getStartedAt(), LocalDateTime.now());
         
-        // joinToken 재생성 (남은 시간으로)
-        long remainingMin = ChronoUnit.MINUTES.between(LocalDateTime.now(), room.getExpiresAt());
-        String joinToken = jwtProvider.createJoinToken(roomCode, room.getHostUserId(), (int) remainingMin);
+        // joinToken 재생성 (24시간 유효)
+        String joinToken = jwtProvider.createJoinToken(roomCode, room.getHostUserId(), 1440);
         String deepLink = String.format("seafeet://join?code=%s&token=%s", roomCode, joinToken);
         
         // 멤버 정보 변환
@@ -136,11 +117,9 @@ public class LocationShareRoomService {
         RoomInfoResponse.RoomInfo roomInfo = RoomInfoResponse.RoomInfo.builder()
                 .roomId(room.getId())
                 .roomCode(room.getRoomCode())
-                .title(room.getTitle())
                 .hostUserId(room.getHostUserId())
                 .isActive(room.getIsActive())
                 .startedAt(room.getStartedAt())
-                .expiresAt(room.getExpiresAt())
                 .elapsedMin(elapsedMin)
                 .maxMembers(MAX_MEMBERS)
                 .currentMemberCount(members.size())
@@ -155,7 +134,7 @@ public class LocationShareRoomService {
 
     @Transactional
     public CloseRoomResponse closeRoom(String roomCode) {
-        LocationShareRoom room = roomRepository.findByRoomCodeAndIsActiveTrue(roomCode)
+        LocationShareRoom room = roomRepository.findByRoomCodeAndIsActiveTrueAndIsDeletedFalse(roomCode)
                 .orElseThrow(() -> new IllegalArgumentException("활성화된 방을 찾을 수 없습니다."));
         
         room.close();
@@ -167,7 +146,7 @@ public class LocationShareRoomService {
     }
     
     public LocationShareRoom findActiveRoom(String roomCode) {
-        return roomRepository.findByRoomCodeAndIsActiveTrue(roomCode)
+        return roomRepository.findByRoomCodeAndIsActiveTrueAndIsDeletedFalse(roomCode)
                 .orElseThrow(() -> new IllegalArgumentException("활성화된 방을 찾을 수 없습니다."));
     }
 
@@ -175,7 +154,7 @@ public class LocationShareRoomService {
         String roomCode;
         do {
             roomCode = generateRoomCode();
-        } while (roomRepository.existsByRoomCode(roomCode));
+        } while (roomRepository.existsByRoomCodeAndIsDeletedFalse(roomCode));
         return roomCode;
     }
 
@@ -191,16 +170,4 @@ public class LocationShareRoomService {
         return sb.toString();
     }
 
-    private int validateExpiresInMin(Integer expiresInMin) {
-        if (expiresInMin == null) {
-            return 180; // 기본값 3시간
-        }
-        if (expiresInMin < MIN_EXPIRES_MINUTES) {
-            return MIN_EXPIRES_MINUTES;
-        }
-        if (expiresInMin > MAX_EXPIRES_MINUTES) {
-            return MAX_EXPIRES_MINUTES;
-        }
-        return expiresInMin;
-    }
 }

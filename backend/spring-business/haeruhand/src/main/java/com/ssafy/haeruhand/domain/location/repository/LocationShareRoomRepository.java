@@ -11,11 +11,13 @@ import java.util.Optional;
 @Repository
 public interface LocationShareRoomRepository extends JpaRepository<LocationShareRoom, Long> {
     
-    Optional<LocationShareRoom> findByRoomCode(String roomCode);
+    Optional<LocationShareRoom> findByRoomCodeAndIsDeletedFalse(String roomCode);
     
-    Optional<LocationShareRoom> findByRoomCodeAndIsActiveTrue(String roomCode);
+    Optional<LocationShareRoom> findByRoomCodeAndIsActiveTrueAndIsDeletedFalse(String roomCode);
     
-    List<LocationShareRoom> findByIsActiveTrueAndExpiresAtBefore(LocalDateTime now);
+    boolean existsByRoomCodeAndIsDeletedFalse(String roomCode);
     
-    boolean existsByRoomCode(String roomCode);
+    List<LocationShareRoom> findAllByIsDeletedFalse();
+    
+    List<LocationShareRoom> findAllByIsActiveFalseAndIsDeletedFalse();
 }

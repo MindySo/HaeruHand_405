@@ -13,7 +13,5 @@ public class CreateRoomResponse {
     private Long roomId;
     private String roomCode;
     private String deepLink;
-    private String wsUrl;
     private LocalDateTime startedAt;
-    private LocalDateTime expiresAt;
 }
