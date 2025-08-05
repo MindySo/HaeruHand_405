@@ -1,13 +1,19 @@
 .container {
   display: flex;
-  gap: 4px;
-  flex-wrap: wrap;
+  align-items: center;
+}
+
+.divider {
+  width: 1px;
+  height: 44px;
+  background-color: #f0f0f0;
+  margin: 0 8px;
+  border-radius: 1px;
+  flex-shrink: 0;
 }
 
 .weatherWidget {
   background: white;
-  border: 1px solid #e0e0e0;
-  border-radius: 12px;
   padding: 8px 4px 8px 8px;
   min-width: 196px;
 }
@@ -29,10 +35,6 @@
   flex: 1;
 }
 
-.iconSection {
-  flex-shrink: 0;
-}
-
 .textSection {
   display: flex;
   flex-direction: column;
@@ -46,7 +48,6 @@
   flex-shrink: 0;
 }
 
-/* 태양 아이콘 */
 .sunIcon {
   position: relative;
   width: 24px;
@@ -63,76 +64,4 @@
   background: linear-gradient(45deg, #ffd700, #ff8c00);
   border-radius: 50%;
   box-shadow: 0 0 6px rgba(255, 215, 0, 0.5);
-}
-
-/* 파도 아이콘 */
-.waveIcon {
-  position: relative;
-  width: 24px;
-  height: 24px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  gap: 2px;
-}
-
-.wave {
-  height: 3px;
-  background: linear-gradient(90deg, #20aeea, #87ceeb);
-  border-radius: 2px;
-  animation: wave 2s ease-in-out infinite;
-}
-
-.wave:nth-child(1) {
-  width: 20px;
-  animation-delay: 0s;
-}
-
-.wave:nth-child(2) {
-  width: 16px;
-  animation-delay: 0.2s;
-}
-
-.wave:nth-child(3) {
-  width: 12px;
-  animation-delay: 0.4s;
-}
-
-@keyframes wave {
-  0%,
-  100% {
-    opacity: 0.6;
-  }
-  50% {
-    opacity: 1;
-  }
-}
-
-/* 물방울 아이콘 */
-.waterDropIcon {
-  position: relative;
-  width: 24px;
-  height: 24px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  gap: 2px;
-}
-
-.drop {
-  width: 8px;
-  height: 8px;
-  background: linear-gradient(45deg, #20aeea, #87ceeb);
-  border-radius: 50% 50% 50% 2px;
-  transform: rotate(45deg);
-}
-
-.drop:nth-child(1) {
-  margin-left: 2px;
-}
-
-.drop:nth-child(2) {
-  margin-left: 8px;
-  width: 6px;
-  height: 6px;
 }
