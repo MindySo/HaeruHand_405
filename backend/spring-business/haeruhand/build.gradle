@@ -67,6 +67,10 @@ dependencies {
 	// Redis
 	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 
+	// GCS
+	implementation(platform("com.google.cloud:libraries-bom:26.65.0"))
+	implementation("com.google.cloud:google-cloud-storage")
+
 }
 
 tasks.named('test') {
