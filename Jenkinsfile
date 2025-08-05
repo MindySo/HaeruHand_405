@@ -3,18 +3,20 @@
  *  ├─ Build & push Spring / FastAPI / Nginx images
  *  └─ Pull + docker-compose up  (same EC2 host)
  */
-
 pipeline {
-    agent any                                  // 마스터 노드(로컬 Jenkins 컨테이너)에서 실행
-    tools {
-        git 'git-default'
-    }
+    agent any
+    tools   { git 'git-default' }
+
+    /* ────── 공통 환경변수 ────── */
     environment {
-        DOCKER_ID    = 'yeriming'              // Docker Hub ID (.env.prod와 동일)
-        COMPOSE_FILE = 'docker/docker-compose.prod.yml'
-        ENV_FILE     = 'docker/.env.prod'
+        DOCKER_ID    = 'yeriming'
+        COMPOSE_FILE = 'docker-compose.prod.yml'
+        ENV_FILE     = '.env.prod'
+        SPRING_RES   = 'backend/spring-business/haeruhand/src/main/resources'
     }
+
     options {
+        skipDefaultCheckout()
         ansiColor('xterm')
         timestamps()
     }
@@ -23,11 +25,39 @@ pipeline {
 
         /* -------------------------------------------------- */
         stage('Checkout') {
-            steps { checkout scm }             // GitLab 레포지토리 풀링
+            steps {
+                checkout([
+                    $class: 'GitSCM',
+                    branches: [[name: '*/be-develop']],
+                    userRemoteConfigs: [[
+                        url: 'https://lab.ssafy.com/s13-webmobile2-sub1/S13P11A405.git',
+                        credentialsId: 'gitlab-jenkins-token'
+                    ]]
+                ])
+            }
         }
 
         /* -------------------------------------------------- */
-        stage('Docker Login') {                // Hub 로그인 (PAT 필요)
+        stage('Prepare Secrets') {
+            steps {
+                withCredentials([
+                    file(credentialsId: 'env-prod',  variable: 'ENV_TMP'),
+                    file(credentialsId: 'gcs-key',   variable: 'GCS_KEY_TMP')
+                ]) {
+                    sh '''
+                        # .env.prod → docker/.env.prod
+                        cp "$ENV_TMP" "docker/$ENV_FILE"
+
+                        # gcs-key.json → Spring resources
+                        mkdir -p "$SPRING_RES"
+                        cp "$GCS_KEY_TMP" "$SPRING_RES/gcs-key.json"
+                    '''
+                }
+            }
+        }
+
+        /* -------------------------------------------------- */
+        stage('Docker Login') {
             steps {
                 withCredentials([usernamePassword(
                         credentialsId: 'docker-hub-cred',
@@ -44,7 +74,7 @@ pipeline {
             steps {
                 sh '''
                     cd backend/spring-business/haeruhand
-                    ./gradlew clean build -x test
+                    ./gradlew clean build -x test          # gcs-key.json 포함해 Jar 생성
                     docker build -t $DOCKER_ID/haeruhand-spring:latest .
                     docker push    $DOCKER_ID/haeruhand-spring:latest
                 '''
@@ -76,17 +106,16 @@ pipeline {
         /* -------------------------------------------------- */
         stage('Deploy (docker-compose prod)') {
             steps {
-
-                withCredentials([file(credentialsId: 'env-prod',
-                                      variable: 'ENV_TMP')]) {
-
-                    sh 'cp "$ENV_TMP" "$ENV_FILE"'
-                }
-
                 sh '''
-                    cd docker
-                    docker compose --env-file $ENV_FILE -f $COMPOSE_FILE pull
-                    docker compose --env-file $ENV_FILE -f $COMPOSE_FILE up -d --remove-orphans
+                    docker compose \
+                      --env-file docker/$ENV_FILE \
+                      -f docker/$COMPOSE_FILE      \
+                      pull
+
+                    docker compose \
+                      --env-file docker/$ENV_FILE \
+                      -f docker/$COMPOSE_FILE      \
+                      up -d
                 '''
             }
         }
