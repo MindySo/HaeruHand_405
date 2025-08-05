@@ -79,11 +79,15 @@ public class OAuthServiceImpl implements OAuthService {
                 throw new GlobalException(ErrorStatus.INVALID_TOKEN);
             }
 
+            // 새로운 refresh token 발급
+            String newRefreshToken = jwtProvider.createRefreshToken(userId);
+            refreshTokenRepository.save(String.valueOf(userId), refreshToken);
+
             // 새로운 access token 발급
             String newAccessToken = jwtProvider.createAccessToken(userId);
             long accessTokenExpiresIn = jwtProvider.getAccessTokenExpirationMilliSec();
 
-            return buildReissueResponse(newAccessToken, refreshToken, accessTokenExpiresIn / 1000);
+            return buildReissueResponse(newAccessToken, newRefreshToken, accessTokenExpiresIn / 1000);
 
         } catch (Exception e) {
             throw new GlobalException(ErrorStatus.OAUTH_ERROR);
