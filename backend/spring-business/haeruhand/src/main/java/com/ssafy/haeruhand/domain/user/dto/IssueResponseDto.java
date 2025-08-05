@@ -9,6 +9,8 @@ import lombok.Setter;
 @Setter
 @Builder
 @AllArgsConstructor
-public class LoginRequestDto {
-    private String code;
+public class IssueResponseDto {
+    private String accessToken;
+    private String refreshToken;
+    private IssueResponseBodyDto responseBodyDto;
 }
