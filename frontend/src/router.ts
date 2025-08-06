@@ -4,6 +4,7 @@ import Chaeeun from './pages/Chaeeun';
 import App from './App';
 import WeatherAlertPage from './pages/WeatherAlertPage/WeatherAlertPage';
 import PhotoAnalysisResultPage from './pages/PhotoAnalysisResultPage/PhotoAnalysisResultPage';
+import TrackingSharePage from './pages/TrackingSharePage/TrackingSharePage';
 
 const rootRoute = createRootRoute();
 
@@ -37,12 +38,19 @@ const photoAnalysisResultRoute = createRoute({
   component: PhotoAnalysisResultPage,
 });
 
+const trackingShareRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: '/tracking-share',
+  component: TrackingSharePage,
+});
+
 const routeTree = rootRoute.addChildren([
   homeRoute,
   kyuminRoute,
   chaeunRoute,
   weatherAlertRoute,
   photoAnalysisResultRoute,
+  trackingShareRoute,
 ]);
 export const router = createRouter({ routeTree });
 
