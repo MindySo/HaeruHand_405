@@ -30,6 +30,13 @@ public enum ErrorStatus implements BaseErrorStatus {
     PROFILE_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, 500, "유저정보 불러오기 오류입니다."),
     USER_CREATE_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, 500, "사용자 생성에 실패했습니다."),
 
+    // FCM
+    FCM_TOKEN_INVALID(HttpStatus.BAD_REQUEST, 400, "유효하지 않은 FCM 토큰입니다."),
+    FCM_TOKEN_NOT_FOUND(HttpStatus.NOT_FOUND, 404, "등록되지 않은 FCM 토큰입니다."),
+    FCM_SEND_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, 500, "FCM 알림 전송에 실패했습니다."),
+    FCM_TOKEN_DUPLICATE(HttpStatus.CONFLICT, 409, "이미 등록된 FCM 토큰입니다."),
+    INVALID_DEVICE_TYPE(HttpStatus.BAD_REQUEST, 400, "지원하지 않는 디바이스 타입입니다."),
+
     // s3
     UNSUPPORTED_IMAGE_TYPE(HttpStatus.BAD_REQUEST, 400, "지원하지 않는 이미지 업로드 타입입니다.");
 

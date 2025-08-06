@@ -37,11 +37,13 @@ out/
 .vscode/
 
 ### 환경변수 파일 ###
-
 *.env
 .env.*
 **/.env
 **/.env.*
+
+### FCM 비공개 키 ###
+**/service-account-key.json
 
 ### Gcs 키 파일 ###
 gcs-key.json
