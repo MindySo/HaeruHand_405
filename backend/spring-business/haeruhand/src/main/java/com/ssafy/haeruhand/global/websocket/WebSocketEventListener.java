@@ -1,94 +1,63 @@
 package com.ssafy.haeruhand.global.websocket;
 
-import com.ssafy.haeruhand.domain.location.dto.websocket.LocationMessage;
-import com.ssafy.haeruhand.domain.location.entity.LocationShareRoom;
-import com.ssafy.haeruhand.domain.location.service.LocationShareMemberService;
-import com.ssafy.haeruhand.domain.location.service.LocationShareRoomService;
-import com.ssafy.haeruhand.domain.user.entity.User;
-import com.ssafy.haeruhand.domain.user.repository.UserRepository;
+import com.ssafy.haeruhand.domain.location.dto.internal.MemberLeaveResultDto;
+import com.ssafy.haeruhand.domain.location.service.LocationRoomEventService;
+import com.ssafy.haeruhand.global.exception.GlobalException;
+import com.ssafy.haeruhand.global.status.ErrorStatus;
+import com.ssafy.haeruhand.global.websocket.service.LocationWebSocketMessageService;
+import com.ssafy.haeruhand.global.websocket.service.WebSocketSessionService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.event.EventListener;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.messaging.SessionDisconnectEvent;
-
-import java.time.LocalDateTime;
 
 @Slf4j
 @Component
 @RequiredArgsConstructor
 public class WebSocketEventListener {
 
-    private final SimpMessagingTemplate messagingTemplate;
-    private final LocationShareMemberService memberService;
-    private final LocationShareRoomService roomService;
-    private final UserRepository userRepository;
+    private final WebSocketSessionService sessionService;
+    private final LocationRoomEventService roomEventService;
+    private final LocationWebSocketMessageService messageService;
 
     @EventListener
     public void handleSessionDisconnect(SessionDisconnectEvent event) {
         StompHeaderAccessor headerAccessor = StompHeaderAccessor.wrap(event.getMessage());
         
-        String roomCode = (String) headerAccessor.getSessionAttributes().get("roomCode");
-        Long userId = (Long) headerAccessor.getSessionAttributes().get("userId");
-        
-        if (roomCode == null || userId == null) {
-            return; // 인증되지 않은 세션
-        }
-        
-        log.info("Session disconnected. User: {}, Room: {}", userId, roomCode);
-        
         try {
-            // 사용자 정보 조회
-            User user = userRepository.findById(userId)
-                    .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
+            // 세션 정보 추출
+            WebSocketSessionService.SessionInfo sessionInfo = 
+                    sessionService.extractSessionInfo(headerAccessor.getSessionAttributes());
             
-            // 멤버 제거
-            memberService.removeMember(roomCode, userId);
+            log.info("Session disconnected. User: {}, Room: {}", 
+                    sessionInfo.getUserId(), sessionInfo.getRoomCode());
             
-            // 남은 멤버 수 확인
-            LocationShareRoom room = roomService.findActiveRoom(roomCode);
-            int remainingMembers = memberService.getActiveMemberCount(room.getId());
+            // 멤버 퇴장 및 방 종료 처리
+            MemberLeaveResultDto leaveResult = 
+                    roomEventService.handleMemberLeave(sessionInfo.getUserId(), sessionInfo.getRoomCode());
             
-            if (remainingMembers == 0) {
-                // 방 종료 처리
-                roomService.closeRoom(roomCode);
-                
-                // 경과 시간 계산
-                long totalDurationMin = java.time.temporal.ChronoUnit.MINUTES.between(
-                        room.getStartedAt(), LocalDateTime.now());
-                
-                // ROOM_CLOSED 브로드캐스트 (모든 멤버 퇴장으로 인한 종료)
-                LocationMessage roomClosedMessage = LocationMessage.builder()
-                        .type(LocationMessage.MessageType.ROOM_CLOSED)
-                        .reason(LocationMessage.CloseReason.ALL_MEMBERS_LEFT)
-                        .closedAt(LocalDateTime.now())
-                        .totalDurationMin(totalDurationMin)
-                        .build();
-                
-                messagingTemplate.convertAndSend(
-                        "/sub/location." + roomCode,
-                        roomClosedMessage);
-                
-                log.info("Room {} closed. Total duration: {} minutes", roomCode, totalDurationMin);
+            if (!leaveResult.isSuccess()) {
+                log.error("Failed to handle member leave: {}", leaveResult.getErrorMessage());
+                return;
+            }
+            
+            // 메시지 브로드캐스트
+            if (leaveResult.isRoomClosed()) {
+                messageService.broadcastRoomClosed(leaveResult.getRoomCode(), leaveResult.getMessage());
             } else {
-                // MEMBER_LEFT 브로드캐스트
-                LocationMessage memberLeftMessage = LocationMessage.builder()
-                        .type(LocationMessage.MessageType.MEMBER_LEFT)
-                        .userId(userId)
-                        .nickname(user.getNickname())
-                        .build();
-                
-                messagingTemplate.convertAndSend(
-                        "/sub/location." + roomCode,
-                        memberLeftMessage);
-                
-                log.info("Member {} left room {}. Remaining members: {}", 
-                        user.getNickname(), roomCode, remainingMembers);
+                messageService.broadcastMemberLeft(leaveResult.getRoomCode(), leaveResult.getMessage());
+            }
+            
+        } catch (GlobalException e) {
+            if (e.getErrorStatus().equals(ErrorStatus.WEBSOCKET_SESSION_INVALID)) {
+                log.warn("Session disconnect event for invalid session: {}", e.getErrorStatus().getMessage());
+            } else {
+                log.error("Session disconnect failed: {} ({})", e.getErrorStatus().getMessage(), e.getErrorStatus().getCode());
             }
         } catch (Exception e) {
-            log.error("Error handling session disconnect", e);
+            log.error("Error handling session disconnect with unexpected error", e);
         }
     }
 }
