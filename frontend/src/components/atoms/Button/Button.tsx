@@ -9,6 +9,7 @@ export interface ButtonProps {
   onClick?: () => void;
   className?: string;
   type?: 'button' | 'submit' | 'reset';
+  fullWidth?: boolean;
 }
 
 const Button: React.FC<ButtonProps> = ({
@@ -19,6 +20,7 @@ const Button: React.FC<ButtonProps> = ({
   onClick,
   className = '',
   type = 'button',
+  fullWidth = false,
 }) => {
   const getVariantStyles = () => {
     switch (variant) {
@@ -97,6 +99,7 @@ const Button: React.FC<ButtonProps> = ({
     alignItems: 'center',
     justifyContent: 'center',
     gap: theme.spacing.xs,
+    width: fullWidth ? '100%' : 'auto',
   };
 
   const styles = {
