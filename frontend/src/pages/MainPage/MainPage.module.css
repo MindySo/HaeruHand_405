@@ -1,65 +1,146 @@
 html,
-body #root {
-  margin: 0;
-  padding: 0;
+body,
+#root {
   height: 100%;
+  width: 100%;
   box-sizing: border-box;
+  overflow: hidden;
 }
 
-.window {
+/* MainPage 컨테이너 */
+.container {
   width: 100%;
+  height: 100vh;
   display: flex;
   flex-direction: column;
 }
 
+/* --------------------------------------------- */
+/* A. 고정 영역 */
+.fixedContent {
+  position: sticky;
+  top: 0;
+  /* width: 100%; */
+  height: 85px;
+  flex-shrink: 0;
+}
+
 .header {
   display: flex;
+  align-items: center;
   justify-content: space-between;
   position: relative;
-  width: 100%;
-  max-width: 360px;
+  /* width: 100%; */
+  /* max-width: 360px; */
+  box-sizing: border-box;
+  margin-bottom: 16px;
 }
 
 .bellIcon {
-  width: 100%;
-  max-width: 24px;
+  width: 24px;
   height: auto;
   /* 아이콘 위치 */
   position: absolute;
+  top: 0;
   right: 0;
+  z-index: 100;
+}
+.bellMarker {
+  width: 8px;
+  height: 8px;
+  background-color: #ff0000;
+  border-radius: 50%;
+  position: absolute;
+  top: 0;
+  right: 0;
+  z-index: 101;
 }
 
 .goBack {
   display: flex;
   justify-content: flex-start;
-  gap: 3%;
-  margin: 3% 0%;
+  /* width: 100%; */
+  height: auto;
+  gap: 8px;
+  margin: 12px 0px;
+}
+
+/* --------------------------------------------- */
+/* B. 스크롤 영역 */
+.scrollContent {
+  flex: 1;
+  /* width: 100%; */
+  min-height: 0;
+  overflow-y: auto;
+  padding-bottom: 20px; /* 하단 콘텐츠 짤림 방지용 여백 */
+}
+.scrollContent::-webkit-scrollbar {
+  display: none;
+}
+
+.warningBanner {
+  top: 1;
 }
 
 .weatherWidgets {
   display: flex;
   align-items: stretch;
-  width: 100%;
-  height: auto;
-  margin: 3% 0%;
+  margin: 12px 0px;
 }
 
+/* 지도 영역 */
+.mapContainer {
+  width: 100%;
+  /* max-width: 360px; */
+  height: 324px;
+  border: 1px solid #ababab;
+  border-radius: 8px;
+  padding: 8px;
+
+  /* 내부 지도 위치 */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* mapContainer 내부에 들어가도록 크기 조정 */
 .map {
   width: 100%;
-  max-width: 360px;
-  height: 324px;
-  border: 1px solid black;
-  margin: 3% 0%;
+  /* max-width: 360px; */
+  height: 308px;
+  border: 1px solid #6fb7d6;
+  border-radius: 8px;
+}
+
+.mapBadges {
+  display: flex;
+  justify-content: baseline;
+  gap: 10px;
+  margin: 14px;
+  overflow: hidden;
+}
+
+.badgeMarker1 {
+  width: 8px;
+  height: 8px;
+  background-color: #6edf74;
+  border-radius: 50%;
+  margin-right: 4px;
+}
+
+.badgeMarker2 {
+  width: 8px;
+  height: 8px;
+  background-color: #ff0000;
+  border-radius: 50%;
+  margin-right: 4px;
 }
 
 .harvestButton {
-  width: 100%;
-  margin: 3% 0%;
+  margin: 12px 0px;
 }
 
 .buttons {
   display: flex;
-  width: 100%;
-  height: auto;
-  gap: 10px;
+  gap: 12px;
 }

@@ -2,7 +2,7 @@
   display: flex;
   align-items: center;
   width: 100%;
-  max-width: 360px;
+  /* max-width: 360px; */
   height: 40px;
   gap: 12px;
   padding: 4px 12px;

@@ -10,6 +10,7 @@
   z-index: 1000;
 }
 
+/* 모달 창 */
 .modalWindow {
   background-color: #20aeea;
   border-radius: 16px;
@@ -20,10 +21,9 @@
 
   /* 모달 창 크기 */
   width: 100%;
-  max-width: 320px;
-  height: auto;
-  /* padding을 포함한 크기 계산 */
-  box-sizing: border-box;
+  max-width: 315px;
+  height: 400px;
+  box-sizing: border-box; /* padding을 포함한 크기 계산 */
 
   /* 모달 창 위치 조정 */
   position: fixed;
@@ -54,18 +54,14 @@
   height: 25px;
 }
 
+/* 모달 창 내부 박스 */
 .boxInWindow {
   background-color: white;
   border-radius: 16px;
   padding: 16px;
-  /* 내부 박스 크기 */
   width: 100%;
   max-width: 290px;
-  height: auto;
-  /* 리스트 스크롤바를 위한 설정(높이 고정) */
-  display: flex;
-
-  flex-direction: column;
+  height: 100%;
 }
 
 .toggleButton {

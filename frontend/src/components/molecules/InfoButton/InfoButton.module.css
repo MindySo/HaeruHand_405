@@ -1,7 +1,7 @@
 .container {
   position: relative;
   width: 50%;
-  max-width: 176px;
+  /* max-width: 176px; */
   height: 112px;
   background: #f1f8fa;
   border: 1px solid #d6eef8;
