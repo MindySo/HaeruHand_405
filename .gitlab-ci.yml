@@ -22,19 +22,20 @@ stages:
   - test
   - deploy
 
-smart-ai-review:
-  stage: ai_review
-  image: python:3.9-slim
-  before_script:
-    - pip install google-generativeai requests
-  script:
-    - python optimized_gemini_review.py
-  rules:
-    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
-  variables:
-    GEMINI_API_KEY: $GEMINI_API_KEY
-    GITLAB_TOKEN: $GITLAB_TOKEN
-  allow_failure: true
+# DISABLED - AI 리뷰 임시 비활성화 (Runner 대기중)
+# smart-ai-review:
+#   stage: ai_review
+#   image: python:3.9-slim
+#   before_script:
+#     - pip install google-generativeai requests
+#   script:
+#     - python optimized_gemini_review.py
+#   rules:
+#     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+#   variables:
+#     GEMINI_API_KEY: $GEMINI_API_KEY
+#     GITLAB_TOKEN: $GITLAB_TOKEN
+#   allow_failure: true
 
 build-job:       # This job runs in the build stage, which runs first.
   stage: build
