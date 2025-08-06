@@ -141,7 +141,7 @@ public ResponseEntity<ApiResponse<Void>> handleGlobalException(GlobalException e
 
 2. **DTO 생성** (`domain/[도메인명]/dto`)
    - Request DTO: 클라이언트 → 서버
-   - Response DTO: 서버 → 클라이언트
+   - Response DTO: 서버 → 클라이언트 (서비스에서 생성 시 Builder 패턴 사용)
    - 내부 DTO: 서비스 간 데이터 전달
 
 3. **Repository 생성** (`domain/[도메인명]/repository`)
@@ -163,7 +163,20 @@ public ResponseEntity<ApiResponse<Void>> handleGlobalException(GlobalException e
    @RequiredArgsConstructor
    public class FishServiceImpl implements FishService {
        private final FishRepository fishRepository;
-       // 구현...
+       
+       @Override
+       public FishResponseDto getFish(Long id) {
+           Fish fish = fishRepository.findById(id)
+               .orElseThrow(() -> new GlobalException(ErrorStatus.FISH_NOT_FOUND));
+           
+           // Builder 패턴으로 Response DTO 생성
+           return FishResponseDto.builder()
+               .id(fish.getId())
+               .name(fish.getName())
+               .length(fish.getLength())
+               .createdAt(fish.getCreatedAt())
+               .build();
+       }
    }
    ```
 
@@ -203,6 +216,64 @@ public class FishCreateRequestDto {
 }
 ```
 
+### 4.3 Response DTO 생성 패턴
+서비스 레이어에서 Response DTO를 생성할 때는 **Builder 패턴**을 사용합니다:
+
+```java
+@Service
+@RequiredArgsConstructor
+public class FishServiceImpl implements FishService {
+    private final FishRepository fishRepository;
+    
+    @Override
+    public FishResponseDto createFish(FishCreateRequestDto request) {
+        Fish fish = Fish.builder()
+            .name(request.getName())
+            .length(request.getLength())
+            .build();
+            
+        Fish savedFish = fishRepository.save(fish);
+        
+        // Response DTO 생성 시 Builder 패턴 사용 (Of 메서드 사용 X)
+        return FishResponseDto.builder()
+            .id(savedFish.getId())
+            .name(savedFish.getName())
+            .length(savedFish.getLength())
+            .createdAt(savedFish.getCreatedAt())
+            .build();
+    }
+    
+    @Override
+    public List<FishResponseDto> getAllFish() {
+        return fishRepository.findAll().stream()
+            .map(fish -> FishResponseDto.builder()
+                .id(fish.getId())
+                .name(fish.getName())
+                .length(fish.getLength())
+                .createdAt(fish.getCreatedAt())
+                .build())
+            .collect(Collectors.toList());
+    }
+}
+```
+
+#### Response DTO 클래스 예제
+```java
+@Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
+@Builder
+public class FishResponseDto {
+    private Long id;
+    private String name;
+    private Double length;
+    private LocalDateTime createdAt;
+    
+    // Of 메서드 사용하지 않음
+    // public static FishResponseDto of(Fish fish) { ... } <- 사용 X
+}
+```
+
 ## 5. 보안 및 인증
 
 ### 5.1 JWT 토큰 사용
@@ -228,8 +299,9 @@ public ResponseEntity<ApiResponse<List<FishResponseDto>>> getMyFish(
 2. **적절한 상태 코드 사용**: 도메인별로 구체적인 상태 메시지 정의
 3. **예외 처리**: 서비스 레이어에서 `GlobalException` 사용
 4. **DTO 분리**: Entity를 직접 반환하지 않고 DTO 사용
-5. **검증**: Request DTO에 Bean Validation 적용
-6. **로깅**: 중요한 비즈니스 로직과 예외 상황에 로그 추가
+5. **DTO 생성 패턴**: 서비스에서 Response DTO 생성 시 Builder 패턴 사용 (Of 메서드 사용 금지)
+6. **검증**: Request DTO에 Bean Validation 적용
+7. **로깅**: 중요한 비즈니스 로직과 예외 상황에 로그 추가
 
 ## 7. 코드 예제
 

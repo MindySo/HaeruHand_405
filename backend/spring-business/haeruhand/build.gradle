@@ -67,10 +67,15 @@ dependencies {
 	// Redis
 	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 
+	// Firebase Admin SDK
+	implementation 'com.google.firebase:firebase-admin:9.2.0'
+
+	// WebSocket & STOMP
+	implementation 'org.springframework.boot:spring-boot-starter-websocket'
+
 	// GCS
 	implementation(platform("com.google.cloud:libraries-bom:26.65.0"))
 	implementation("com.google.cloud:google-cloud-storage")
-
 }
 
 tasks.named('test') {

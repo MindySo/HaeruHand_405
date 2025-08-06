@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>FCM 토큰 생성 테스트</title>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-messaging-compat.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        button { padding: 10px 20px; margin: 10px; font-size: 16px; }
+        textarea { width: 100%; font-family: monospace; }
+        .success { color: green; }
+        .error { color: red; }
+    </style>
+</head>
+<body>
+    <h1>FCM 토큰 생성 테스트</h1>
+    
+    <button id="generateToken">FCM 토큰 생성</button>
+    <button id="testNotification">백엔드로 테스트 알림 전송</button>
+    
+    <div id="result" style="margin-top: 20px;">
+        <h3>생성된 토큰:</h3>
+        <textarea id="tokenArea" rows="5" cols="80" readonly placeholder="토큰이 여기에 표시됩니다"></textarea>
+    </div>
+
+    <div id="status" style="margin-top: 10px;"></div>
+
+    <script>
+        // Firebase 설정 : 공개 가능
+        const firebaseConfig = {
+            apiKey: "AIzaSyD6V17pyg4QNyV_QQXV5if9brML8nGEu5c",
+            authDomain: "haeruhand-b0ca7.firebaseapp.com",
+            projectId: "haeruhand-b0ca7",
+            storageBucket: "haeruhand-b0ca7.firebasestorage.app",
+            messagingSenderId: "983094973633",
+            appId: "1:983094973633:web:3b81d27322fff0b581b040",
+            measurementId: "G-F4VLBQBWMN"
+        };
+
+        // Firebase 초기화
+        firebase.initializeApp(firebaseConfig);
+        const messaging = firebase.messaging();
+
+        // 서비스 워커 등록 (백그라운드 알림용)
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/firebase-messaging-sw.js')
+                .then((registration) => {
+                    console.log('Service Worker 등록 성공:', registration);
+                })
+                .catch((error) => {
+                    console.log('Service Worker 등록 실패:', error);
+                });
+        } else {
+            console.log('이 브라우저는 Service Worker를 지원하지 않습니다.');
+        }
+
+        function updateStatus(message, isError = false) {
+            const statusDiv = document.getElementById('status');
+            statusDiv.innerHTML = message;
+            statusDiv.className = isError ? 'error' : 'success';
+        }
+
+        // FCM 토큰 생성
+        document.getElementById('generateToken').addEventListener('click', async () => {
+            try {
+                updateStatus('알림 권한을 요청합니다...');
+                
+                // 알림 권한 요청
+                const permission = await Notification.requestPermission();
+                if (permission === 'granted') {
+                    updateStatus('토큰을 생성하고 있습니다...');
+                    
+                    // FCM 토큰 생성
+                    const token = await messaging.getToken();
+                    
+                    document.getElementById('tokenArea').value = token;
+                    updateStatus('FCM 토큰 생성 성공');
+                    console.log('FCM 토큰:', token);
+                } else {
+                    updateStatus('알림 권한이 거부되었습니다. 브라우저 설정에서 알림을 허용해주세요.', true);
+                }
+            } catch (error) {
+                console.error('토큰 생성 실패:', error);
+                updateStatus('토큰 생성 실패: ' + error.message, true);
+            }
+        });
+
+        // 백엔드로 테스트 알림 전송 요청
+        document.getElementById('testNotification').addEventListener('click', async () => {
+            const token = document.getElementById('tokenArea').value;
+            if (!token) {
+                updateStatus('먼저 토큰을 생성해주세요.', true);
+                return;
+            }
+
+            try {
+                updateStatus('백엔드로 알림을 전송하고 있습니다...');
+                
+                const response = await fetch('http://localhost:8080/api/v1/notifications/send', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        token: token,
+                        title: 'fcm 알림 테스트',
+                        body: 'Haeruhand에서 보낸 알림입니다.'
+                    })
+                });
+
+                const result = await response.json();
+                if (result.is_success) {
+                    updateStatus('알림 전송 성공: 브라우저 알림을 확인해보세요.');
+                } else {
+                    updateStatus('알림 전송 실패: ' + result.message, true);
+                }
+                console.log('전송 결과:', result);
+            } catch (error) {
+                console.error('알림 전송 실패:', error);
+                updateStatus('백엔드 연결 실패: 서버가 실행 중인지 확인해주세요.', true);
+            }
+        });
+
+        // 포그라운드에서 메시지 수신
+        messaging.onMessage((payload) => {
+            console.log('FCM 메시지 수신(foreground)');
+            console.log('payload:', payload);
+            alert('foreground에서 FCM 메시지를 수신했습니다.');
+            updateStatus('실시간 메시지 수신: ' + payload.notification?.title);
+        });
+    </script>
+</body>
+</html>
