@@ -7,12 +7,30 @@ export interface WarningBannerProps {
   date: string;
   location: string;
   className?: string;
+  variant?: 'latest' | 'past';
 }
 
-const WarningBanner: React.FC<WarningBannerProps> = ({ type, date, location, className = '' }) => {
+const WarningBanner: React.FC<WarningBannerProps> = ({
+  type,
+  date,
+  location,
+  className = '',
+  variant = 'latest',
+}) => {
+  const isLatest = variant === 'latest';
+
   return (
-    <div className={`${styles.container} ${className}`}>
-      <Badge variant="error" size="small" className={styles.badge}>
+    <div className={`${styles.container} ${isLatest ? styles.latest : styles.past} ${className}`}>
+      <Badge
+        variant={isLatest ? 'error' : 'neutral'}
+        size="small"
+        className={styles.badge}
+        style={{
+          backgroundColor: isLatest ? '#FD0202' : '#ABABAB',
+          color: 'white',
+          fontSize: '14px',
+        }}
+      >
         {type}
       </Badge>
       <span className={styles.text}>
