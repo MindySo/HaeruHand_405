@@ -42,7 +42,8 @@ pipeline {
             steps {
                 withCredentials([
                     file(credentialsId: 'env-prod',  variable: 'ENV_TMP'),
-                    file(credentialsId: 'gcs-key',   variable: 'GCS_KEY_TMP')
+                    file(credentialsId: 'gcs-key',   variable: 'GCS_KEY_TMP'),
+                    file(credentialsId: 'service-account-key', variable: 'SA_KEY_TMP')
                 ]) {
                     sh '''
                         # .env.prod → docker/.env.prod
@@ -51,6 +52,9 @@ pipeline {
                         # gcs-key.json → Spring resources
                         mkdir -p "$SPRING_RES"
                         cp "$GCS_KEY_TMP" "$SPRING_RES/gcs-key.json"
+
+                        # service-account-key.json → Spring resources
+                        cp "$SA_KEY_TMP" "$SPRING_RES/service-account-key.json"
                     '''
                 }
             }
@@ -74,7 +78,7 @@ pipeline {
             steps {
                 sh '''
                     cd backend/spring-business/haeruhand
-                    ./gradlew clean build -x test          # gcs-key.json 포함해 Jar 생성
+                    ./gradlew clean build -x test
                     docker build -t $DOCKER_ID/haeruhand-spring:latest .
                     docker push    $DOCKER_ID/haeruhand-spring:latest
                 '''
