@@ -22,4 +22,16 @@ public class BaseEntity {
 
     @Column(name = "is_deleted", nullable = false)
     private Boolean isDeleted = false;
+    
+    public void softDelete() {
+        this.isDeleted = true;
+    }
+    
+    public void restore() {
+        this.isDeleted = false;
+    }
+    
+    public boolean isDeleted() {
+        return this.isDeleted;
+    }
 }
