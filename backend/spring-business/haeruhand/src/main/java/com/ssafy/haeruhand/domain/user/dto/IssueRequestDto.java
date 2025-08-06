@@ -9,6 +9,6 @@ import lombok.Setter;
 @Setter
 @Builder
 @AllArgsConstructor
-public class LoginRequestDto {
+public class IssueRequestDto {
     private String code;
 }

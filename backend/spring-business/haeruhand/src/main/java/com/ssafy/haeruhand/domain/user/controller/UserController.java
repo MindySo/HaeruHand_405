@@ -20,7 +20,7 @@ public class UserController {
     @PostMapping("/issue/kakao")
     @Operation(summary = "카카오 인증 및 Token 발급")
     public ResponseEntity<ApiResponse<IssueResponseBodyDto>> authorizeKakaoAndIssueToken(
-            @RequestBody @Valid LoginRequestDto request,
+            @RequestBody @Valid IssueRequestDto request,
             HttpServletResponse response) {
 
         IssueResponseDto responseDto = oAuthService.authorizeKakaoAndIssueToken(request.getCode(), response);
