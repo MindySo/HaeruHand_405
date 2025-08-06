@@ -37,7 +37,7 @@ public class OAuthServiceImpl implements OAuthService {
     private final ObjectMapper objectMapper;
     private final RestTemplate restTemplate = new RestTemplate();
 
-    @Value("${CLIENT_ID}")
+    @Value("${spring.security.oauth2.client.registration.kakao.client-id}")
     private String clientId;
 
     // 프론트 redirectUri로 변경 필요
