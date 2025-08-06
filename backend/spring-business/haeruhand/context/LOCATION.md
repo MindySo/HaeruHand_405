@@ -294,15 +294,10 @@ CREATE TABLE location_share_member (
 ```
 
 **색상 할당 정책**:
-```java
-// 미리 정의된 색상 팔레트 (최대 4명)
-private static final String[] MEMBER_COLORS = {
-    "#FF0000", // 빨강 (호스트)
-    "#0084FF", // 파랑
-    "#00C851", // 초록  
-    "#FF6900"  // 주황
-};
-```
+- 미리 정의된 4가지 색상 팔레트
+- 호스트: #FF0000 (빨강)
+- 멤버: #0084FF (파랑), #00C851 (초록), #FF6900 (주황)
+- 참가 순서대로 자동 할당
 
 #### 3.2.3 위치 로그 테이블
 ```sql
@@ -329,13 +324,14 @@ CREATE TABLE user_location_log (
 | 토큰 | 발급 시점 | 클레임 | TTL | 저장소 | 사용 위치 |
 |------|-----------|---------|-----|--------|-----------|
 | `accessJWT` | Kakao OAuth → 앱 | `sub`(userId), `exp` | 1시간 | 없음 | 모든 REST + WS Authorization |
-| `joinToken` | 방 생성 시 서버 | `room`(code), `sub`(방 생성자 userId), `jti`, `exp` | **방이 활성화된 동안** | Redis SET `jti:<uuid>` | WS join-token 헤더 |
+| `joinToken` | 방 생성 시 서버 | `room`(code), `sub`(방 생성자 userId), `jti`, `exp` | **24시간** | Redis SET `jti:<uuid>:user:<userId>` | WS join-token 헤더 |
 
 ### 4.2 joinToken 공유 정책
 - **방별 공유 토큰**: 모든 참가자가 동일한 `joinToken` 사용
-- **무제한 재사용**: 방이 활성화되어 있는 동안 계속 유효
-- **TTL**: 방이 활성 상태인 동안 유효 (방 비활성화 시 무효화)
+- **무제한 재사용**: 24시간 동안 여러 사용자가 동일한 토큰으로 입장 가능
+- **TTL**: 24시간 (1440분) 고정
 - **초대 체인**: User1 → User2 → User3/4 등 연쇄 초대 가능
+- **JTI 관리**: `jti:<uuid>:user:<userId>` 형식으로 사용자별 중복 세션 추적
 
 ### 4.3 WebSocket 인증 플로우
 1. URL 파라미터에서 `roomCode` 추출
@@ -343,173 +339,59 @@ CREATE TABLE user_location_log (
 3. (테스트 환경에서는 아래 단계 생략 가능)
    - `accessJWT` 인증 → `userId` 추출
    - `joinToken` 서명·TTL 확인 (`room` claim 일치)
-   - Redis `SETNX jti:<uuid>` "used" (선택사항)
+   - Redis `SETNX jti:<uuid>:user:<userId>` "connected" (30분 TTL, 사용자별 중복 세션 체크)
 4. `location_share_member` UPSERT (없으면 INSERT, 있으면 `last_active_at` 갱신)
 
 ## 5. Spring Boot 구현 세부사항
 
 ### 5.0 테스트 환경 설정
 
-**CORS 설정** (SecurityConfig.java):
-```java
-@Bean
-public CorsConfigurationSource corsConfigurationSource() {
-    CorsConfiguration configuration = new CorsConfiguration();
-    configuration.setAllowedOriginPatterns(Arrays.asList("*"));
-    configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-    configuration.setAllowedHeaders(Arrays.asList("*"));
-    configuration.setAllowCredentials(true);
-    
-    UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-    source.registerCorsConfiguration("/**", configuration);
-    return source;
-}
-```
+- **CORS**: 모든 Origin 허용, 모든 HTTP 메서드 허용
+- **인증**: 테스트 환경에서는 JWT 검증 생략 가능
+- **DDL**: Hibernate ddl-auto를 update로 설정하여 엔티티 변경 시 자동 반영
 
-**DDL Auto 설정** (application-local.yml):
-```yaml
-jpa:
-  hibernate:
-    ddl-auto: update  # 테이블 스키마 변경 시 update 사용
-```
+### 5.1 Security 설정
 
-### 5.1 Security Filter Chain
-```java
-@Configuration
-public class SecurityConfig {
-    
-    @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        return http
-            .csrf(csrf -> csrf.disable())
-            .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/api/v1/**").authenticated()
-                .anyRequest().permitAll())
-            .addFilterBefore(jwtAuthFilter, BearerTokenAuthenticationFilter.class)
-            .build();
-    }
-}
-```
+- **CSRF**: 비활성화 (REST API 특성상)
+- **인증 정책**: `/api/v1/**` 경로는 인증 필요
+- **JWT 필터**: BearerTokenAuthenticationFilter 앞에 JwtAuthFilter 추가
 
 ### 5.2 WebSocket 설정
-```java
-@Configuration
-@EnableWebSocketMessageBroker
-public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
-    
-    @Override
-    public void registerStompEndpoints(StompEndpointRegistry registry) {
-        registry.addEndpoint("/api/ws")
-            .addInterceptors(new WsHandshakeInterceptor())
-            .setAllowedOrigins("*");
-    }
-    
-    @Override
-    public void configureMessageBroker(MessageBrokerRegistry registry) {
-        registry.setApplicationDestinationPrefixes("/pub");
-        registry.enableStompBrokerRelay("/sub")
-            .setRelayHost("redis")
-            .setRelayPort(6379);
-    }
-}
-```
 
-### 5.3 WsHandshakeInterceptor 핵심 로직
-```java
-@Component
-public class WsHandshakeInterceptor implements HandshakeInterceptor {
-    
-    @Override
-    public boolean beforeHandshake(ServerHttpRequest request, 
-                                 ServerHttpResponse response,
-                                 WebSocketHandler wsHandler, 
-                                 Map<String, Object> attributes) throws Exception {
-        
-        // 1. URL 파라미터에서 roomCode 추출
-        String roomCode = extractRoomCodeFromUrl(request);
-        LocationShareRoom room = roomService.findActiveRoom(roomCode);
-        
-        // 2. 테스트 환경에서는 임시 사용자 ID 사용
-        // TODO: 실제 배포 시 accessJWT 인증 복원 필요
-        Long userId = (long) (Math.random() * 4 + 1); // 1~4 순환
-        
-        // 3. 최대 인원 체크 (4명 제한)
-        int currentMemberCount = memberService.getActiveMemberCount(room.getId());
-        boolean isExistingMember = memberService.isMemberExists(room.getId(), userId);
-        
-        if (!isExistingMember && currentMemberCount >= 4) {
-            throw new RoomFullException("방 참가 인원이 초과되었습니다. (최대 4명)");
-        }
-        
-        // 4. 멤버 UPSERT (색상 자동 할당)
-        memberService.upsertMember(room.getId(), userId);
-        
-        attributes.put("userId", userId);
-        attributes.put("roomCode", roomCode);
-        attributes.put("roomId", room.getId());
-        
-        return true;
-    }
-    
-    private String extractRoomCodeFromUrl(ServerHttpRequest request) {
-        String query = request.getURI().getQuery();
-        if (query == null) {
-            throw new IllegalArgumentException("roomCode parameter is missing");
-        }
-        
-        String[] params = query.split("&");
-        for (String param : params) {
-            String[] keyValue = param.split("=");
-            if (keyValue.length == 2 && "roomCode".equals(keyValue[0])) {
-                return keyValue[1];
-            }
-        }
-        
-        throw new IllegalArgumentException("roomCode parameter is missing");
-    }
-}
-```
+- **Endpoint**: `/api/ws`
+- **Protocol**: STOMP over WebSocket
+- **Handshake Interceptor**: WsHandshakeInterceptor로 인증 처리
+- **Message Prefix**: 
+  - Application: `/pub`
+  - Broker: `/sub`
+- **Broker Relay**: Redis 사용 (port 6379)
 
-### 5.4 위치 정보 배치 처리기
-```java
-@Component
-public class LocationBatchWriter {
-    
-    private final BlockingQueue<LocationDto> locationQueue = new LinkedBlockingQueue<>();
-    
-    @Scheduled(fixedRate = 3000) // 3초마다
-    public void flushLocationBatch() {
-        List<LocationDto> batch = new ArrayList<>();
-        locationQueue.drainTo(batch, 1000); // 최대 1000개
-        
-        if (batch.isEmpty()) {
-            return;
-        }
-        
-        jdbcTemplate.batchUpdate(
-            """
-            INSERT INTO user_location_log 
-            (location_share_room_id, user_id, latitude, longitude, accuracy, timestamp) 
-            VALUES (?, ?, ?, ?, ?, ?)
-            """,
-            batch,
-            batch.size(),
-            (PreparedStatement ps, LocationDto location) -> {
-                ps.setLong(1, location.getRoomId());
-                ps.setLong(2, location.getUserId());
-                ps.setBigDecimal(3, location.getLatitude());
-                ps.setBigDecimal(4, location.getLongitude());
-                ps.setBigDecimal(5, location.getAccuracy());
-                ps.setTimestamp(6, Timestamp.valueOf(location.getTimestamp()));
-            }
-        );
-    }
-    
-    public void enqueue(LocationDto location) {
-        locationQueue.offer(location);
-    }
-}
-```
+### 5.3 WebSocket 인증 플로우
+
+**WebSocketAuthService 처리 단계**:
+1. **Access Token 검증**: Bearer 토큰에서 userId 추출
+2. **Room 검증**: roomCode로 활성화된 방 확인
+3. **Join Token 검증**: 서명 및 TTL 확인
+4. **JTI 관리**: 
+   - 키 형식: `jti:{uuid}:user:{userId}`
+   - TTL: 30분 (자동 정리)
+   - 동일 사용자 재연결 허용
+   - 다른 사용자도 동일 JTI로 입장 가능
+
+**WsHandshakeInterceptor 처리**:
+1. URL 파라미터에서 roomCode 추출
+2. 인증 서비스 호출 (WebSocketAuthService)
+3. 최대 인원(4명) 체크
+4. 멤버 UPSERT 및 색상 자동 할당
+5. 세션 속성 설정 (userId, roomCode, roomId)
+
+### 5.4 위치 정보 배치 처리
+
+**LocationUpdateService 특징**:
+- **큐 기반 처리**: BlockingQueue로 위치 데이터 버퍼링
+- **배치 주기**: 3초마다 최대 1000개씩 배치 INSERT
+- **DTO 분리**: LocationBatchDto를 별도 패키지로 관리
+- **효율성**: 개별 INSERT 대신 배치 처리로 DB 부하 감소
 
 ## 6. Redis 연동
 
@@ -518,36 +400,13 @@ public class LocationBatchWriter {
 - **STOMP 브로드캐스트**: `convertAndSend("/sub/location." + roomCode, message)`
 
 ### 6.2 세션 종료 처리
-```java
-@EventListener
-public void handleSessionDisconnect(SessionDisconnectEvent event) {
-    String roomCode = (String) event.getSession().getAttributes().get("roomCode");
-    Long userId = (Long) event.getSession().getAttributes().get("userId");
-    
-    // 멤버 제거
-    memberService.removeMember(roomCode, userId);
-    
-    // 남은 멤버 수 확인
-    int remainingMembers = memberService.getActiveMemberCount(roomCode);
-    
-    if (remainingMembers == 0) {
-        // 방 종료 처리
-        roomService.closeRoom(roomCode);
-        
-        // ROOM_CLOSED 브로드캐스트
-        messagingTemplate.convertAndSend(
-            "/sub/location." + roomCode,
-            new RoomClosedMessage(LocalDateTime.now())
-        );
-    } else {
-        // MEMBER_LEFT 브로드캐스트
-        messagingTemplate.convertAndSend(
-            "/sub/location." + roomCode,
-            new MemberLeftMessage(userId)
-        );
-    }
-}
-```
+
+**SessionDisconnectEvent 처리**:
+1. 세션 속성에서 roomCode, userId 추출
+2. 멤버 제거 처리
+3. 남은 멤버 수 확인:
+   - 0명: 방 종료 → `ROOM_CLOSED` 브로드캐스트
+   - 1명 이상: `MEMBER_LEFT` 브로드캐스트
 
 ## 7. 프론트엔드 연동 가이드
 
@@ -596,219 +455,55 @@ appUrlOpen(deepLink)
 ### 7.3 실시간 데이터 처리
 
 #### 7.3.1 GPS 위치 수집 및 전송
-```javascript
-// 1. 위치 권한 요청
-navigator.geolocation.getCurrentPosition(
-    (position) => {
-        const location = {
-            latitude: position.coords.latitude,
-            longitude: position.coords.longitude,
-            accuracy: position.coords.accuracy,
-            sentAt: new Date().toISOString()
-        };
-        
-        // WebSocket으로 위치 전송
-        stompClient.send('/pub/location.update', {}, JSON.stringify(location));
-    },
-    (error) => {
-        console.error('GPS 오류:', error);
-    },
-    {
-        enableHighAccuracy: true,
-        timeout: 5000,
-        maximumAge: 0
-    }
-);
 
-// 2. 5초 간격 위치 업데이트
-let locationInterval;
-
-function startLocationTracking() {
-    locationInterval = setInterval(() => {
-        navigator.geolocation.getCurrentPosition(
-            (position) => {
-                const location = {
-                    latitude: position.coords.latitude,
-                    longitude: position.coords.longitude,
-                    accuracy: position.coords.accuracy,
-                    sentAt: new Date().toISOString()
-                };
-                
-                stompClient.send('/pub/location.update', {}, JSON.stringify(location));
-            },
-            (error) => {
-                console.error('GPS 업데이트 오류:', error);
-            }
-        );
-    }, 5000); // 5초마다
-}
-
-function stopLocationTracking() {
-    if (locationInterval) {
-        clearInterval(locationInterval);
-    }
-}
-```
+**위치 수집 정책**:
+- **권한**: 앱 실행 시 위치 권한 필수
+- **정확도**: enableHighAccuracy = true
+- **주기**: 5초 간격
+- **타임아웃**: 5초
+- **전송 형식**: latitude, longitude, accuracy, sentAt
 
 #### 7.3.2 다른 사용자 위치 수신 및 표시
-```javascript
-// 위치 메시지 수신 처리
-stompClient.subscribe('/sub/location.' + roomCode, function(message) {
-    const data = JSON.parse(message.body);
-    
-    switch(data.type) {
-        case 'LOCATION':
-            // 다른 사용자 위치 업데이트
-            updateMemberLocation(data.userId, {
-                latitude: data.latitude,
-                longitude: data.longitude,
-                accuracy: data.accuracy
-            });
-            break;
-            
-        case 'MEMBER_LIST':
-            // 초기 멤버 목록 설정
-            data.members.forEach(member => {
-                addMemberToMap(member);
-            });
-            break;
-            
-        case 'MEMBER_JOINED':
-            // 새 멤버 추가
-            addMemberToMap(data);
-            break;
-            
-        case 'MEMBER_LEFT':
-            // 멤버 제거
-            removeMemberFromMap(data.userId);
-            break;
-    }
-});
 
-// 지도 마커 관리
-const memberMarkers = new Map();
+**메시지 처리 타입**:
+- `LOCATION`: 실시간 위치 업데이트
+- `MEMBER_LIST`: 초기 멤버 목록
+- `MEMBER_JOINED`: 새 멤버 참가
+- `MEMBER_LEFT`: 멤버 퇴장
+- `TIMER_UPDATE`: 경과 시간 업데이트
+- `ROOM_CLOSED`: 방 종료
 
-function updateMemberLocation(userId, location) {
-    const marker = memberMarkers.get(userId);
-    if (marker) {
-        // 기존 마커 위치 업데이트
-        marker.setPosition({
-            lat: location.latitude,
-            lng: location.longitude
-        });
-    }
-}
+**마커 관리**:
+- 색상별 구분 (호스트: 빨강, 멤버: 파랑/초록/주황)
+- 실시간 위치 업데이트
+- 멤버 퇴장 시 마커 제거
 
-function addMemberToMap(member) {
-    const marker = new google.maps.Marker({
-        position: { lat: member.latitude || 0, lng: member.longitude || 0 },
-        map: map,
-        title: member.nickname,
-        icon: {
-            path: google.maps.SymbolPath.CIRCLE,
-            scale: 10,
-            fillColor: member.color,
-            fillOpacity: 0.8,
-            strokeColor: '#ffffff',
-            strokeWeight: 2
-        }
-    });
-    
-    memberMarkers.set(member.userId, marker);
-}
+#### 7.3.3 종료 플로우
 
-function removeMemberFromMap(userId) {
-    const marker = memberMarkers.get(userId);
-    if (marker) {
-        marker.setMap(null);
-        memberMarkers.delete(userId);
-    }
-}
-```
-
-#### 7.3.3 타이머 업데이트
-```javascript
-// TIMER_UPDATE 메시지 수신 시
-onTimerUpdate(message) {
-    const elapsedMin = message.elapsedMin;
-    updateTimerDisplay(`함께 해루하기 ${elapsedMin}분`);
-}
-```
-
-#### 7.3.4 종료 플로우
-```javascript
-// "그만하기" 버튼 클릭
-onExitButtonClick() {
-    showConfirmModal("정말 그만하실건가요?", {
-        onConfirm: () => {
-            websocket.send('/pub/location.leave', {});
-            websocket.disconnect();
-            navigateToHome();
-        },
-        onCancel: () => {
-            hideConfirmModal();
-        }
-    });
-}
-```
+**그만하기 처리**:
+1. 확인 모달 표시: "정말 그만하실건가요?"
+2. 확인 시:
+   - `/pub/location.leave` 전송 (선택사항)
+   - WebSocket 연결 종료
+   - 홈 화면으로 이동
+3. 취소 시: 모달 닫기
 
 ### 7.4 GPS 위치 수집 모범 사례
 
 #### 7.4.1 초기화 및 권한 처리
-```javascript
-// 위치 권한 확인 및 요청
-async function initializeLocationTracking() {
-    try {
-        // 현재 권한 상태 확인
-        const permissionStatus = await navigator.permissions.query({ name: 'geolocation' });
-        
-        if (permissionStatus.state === 'denied') {
-            alert('위치 권한이 거부되어 실시간 위치 공유가 불가능합니다.');
-            return false;
-        }
-        
-        // 위치 권한 요청
-        const position = await getCurrentPosition();
-        if (position) {
-            startLocationTracking();
-            return true;
-        }
-    } catch (error) {
-        console.error('Location initialization failed:', error);
-        return false;
-    }
-}
-
-function getCurrentPosition() {
-    return new Promise((resolve, reject) => {
-        navigator.geolocation.getCurrentPosition(resolve, reject, {
-            enableHighAccuracy: true,
-            timeout: 5000,
-            maximumAge: 0
-        });
-    });
-}
-```
+- **권한 확인**: navigator.permissions API 사용
+- **거부 처리**: 명확한 안내 메시지 표시
+- **옵션 설정**:
+  - enableHighAccuracy: true
+  - timeout: 5000ms
+  - maximumAge: 0 (항상 최신 위치)
 
 #### 7.4.2 백그라운드 위치 추적 (Mobile)
-```javascript
-// React Native 예시
-import BackgroundGeolocation from 'react-native-background-geolocation';
-
-BackgroundGeolocation.configure({
-    desiredAccuracy: BackgroundGeolocation.DESIRED_ACCURACY_HIGH,
-    distanceFilter: 10, // 10미터 이동 시 업데이트
-    stopOnTerminate: false,
-    startOnBoot: false,
-    interval: 5000, // 5초
-    fastestInterval: 5000
-});
-
-BackgroundGeolocation.on('location', (location) => {
-    // WebSocket으로 위치 전송
-    sendLocationUpdate(location.coords);
-});
-```
+- **React Native**: BackgroundGeolocation 라이브러리 사용
+- **설정값**:
+  - distanceFilter: 10m (최소 이동 거리)
+  - interval: 5000ms (5초 주기)
+  - desiredAccuracy: HIGH
 
 ### 7.5 QR 코드 재표시
 - `deepLink` 문자열을 그대로 QR 코드로 렌더링
@@ -827,6 +522,7 @@ BackgroundGeolocation.on('location', (location) => {
 - **타이머 업데이트**: 1분마다 모든 클라이언트에 브로드캐스트
 - **비활성 멤버 처리**: 10분간 위치 업데이트 없으면 자동 퇴장
 - **QR 코드 공유**: 모든 참가자가 동일한 딥링크로 다른 사람 초대 가능
+- **JTI 중복 처리**: 동일한 joinToken으로 여러 사용자 입장 가능 (userId별 관리)
 
 ### 8.2 GPS 위치 처리 상세
 
@@ -849,9 +545,13 @@ BackgroundGeolocation.on('location', (location) => {
 - **경로 표시**: 옵션으로 이동 경로 표시 가능
 
 ### 8.3 모니터링 포인트
+
+**시스템 메트릭**:
 - WebSocket 연결 수 및 동시 방 개수
 - Redis Pub/Sub 메시지 처리량
 - 위치 데이터 배치 처리 지연시간
+
+**비즈니스 메트릭**:
 - 일별 위치 로그 데이터 증가량
 - 평균 방 지속 시간 및 참여자 수
 - 방 정원 초과 시도 횟수 (4명 제한)
