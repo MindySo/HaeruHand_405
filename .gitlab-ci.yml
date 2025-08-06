@@ -22,23 +22,12 @@ stages:
   - test
   - deploy
 
-# 토큰 최적화 AI 리뷰
 smart-ai-review:
   stage: ai_review
   image: python:3.9-slim
   before_script:
-    - pip install --upgrade pip
-    - pip install --no-cache-dir google-generativeai requests
-    - echo "Checking environment variables..."
-    - if [ -z "$GEMINI_API_KEY" ]; then echo "ERROR GEMINI_API_KEY not set"; exit 1; fi
-    - if [ -z "$GITLAB_TOKEN" ]; then echo "ERROR GITLAB_TOKEN not set"; exit 1; fi  
-    - if [ ! -f "optimized_gemini_review.py" ]; then echo "ERROR script not found"; ls -la; exit 1; fi
-    - echo "✓ All checks passed"
+    - pip install google-generativeai requests
   script:
-    - echo "Starting AI Code Review..."
-    - echo "MR IID: $CI_MERGE_REQUEST_IID"
-    - echo "Project ID: $CI_PROJECT_ID"
-    - echo "Branch: $CI_COMMIT_REF_NAME"
     - python optimized_gemini_review.py
   rules:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
@@ -46,7 +35,6 @@ smart-ai-review:
     GEMINI_API_KEY: $GEMINI_API_KEY
     GITLAB_TOKEN: $GITLAB_TOKEN
   allow_failure: true
-  timeout: 5 minutes
 
 build-job:       # This job runs in the build stage, which runs first.
   stage: build
