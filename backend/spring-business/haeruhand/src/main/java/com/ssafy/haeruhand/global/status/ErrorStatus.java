@@ -30,8 +30,15 @@ public enum ErrorStatus implements BaseErrorStatus {
     PROFILE_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, 500, "유저정보 불러오기 오류입니다."),
     USER_CREATE_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, 500, "사용자 생성에 실패했습니다."),
 
-    // s3
-    UNSUPPORTED_IMAGE_TYPE(HttpStatus.BAD_REQUEST, 400, "지원하지 않는 이미지 업로드 타입입니다.");
+    // gcs
+    UNSUPPORTED_IMAGE_TYPE(HttpStatus.BAD_REQUEST, 400, "지원하지 않는 이미지 업로드 타입입니다."),
+    INVALID_IMAGE_URL(HttpStatus.BAD_REQUEST, 400, "image url이 잘못되었습니다."),
+    NO_EXTENSION(HttpStatus.BAD_REQUEST, 400, "확장자가 없습니다."),
+
+    // fast api
+    FAST_API_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, 500, "FAST API 서버 오류입니다.");
+
+
 
     private final HttpStatus httpStatus;
     private final Integer code;
