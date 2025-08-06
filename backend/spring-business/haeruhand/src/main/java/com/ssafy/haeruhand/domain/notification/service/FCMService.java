@@ -44,13 +44,13 @@ public class FCMService {
 
             log.info("FCM 전송 성공 - Token: {}, MessageId: {}", maskToken(token), firebaseMessageId);
 
-            return FCMSendResponseDto.of(
-                    maskToken(token),
-                    title,
-                    body,
-                    firebaseMessageId,
-                    sentAt
-            );
+            return FCMSendResponseDto.builder()
+                    .maskedToken(maskToken(token))
+                    .title(title)
+                    .body(body)
+                    .firebaseMessageId(firebaseMessageId)
+                    .sentAt(sentAt)
+                    .build();
 
         } catch (Exception e) {
             log.error("FCM 전송 실패 - Token: {}, Error: {}", maskToken(token), e.getMessage());
@@ -89,13 +89,13 @@ public class FCMService {
 
             log.info("FCM 데이터 포함 전송 성공 - Token: {}, MessageId: {}", maskToken(token), firebaseMessageId);
 
-            return FCMSendResponseDto.of(
-                    maskToken(token),
-                    title,
-                    body,
-                    firebaseMessageId,
-                    sentAt
-            );
+            return FCMSendResponseDto.builder()
+                    .maskedToken(maskToken(token))
+                    .title(title)
+                    .body(body)
+                    .firebaseMessageId(firebaseMessageId)
+                    .sentAt(sentAt)
+                    .build();
 
         } catch (Exception e) {
             log.error("FCM 데이터 포함 전송 실패 - Token: {}, Error: {}", maskToken(token), e.getMessage());

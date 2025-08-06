@@ -16,6 +16,7 @@ import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
 import java.util.Date;
+import java.util.UUID;
 
 @Slf4j
 @Component
@@ -78,5 +79,46 @@ public class JwtProvider {
     private Claims parseClaims(String token) {
         JwtParser parser = Jwts.parser().verifyWith(key).build();
         return parser.parseSignedClaims(token).getPayload();
+    }
+    
+    public String createJoinToken(String roomCode, Long hostUserId, int expiresInMin) {
+        Date now = new Date();
+        Date expiry = new Date(now.getTime() + (expiresInMin * 60 * 1000L));
+        String jti = UUID.randomUUID().toString();
+        
+        return Jwts.builder()
+                .claim("room", roomCode)
+                .subject(String.valueOf(hostUserId))
+                .id(jti)
+                .issuedAt(now)
+                .expiration(expiry)
+                .signWith(key)
+                .compact();
+    }
+    
+    public void validateJoinToken(String token, String expectedRoomCode) {
+        try {
+            Claims claims = parseClaims(token);
+            String roomCode = claims.get("room", String.class);
+            
+            if (!expectedRoomCode.equals(roomCode)) {
+                throw new JwtException("Invalid room code in join token");
+            }
+        } catch (JwtException | IllegalArgumentException e) {
+            log.error("Invalid join token: {}", e.getMessage());
+            throw new IllegalArgumentException("Invalid join token", e);
+        }
+    }
+    
+    public String getJti(String token) {
+        Claims claims = parseClaims(token);
+        return claims.getId();
+    }
+    
+    public Long validateAndGetUserId(String token) {
+        if (!validateToken(token)) {
+            throw new IllegalArgumentException("Invalid token");
+        }
+        return getUserIdFromToken(token);
     }
 }

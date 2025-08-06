@@ -12,9 +12,7 @@ import java.util.Optional;
 @Repository
 public interface UserFcmTokenRepository extends JpaRepository<UserFcmToken, Long> {
 
-    @Query("SELECT t FROM UserFcmToken t WHERE t.userId = :userId AND t.isDeleted = false")
-    List<UserFcmToken> findActiveTokensByUserId(@Param("userId") Long userId);
+    List<UserFcmToken> findActiveTokensByUserId(Long userId);
 
     Optional<UserFcmToken> findByFcmTokenAndIsDeletedFalse(String fcmToken);
-    Optional<UserFcmToken> findByUserIdAndFcmTokenAndIsDeletedFalse(Long userId, String fcmToken);
 }
