@@ -1,18 +1,41 @@
+/* 화면 전체를 덮는 반투명 오버레이 */
+.overlay {
+  position: fixed;
+  /* 화면 꽉 채우기 */
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+}
+
 .modalWindow {
-  margin: 16px;
   background-color: #20aeea;
   border-radius: 16px;
-  padding-top: 16px;
-  padding-bottom: 0;
+  padding: 16px 0;
 
   /* 닫기 버튼 배치를 위한 설정 */
   position: relative;
 
-  /* 모달 창 크기(고정) */
-  width: 360px;
-  height: 400px;
+  /* 모달 창 크기 */
+  width: 100%;
+  max-width: 320px;
+  height: auto;
   /* padding을 포함한 크기 계산 */
   box-sizing: border-box;
+
+  /* 모달 창 위치 조정 */
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%); /* 정중앙 위치 */
+  z-index: 1001;
+
+  /* 내부 박스 위치 조정 */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .headerTitle {
@@ -36,10 +59,12 @@
   border-radius: 16px;
   padding: 16px;
   /* 내부 박스 크기 */
-  margin: 0px 16px;
-  height: 324px;
+  width: 100%;
+  max-width: 290px;
+  height: auto;
   /* 리스트 스크롤바를 위한 설정(높이 고정) */
   display: flex;
+
   flex-direction: column;
 }
 
@@ -58,9 +83,9 @@
 
 .list {
   font-size: 18px;
-  margin-top: 8px;
+  padding-top: 1%;
   /* 내부 콘텐츠가 크기를 넘으면 스크롤바 표시(높이 설정을 해주어야 가능) */
-  height: 210px;
+  height: 200px;
   overflow: auto;
   /* background-color: bisque; */
 

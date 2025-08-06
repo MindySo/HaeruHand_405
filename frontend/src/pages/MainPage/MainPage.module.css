@@ -1,0 +1,65 @@
+html,
+body #root {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  box-sizing: border-box;
+}
+
+.window {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  position: relative;
+  width: 100%;
+  max-width: 360px;
+}
+
+.bellIcon {
+  width: 100%;
+  max-width: 24px;
+  height: auto;
+  /* 아이콘 위치 */
+  position: absolute;
+  right: 0;
+}
+
+.goBack {
+  display: flex;
+  justify-content: flex-start;
+  gap: 3%;
+  margin: 3% 0%;
+}
+
+.weatherWidgets {
+  display: flex;
+  align-items: stretch;
+  width: 100%;
+  height: auto;
+  margin: 3% 0%;
+}
+
+.map {
+  width: 100%;
+  max-width: 360px;
+  height: 324px;
+  border: 1px solid black;
+  margin: 3% 0%;
+}
+
+.harvestButton {
+  width: 100%;
+  margin: 3% 0%;
+}
+
+.buttons {
+  display: flex;
+  width: 100%;
+  height: auto;
+  gap: 10px;
+}
