@@ -1,11 +1,15 @@
 package com.ssafy.haeruhand.domain.user.dto;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.Setter;
 
 @Getter
+@Setter
 @Builder
-public class LoginResponseDto {
+@AllArgsConstructor
+public class IssueResponseBodyDto {
     private long accessTokenExpiresIn;
     private UserInfoDto user;
 }

@@ -3,19 +3,20 @@
  *  ├─ Build & push Spring / FastAPI / Nginx images
  *  └─ Pull + docker-compose up  (same EC2 host)
  */
-
 pipeline {
-    agent any                                  // 마스터 노드(로컬 Jenkins 컨테이너)에서 실행
-    tools {
-        git 'git-default'
-    }
+    agent any
+    tools   { git 'git-default' }
+
+    /* ────── 공통 환경변수 ────── */
     environment {
-        DOCKER_ID    = 'yeriming'              // Docker Hub ID (.env.prod와 동일)
+        DOCKER_ID    = 'yeriming'
         COMPOSE_FILE = 'docker-compose.prod.yml'
         ENV_FILE     = '.env.prod'
+        SPRING_RES   = 'backend/spring-business/haeruhand/src/main/resources'
     }
+
     options {
-	skipDefaultCheckout()
+        skipDefaultCheckout()
         ansiColor('xterm')
         timestamps()
     }
@@ -37,7 +38,30 @@ pipeline {
         }
 
         /* -------------------------------------------------- */
-        stage('Docker Login') {                // Hub 로그인 (PAT 필요)
+        stage('Prepare Secrets') {
+            steps {
+                withCredentials([
+                    file(credentialsId: 'env-prod',  variable: 'ENV_TMP'),
+                    file(credentialsId: 'gcs-key',   variable: 'GCS_KEY_TMP'),
+                    file(credentialsId: 'service-account-key', variable: 'SA_KEY_TMP')
+                ]) {
+                    sh '''
+                        # .env.prod → docker/.env.prod
+                        cp "$ENV_TMP" "docker/$ENV_FILE"
+
+                        # gcs-key.json → Spring resources
+                        mkdir -p "$SPRING_RES"
+                        cp "$GCS_KEY_TMP" "$SPRING_RES/gcs-key.json"
+
+                        # service-account-key.json → Spring resources
+                        cp "$SA_KEY_TMP" "$SPRING_RES/service-account-key.json"
+                    '''
+                }
+            }
+        }
+
+        /* -------------------------------------------------- */
+        stage('Docker Login') {
             steps {
                 withCredentials([usernamePassword(
                         credentialsId: 'docker-hub-cred',
@@ -86,17 +110,16 @@ pipeline {
         /* -------------------------------------------------- */
         stage('Deploy (docker-compose prod)') {
             steps {
-
-                withCredentials([file(credentialsId: 'env-prod',
-                                      variable: 'ENV_TMP')]) {
-
-                    sh 'cp "$ENV_TMP" "docker/$ENV_FILE"'
-                }
-
                 sh '''
-                    cd docker
-                    docker-compose --env-file $ENV_FILE -f $COMPOSE_FILE pull
-                    docker-compose --env-file $ENV_FILE -f $COMPOSE_FILE up -d
+                    docker compose \
+                      --env-file docker/$ENV_FILE \
+                      -f docker/$COMPOSE_FILE      \
+                      pull
+
+                    docker compose \
+                      --env-file docker/$ENV_FILE \
+                      -f docker/$COMPOSE_FILE      \
+                      up -d
                 '''
             }
         }

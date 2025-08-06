@@ -2,18 +2,13 @@ package com.ssafy.haeruhand.domain.user.service;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.ssafy.haeruhand.domain.user.dto.KakaoUserInfoDto;
-import com.ssafy.haeruhand.domain.user.dto.LoginResponseDto;
-import com.ssafy.haeruhand.domain.user.dto.TokenReissueResponseDto;
-import com.ssafy.haeruhand.domain.user.dto.UserInfoDto;
+import com.ssafy.haeruhand.domain.user.dto.*;
 import com.ssafy.haeruhand.domain.user.entity.User;
 import com.ssafy.haeruhand.domain.user.repository.RefreshTokenRepository;
 import com.ssafy.haeruhand.domain.user.repository.UserRepository;
 import com.ssafy.haeruhand.global.exception.GlobalException;
 import com.ssafy.haeruhand.global.jwt.JwtProvider;
-import com.ssafy.haeruhand.global.response.ApiResponse;
 import com.ssafy.haeruhand.global.status.ErrorStatus;
-import com.ssafy.haeruhand.global.status.SuccessStatus;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -37,14 +32,14 @@ public class OAuthServiceImpl implements OAuthService {
     private final ObjectMapper objectMapper;
     private final RestTemplate restTemplate = new RestTemplate();
 
-    @Value("${CLIENT_ID}")
+    @Value("${spring.security.oauth2.client.registration.kakao.client-id}")
     private String clientId;
 
     // 프론트 redirectUri로 변경 필요
-    private final String redirectUri = "http://localhost:3000/oauth/kakao/callback.html";
+    private final String redirectUri = "http://localhost:3000/callback.html";
 
     @Override
-    public ResponseEntity<ApiResponse<LoginResponseDto>> loginWithKakao(String code, HttpServletResponse response) {
+    public IssueResponseDto authorizeKakaoAndIssueToken(String code, HttpServletResponse response) {
         try {
             // 카카오 AccessToken 요청
             String kakaoAccessToken = requestKakaoToken(code);
@@ -62,8 +57,7 @@ public class OAuthServiceImpl implements OAuthService {
             refreshTokenRepository.save(String.valueOf(user.getId()), refreshToken);
 
             // 응답 구성
-            LoginResponseDto loginResponse = buildLoginResponse(user, accessTokenExpiresIn / 1000);
-            return ApiResponse.successWithToken(SuccessStatus.LOGIN_SUCCESS, loginResponse, accessToken, refreshToken);
+            return buildIssueResponse(accessToken, refreshToken, user, accessTokenExpiresIn / 1000);
 
         } catch (Exception e) {
             throw new GlobalException(ErrorStatus.OAUTH_ERROR);
@@ -71,7 +65,7 @@ public class OAuthServiceImpl implements OAuthService {
     }
 
     @Override
-    public ResponseEntity<ApiResponse<TokenReissueResponseDto>> reissueToken(String refreshToken) {
+    public ReissueResponseDto reissueToken(String refreshToken) {
         try {
             // rtk 유효성 검사
             if (!jwtProvider.validateToken(refreshToken)) {
@@ -85,12 +79,15 @@ public class OAuthServiceImpl implements OAuthService {
                 throw new GlobalException(ErrorStatus.INVALID_TOKEN);
             }
 
+            // 새로운 refresh token 발급
+            String newRefreshToken = jwtProvider.createRefreshToken(userId);
+            refreshTokenRepository.save(String.valueOf(userId), refreshToken);
+
             // 새로운 access token 발급
             String newAccessToken = jwtProvider.createAccessToken(userId);
-            TokenReissueResponseDto responseDto =
-                    new TokenReissueResponseDto((long) jwtProvider.getAccessTokenExpirationMilliSec());
+            long accessTokenExpiresIn = jwtProvider.getAccessTokenExpirationMilliSec();
 
-            return ApiResponse.successWithToken(SuccessStatus.OK, responseDto, newAccessToken);
+            return buildReissueResponse(newAccessToken, newRefreshToken, accessTokenExpiresIn / 1000);
 
         } catch (Exception e) {
             throw new GlobalException(ErrorStatus.OAUTH_ERROR);
@@ -176,7 +173,7 @@ public class OAuthServiceImpl implements OAuthService {
                 ));
     }
 
-    private LoginResponseDto buildLoginResponse(User user, long accessTokenExpiresIn) {
+    private IssueResponseDto buildIssueResponse(String accessToken, String refreshToken, User user, long accessTokenExpiresIn) {
         UserInfoDto userInfo = UserInfoDto.builder()
                 .userId(user.getId())
                 .kakaoSub(user.getKakaoSub())
@@ -184,9 +181,27 @@ public class OAuthServiceImpl implements OAuthService {
                 .profileImageUrl(user.getProfileImage())
                 .build();
 
-        return LoginResponseDto.builder()
+        IssueResponseBodyDto responseBodyDto = IssueResponseBodyDto.builder()
                 .accessTokenExpiresIn(accessTokenExpiresIn)
                 .user(userInfo)
+                .build();
+
+        return IssueResponseDto.builder()
+                .accessToken(accessToken)
+                .refreshToken(refreshToken)
+                .responseBodyDto(responseBodyDto)
+                .build();
+    }
+    private ReissueResponseDto buildReissueResponse(String accessToken, String refreshToken, long accessTokenExpiresIn) {
+
+        ReissueResponseBodyDto responseBodyDto = ReissueResponseBodyDto.builder()
+                .accessTokenExpiresIn(accessTokenExpiresIn)
+                .build();
+
+        return ReissueResponseDto.builder()
+                .accessToken(accessToken)
+                .refreshToken(refreshToken)
+                .responseBodyDto(responseBodyDto)
                 .build();
     }
 }
