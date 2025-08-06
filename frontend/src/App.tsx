@@ -47,6 +47,16 @@ function App() {
               Kyumin Page
             </Button>
           </Link>
+          <Link to="/photo-analysis" style={{ textDecoration: 'none' }}>
+            <Button variant="primary" size="medium">
+              PhotoAnalysisPage
+            </Button>
+          </Link>
+          <Link to="/tracking-share" style={{ textDecoration: 'none' }}>
+            <Button variant="secondary" size="medium">
+              TrackingSharePage
+            </Button>
+          </Link>
         </div>
       </div>
 
