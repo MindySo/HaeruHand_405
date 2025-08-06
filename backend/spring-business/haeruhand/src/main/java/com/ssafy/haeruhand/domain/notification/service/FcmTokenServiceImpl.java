@@ -40,7 +40,12 @@ public class FcmTokenServiceImpl implements FcmTokenService {
             } else {
                 existingToken.get().setLastUsedAt(LocalDateTime.now());
                 log.info("기존 FCM 토큰 갱신 - userId: {}, tokenId: {}", userId, existingToken.get().getId());
-                return FcmTokenResponseDto.from(existingToken.get());
+                return FcmTokenResponseDto.builder()
+                        .tokenId(existingToken.get().getId())
+                        .maskedToken(maskToken(existingToken.get().getFcmToken()))
+                        .isActive(!existingToken.get().isDeleted())
+                        .lastUsedAt(existingToken.get().getLastUsedAt())
+                        .build();
             }
         }
 
@@ -96,5 +101,12 @@ public class FcmTokenServiceImpl implements FcmTokenService {
         List<UserFcmToken> activeTokens = fcmTokenRepository.findActiveTokensByUserId(userId);
         log.debug("사용자 활성 FCM 토큰 조회 - userId: {}, tokenCount: {}", userId, activeTokens.size());
         return activeTokens;
+    }
+
+    private String maskToken(String token) {
+        if (token == null || token.length() < 10) {
+            return "INVALID_TOKEN";
+        }
+        return token.substring(0, 6) + "****" + token.substring(token.length() - 4);
     }
 }
