@@ -2,6 +2,15 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## Development Guidelines
+
+**IMPORTANT**: Always follow the development standards and patterns defined in `DEVELOPER_GUIDE.md` when writing code for this project. This includes:
+- API response patterns using `ApiResponse<T>`
+- DTO creation using Builder pattern (not Of methods)
+- Exception handling with `GlobalException`
+- Status code management with `SuccessStatus` and `ErrorStatus` enums
+- Domain-driven architecture patterns
+
 ## Build and Development Commands
 
 ### Build
