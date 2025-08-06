@@ -50,7 +50,7 @@ public class ApiResponse<T> {
                 ));
     }
 
-    // 성공 응답 (토큰 포함) : 로그인 성공 시 rtk까지 포함
+    // 성공 응답 (토큰 포함) : atk, rtk 모두 포함
     public static <T> ResponseEntity<ApiResponse<T>> successWithToken(
             BaseSuccessStatus status,
             T data,
