@@ -9,7 +9,9 @@ import com.ssafy.haeruhand.domain.location.repository.LocationShareMemberReposit
 import com.ssafy.haeruhand.domain.location.repository.LocationShareRoomRepository;
 import com.ssafy.haeruhand.domain.user.entity.User;
 import com.ssafy.haeruhand.domain.user.repository.UserRepository;
+import com.ssafy.haeruhand.global.exception.GlobalException;
 import com.ssafy.haeruhand.global.jwt.JwtProvider;
+import com.ssafy.haeruhand.global.status.ErrorStatus;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -44,7 +46,11 @@ public class LocationShareRoomService {
     private static final int MAX_MEMBERS = 4;
 
     @Transactional
-    public CreateRoomResponse createRoom(Long userId) {
+    public CreateRoomResponse createRoom(String bearerToken) {
+        // 토큰에서 사용자 ID 추출
+        String accessToken = bearerToken.replace("Bearer ", "");
+        Long userId = jwtProvider.validateAndGetUserId(accessToken);
+        
         // 방 코드 생성
         String roomCode = generateUniqueRoomCode();
         
@@ -86,7 +92,7 @@ public class LocationShareRoomService {
 
     public RoomInfoResponse getRoomInfo(String roomCode) {
         LocationShareRoom room = roomRepository.findByRoomCodeAndIsDeletedFalse(roomCode)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 방입니다."));
+                .orElseThrow(() -> new GlobalException(ErrorStatus.WEBSOCKET_ROOM_NOT_FOUND));
         
         List<LocationShareMember> members = memberRepository.findByRoomIdAndIsDeletedFalse(room.getId());
         
@@ -101,7 +107,7 @@ public class LocationShareRoomService {
         List<RoomInfoResponse.MemberInfo> memberInfos = members.stream()
                 .map(member -> {
                     User user = userRepository.findById(member.getUserId())
-                            .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
+                            .orElseThrow(() -> new GlobalException(ErrorStatus.USER_NOT_FOUND));
                     
                     return RoomInfoResponse.MemberInfo.builder()
                             .userId(member.getUserId())
@@ -135,7 +141,7 @@ public class LocationShareRoomService {
     @Transactional
     public CloseRoomResponse closeRoom(String roomCode) {
         LocationShareRoom room = roomRepository.findByRoomCodeAndIsActiveTrueAndIsDeletedFalse(roomCode)
-                .orElseThrow(() -> new IllegalArgumentException("활성화된 방을 찾을 수 없습니다."));
+                .orElseThrow(() -> new GlobalException(ErrorStatus.WEBSOCKET_ROOM_NOT_FOUND));
         
         room.close();
         
@@ -147,7 +153,7 @@ public class LocationShareRoomService {
     
     public LocationShareRoom findActiveRoom(String roomCode) {
         return roomRepository.findByRoomCodeAndIsActiveTrueAndIsDeletedFalse(roomCode)
-                .orElseThrow(() -> new IllegalArgumentException("활성화된 방을 찾을 수 없습니다."));
+                .orElseThrow(() -> new GlobalException(ErrorStatus.WEBSOCKET_ROOM_NOT_FOUND));
     }
 
     private String generateUniqueRoomCode() {
