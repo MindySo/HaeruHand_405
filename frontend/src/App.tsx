@@ -57,6 +57,11 @@ function App() {
               TrackingSharePage
             </Button>
           </Link>
+          <Link to="/location-select" style={{ textDecoration: 'none' }}>
+            <Button variant="primary" size="medium">
+              LocationSelectPage
+            </Button>
+          </Link>
         </div>
       </div>
 

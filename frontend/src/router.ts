@@ -5,6 +5,7 @@ import App from './App';
 import WeatherAlertPage from './pages/WeatherAlertPage/WeatherAlertPage';
 import PhotoAnalysisResultPage from './pages/PhotoAnalysisResultPage/PhotoAnalysisResultPage';
 import TrackingSharePage from './pages/TrackingSharePage/TrackingSharePage';
+import LocationSelectPage from './pages/LocationSelectPage/LocationSelectPage';
 
 const rootRoute = createRootRoute();
 
@@ -44,6 +45,12 @@ const trackingShareRoute = createRoute({
   component: TrackingSharePage,
 });
 
+const locationSelectRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: '/location-select',
+  component: LocationSelectPage,
+});
+
 const routeTree = rootRoute.addChildren([
   homeRoute,
   kyuminRoute,
@@ -51,6 +58,7 @@ const routeTree = rootRoute.addChildren([
   weatherAlertRoute,
   photoAnalysisResultRoute,
   trackingShareRoute,
+  locationSelectRoute,
 ]);
 export const router = createRouter({ routeTree });
 
