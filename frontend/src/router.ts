@@ -2,6 +2,7 @@ import { createRootRoute, createRoute, createRouter } from '@tanstack/react-rout
 import Kyumin from './pages/Kyumin';
 import Chaeeun from './pages/Chaeeun';
 import App from './App';
+import WeatherAlertPage from './pages/WeatherAlertPage/WeatherAlertPage';
 
 const rootRoute = createRootRoute();
 
@@ -23,7 +24,13 @@ const chaeunRoute = createRoute({
   component: Chaeeun,
 });
 
-const routeTree = rootRoute.addChildren([homeRoute, kyuminRoute, chaeunRoute]);
+const weatherAlertRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: '/weather-alert',
+  component: WeatherAlertPage,
+});
+
+const routeTree = rootRoute.addChildren([homeRoute, kyuminRoute, chaeunRoute, weatherAlertRoute]);
 export const router = createRouter({ routeTree });
 
 declare module '@tanstack/react-router' {

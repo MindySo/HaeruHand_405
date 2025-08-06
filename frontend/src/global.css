@@ -1,5 +1,13 @@
 @import 'pretendard/dist/web/static/pretendard.css';
 
+html,
+body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
 :root {
   /* Typography */
   --font-family-primary:
