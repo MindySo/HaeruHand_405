@@ -5,11 +5,31 @@ import WarningBanner from '../components/molecules/WarningBanner/WarningBanner';
 
 const Kyumin = () => {
   return (
-    <div>
+    <div
+      style={{
+        display: 'flex',
+        flexDirection: 'column',
+        gap: '10px',
+        height: '100vh',
+        alignItems: 'center',
+        width: '100%',
+      }}
+    >
       <HarvestButton />
-      <TrackingButton />
-      <InfoButton />
-      <WarningBanner type="호우주의보" date="2025-08-05" location="서울" />
+      <div
+        style={{
+          display: 'flex',
+          gap: '10px',
+          width: '100%',
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}
+      >
+        <TrackingButton />
+        <InfoButton />
+      </div>
+
+      <WarningBanner type="호우주의보" date="07월 24일 22시 00분" location="서울" />
       <WeatherWidgets
         items={[
           {
