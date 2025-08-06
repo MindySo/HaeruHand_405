@@ -27,41 +27,17 @@ smart-ai-review:
   stage: ai_review
   image: python:3.9-slim
   before_script:
-    # 패키지 설치 전 업그레이드
     - pip install --upgrade pip
     - pip install --no-cache-dir google-generativeai requests
-    # 디버깅을 위한 환경변수 확인
     - echo "Checking environment variables..."
-    - |
-      if [ -z "$GEMINI_API_KEY" ]; then
-        echo "ERROR: GEMINI_API_KEY is not set"
-        exit 1
-      else
-        echo "✓ GEMINI_API_KEY is set"
-      fi
-    - |
-      if [ -z "$GITLAB_TOKEN" ]; then
-        echo "ERROR: GITLAB_TOKEN is not set"
-        exit 1
-      else
-        echo "✓ GITLAB_TOKEN is set"
-      fi
-    # 스크립트 파일 확인
-    - |
-      if [ -f "optimized_gemini_review.py" ]; then
-        echo "✓ Script file found"
-      else
-        echo "ERROR: optimized_gemini_review.py not found"
-        ls -la
-        exit 1
-      fi
+    - test -n "$GEMINI_API_KEY" && echo "✓ GEMINI_API_KEY is set" || (echo "ERROR: GEMINI_API_KEY is not set" && exit 1)
+    - test -n "$GITLAB_TOKEN" && echo "✓ GITLAB_TOKEN is set" || (echo "ERROR: GITLAB_TOKEN is not set" && exit 1)
+    - test -f "optimized_gemini_review.py" && echo "✓ Script file found" || (echo "ERROR: optimized_gemini_review.py not found" && ls -la && exit 1)
   script:
-    # 디버깅 정보 출력
     - echo "Starting AI Code Review..."
     - echo "MR IID: $CI_MERGE_REQUEST_IID"
     - echo "Project ID: $CI_PROJECT_ID"
     - echo "Branch: $CI_COMMIT_REF_NAME"
-    # Python 스크립트 실행
     - python optimized_gemini_review.py
   rules:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
