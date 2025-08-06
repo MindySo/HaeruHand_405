@@ -56,10 +56,14 @@ public class LocationShareRoomService {
         
         LocalDateTime now = LocalDateTime.now();
         
+        // 호스트 사용자 조회
+        User hostUser = userRepository.findById(userId)
+                .orElseThrow(() -> new GlobalException(ErrorStatus.USER_NOT_FOUND));
+        
         // 방 생성
         LocationShareRoom room = LocationShareRoom.builder()
                 .roomCode(roomCode)
-                .hostUserId(userId)
+                .hostUser(hostUser)
                 .startedAt(now)
                 .build();
         
@@ -68,7 +72,7 @@ public class LocationShareRoomService {
         // 호스트를 첫 번째 멤버로 추가
         LocationShareMember hostMember = LocationShareMember.builder()
                 .room(room)
-                .userId(userId)
+                .user(hostUser)
                 .isHost(true)
                 .color(MEMBER_COLORS[0])
                 .lastActiveAt(now)

@@ -4,6 +4,8 @@ import com.ssafy.haeruhand.domain.location.entity.LocationShareMember;
 import com.ssafy.haeruhand.domain.location.entity.LocationShareRoom;
 import com.ssafy.haeruhand.domain.location.repository.LocationShareMemberRepository;
 import com.ssafy.haeruhand.domain.location.repository.LocationShareRoomRepository;
+import com.ssafy.haeruhand.domain.user.entity.User;
+import com.ssafy.haeruhand.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -20,6 +22,7 @@ public class LocationShareMemberService {
 
     private final LocationShareMemberRepository memberRepository;
     private final LocationShareRoomRepository roomRepository;
+    private final UserRepository userRepository;
 
     private static final String[] MEMBER_COLORS = {
         "#FF0000", // 빨강 (호스트)
@@ -50,13 +53,16 @@ public class LocationShareMemberService {
                     LocationShareRoom room = roomRepository.findById(roomId)
                             .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 방입니다."));
                     
+                    User user = userRepository.findById(userId)
+                            .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
+                    
                     // 색상 할당 (현재 멤버 수에 따라)
                     int currentCount = memberRepository.countActiveMembers(roomId);
                     String color = MEMBER_COLORS[Math.min(currentCount, MEMBER_COLORS.length - 1)];
                     
                     LocationShareMember newMember = LocationShareMember.builder()
                             .room(room)
-                            .userId(userId)
+                            .user(user)
                             .isHost(false)
                             .color(color)
                             .lastActiveAt(LocalDateTime.now())
