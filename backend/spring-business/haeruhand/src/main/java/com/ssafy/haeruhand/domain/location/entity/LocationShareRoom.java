@@ -39,7 +39,7 @@ public class LocationShareRoom extends BaseEntity {
     @Column(name = "closed_at")
     private LocalDateTime closedAt;
 
-    @OneToMany(mappedBy = "room", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "room", cascade = CascadeType.PERSIST)
     @Builder.Default
     private List<LocationShareMember> members = new ArrayList<>();
 
