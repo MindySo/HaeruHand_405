@@ -32,4 +32,7 @@ public class Fishery extends BaseEntity {
 
     @Column(name = "longitude", nullable = false, precision = 9, scale = 6)
     private BigDecimal longitude;
+
+    @Column(name = "station_code", length = 20)
+    private String stationCode;
 }
