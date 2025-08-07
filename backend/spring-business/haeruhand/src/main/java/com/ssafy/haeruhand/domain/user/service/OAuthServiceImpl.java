@@ -40,7 +40,7 @@ public class OAuthServiceImpl implements OAuthService {
 
     @Override
     public IssueResponseDto authorizeKakaoAndIssueToken(String code, HttpServletResponse response) {
-        log.info("카카오 OAuth 인증 시작 - 인가코드 수신: {}", code.substring(0, Math.min(10, code.length())) + "...");
+        log.info("카카오 OAuth 인증 시작 - 인가코드 수신: {}, redirectUri : {}", code.substring(0, Math.min(10, code.length())) + "...", redirectUri);
 
         try {
             // 카카오 AccessToken 요청
