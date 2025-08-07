@@ -21,7 +21,12 @@ public enum SuccessStatus implements BaseSuccessStatus {
     PATCH_EMAIL_SUCCESS(HttpStatus.OK, 200, "이메일 수정이 성공적으로 완료되었습니다."),
     DELETE_EMAIL_SUCCESS(HttpStatus.OK, 200, "이메일 삭제가 성공적으로 완료되었습니다."),
 
-    TOKEN_REISSUE_SUCCESS(HttpStatus.OK, 200, "토큰 재발급이 성공적으로 완료되었습니다.");
+    TOKEN_REISSUE_SUCCESS(HttpStatus.OK, 200, "토큰 재발급이 성공적으로 완료되었습니다."),
+
+    SEND_FCM_SUCCESS(HttpStatus.OK, 200, "FCM 알림 전송이 성공적으로 완료되었습니다."),
+    REGISTER_FCM_TOKEN_SUCCESS(HttpStatus.CREATED, 201, "FCM 토큰 등록이 성공적으로 완료되었습니다."),
+    UPDATE_FCM_TOKEN_SUCCESS(HttpStatus.OK, 200, "FCM 토큰 갱신이 성공적으로 완료되었습니다."),
+    DELETE_FCM_TOKEN_SUCCESS(HttpStatus.OK, 200, "FCM 토큰 삭제가 성공적으로 완료되었습니다.");
 
     private final HttpStatus httpStatus;
     private final Integer code;
