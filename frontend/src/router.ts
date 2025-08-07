@@ -6,6 +6,7 @@ import WeatherAlertPage from './pages/WeatherAlertPage/WeatherAlertPage';
 import PhotoAnalysisResultPage from './pages/PhotoAnalysisResultPage/PhotoAnalysisResultPage';
 import TrackingSharePage from './pages/TrackingSharePage/TrackingSharePage';
 import LocationSelectPage from './pages/LocationSelectPage/LocationSelectPage';
+import BuddyTrackingPage from './pages/BuddyTrackingPage/BuddyTrackingPage';
 
 const rootRoute = createRootRoute();
 
@@ -51,6 +52,12 @@ const locationSelectRoute = createRoute({
   component: LocationSelectPage,
 });
 
+const buddyTrackingRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: '/buddy-tracking',
+  component: BuddyTrackingPage,
+});
+
 const routeTree = rootRoute.addChildren([
   homeRoute,
   kyuminRoute,
@@ -59,6 +66,7 @@ const routeTree = rootRoute.addChildren([
   photoAnalysisResultRoute,
   trackingShareRoute,
   locationSelectRoute,
+  buddyTrackingRoute,
 ]);
 export const router = createRouter({ routeTree });
 
