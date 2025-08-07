@@ -1,0 +1,89 @@
+.container {
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  padding: 0 16px;
+}
+
+/* Header */
+.header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 4px;
+  flex-shrink: 0;
+  height: 56px;
+  box-sizing: border-box;
+}
+
+.backButton {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 4px;
+}
+
+.backButtonIcon {
+  width: 12px;
+  height: auto;
+}
+
+.title {
+  flex: 1;
+  margin: 0;
+}
+
+/* Filter Tabs */
+.filterTabs {
+  display: flex;
+  justify-content: space-between;
+  padding: 0 0 8px 0;
+  overflow-x: auto;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+  flex-shrink: 0;
+  height: 48px;
+  box-sizing: border-box;
+}
+
+.filterTabs::-webkit-scrollbar {
+  display: none;
+}
+
+.filterTab {
+  background: none;
+  border: none;
+  padding: 8px;
+  border-radius: 8px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.filterTab.active {
+  background-color: #f0f0f0;
+}
+
+.alertList {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 0 0 12px 0;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.alertList::-webkit-scrollbar {
+  display: none;
+}
+
+.alertItem {
+  flex-shrink: 0;
+}

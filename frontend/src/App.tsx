@@ -1,7 +1,8 @@
 import './App.css';
 import { theme } from './theme';
 import { Button, Badge, Text } from './components/atoms';
-import { Link, Outlet } from '@tanstack/react-router';
+import { WarningBanner, HarvestButton, WeatherWidgets } from './components/molecules';
+import { Link } from '@tanstack/react-router';
 
 function App() {
   return (
@@ -14,10 +15,6 @@ function App() {
         fontFamily: theme.typography.fontFamily.primary,
       }}
     >
-      <div style={{ display: 'flex', gap: theme.spacing.md }}>
-        <Link to="/chaeeun">Chaeeun</Link>
-        <Link to="/kyumin">Kyumin</Link>
-      </div>
       {/* Header */}
       <div
         style={{
@@ -30,8 +27,42 @@ function App() {
         }}
       >
         <Text size="lg" color="white">
-          공통컴포넌트 - Atom
+          공통컴포넌트 - Atom & Molecule
         </Text>
+      </div>
+
+      {/* Navigation */}
+      <div style={{ marginBottom: theme.spacing.xxxl }}>
+        <Text size="lg" color="white" style={{ marginBottom: theme.spacing.md }}>
+          페이지 이동:
+        </Text>
+        <div style={{ display: 'flex', gap: theme.spacing.md }}>
+          <Link to="/weather-alert" style={{ textDecoration: 'none' }}>
+            <Button variant="primary" size="medium">
+              WeatherAlertPage
+            </Button>
+          </Link>
+          <Link to="/kyumin" style={{ textDecoration: 'none' }}>
+            <Button variant="secondary" size="medium">
+              Kyumin Page
+            </Button>
+          </Link>
+          <Link to="/photo-analysis" style={{ textDecoration: 'none' }}>
+            <Button variant="primary" size="medium">
+              PhotoAnalysisPage
+            </Button>
+          </Link>
+          <Link to="/tracking-share" style={{ textDecoration: 'none' }}>
+            <Button variant="secondary" size="medium">
+              TrackingSharePage
+            </Button>
+          </Link>
+          <Link to="/location-select" style={{ textDecoration: 'none' }}>
+            <Button variant="primary" size="medium">
+              LocationSelectPage
+            </Button>
+          </Link>
+        </div>
       </div>
 
       {/* Text Section */}
@@ -95,6 +126,68 @@ function App() {
             />
             채집금지구역
           </Badge>
+        </div>
+      </section>
+
+      {/* Molecule Components Section */}
+      <section style={{ marginBottom: theme.spacing.xxxl }}>
+        <Text size="xxxl" color="white" style={{ marginBottom: theme.spacing.lg }}>
+          Molecule 컴포넌트들
+        </Text>
+
+        {/* Warning Banner */}
+        <div style={{ marginBottom: theme.spacing.lg }}>
+          <Text size="lg" color="white" style={{ marginBottom: theme.spacing.md }}>
+            WarningBanner
+          </Text>
+          <WarningBanner type="풍랑주의보" date="07월 24일 22시 00분" location="제주 앞바다" />
+        </div>
+
+        {/* Harvest Button */}
+        <div style={{ marginBottom: theme.spacing.lg }}>
+          <Text size="lg" color="white" style={{ marginBottom: theme.spacing.md }}>
+            HarvestButton
+          </Text>
+          <HarvestButton onClick={() => console.log('수확물 확인!')} />
+        </div>
+
+        {/* Weather Widgets */}
+        <div style={{ marginBottom: theme.spacing.lg }}>
+          <Text size="lg" color="white" style={{ marginBottom: theme.spacing.md }}>
+            WeatherWidgets
+          </Text>
+          <WeatherWidgets
+            items={[
+              {
+                icon: (
+                  <div
+                    style={{
+                      width: '24px',
+                      height: '24px',
+                      background: '#ffd700',
+                      borderRadius: '50%',
+                    }}
+                  />
+                ),
+                subtitle: '현재 날씨',
+                data: '32.7℃ / 맑음',
+              },
+              {
+                icon: (
+                  <div
+                    style={{
+                      width: '24px',
+                      height: '24px',
+                      background: '#4CAF50',
+                      borderRadius: '50%',
+                    }}
+                  />
+                ),
+                subtitle: '위험도',
+                data: '보통',
+              },
+            ]}
+          />
         </div>
       </section>
     </div>

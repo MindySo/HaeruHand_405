@@ -2,7 +2,11 @@ import { createRootRoute, createRoute, createRouter } from '@tanstack/react-rout
 import Kyumin from './pages/Kyumin';
 import Chaeeun from './pages/Chaeeun';
 import App from './App';
-import { MainPage } from './pages/MainPage/MainPage';
+import WeatherAlertPage from './pages/WeatherAlertPage/WeatherAlertPage';
+import PhotoAnalysisResultPage from './pages/PhotoAnalysisResultPage/PhotoAnalysisResultPage';
+import TrackingSharePage from './pages/TrackingSharePage/TrackingSharePage';
+import LocationSelectPage from './pages/LocationSelectPage/LocationSelectPage';
+import BuddyTrackingPage from './pages/BuddyTrackingPage/BuddyTrackingPage';
 
 const rootRoute = createRootRoute();
 
@@ -24,13 +28,46 @@ const chaeeunRoute = createRoute({
   component: Chaeeun,
 });
 
-const mainPageRoute = createRoute({
+const weatherAlertRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/main',
-  component: MainPage,
+  path: '/weather-alert',
+  component: WeatherAlertPage,
 });
 
-const routeTree = rootRoute.addChildren([homeRoute, kyuminRoute, chaeeunRoute, mainPageRoute]);
+const photoAnalysisResultRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: '/photo-analysis',
+  component: PhotoAnalysisResultPage,
+});
+
+const trackingShareRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: '/tracking-share',
+  component: TrackingSharePage,
+});
+
+const locationSelectRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: '/location-select',
+  component: LocationSelectPage,
+});
+
+const buddyTrackingRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: '/buddy-tracking',
+  component: BuddyTrackingPage,
+});
+
+const routeTree = rootRoute.addChildren([
+  homeRoute,
+  kyuminRoute,
+  chaeunRoute,
+  weatherAlertRoute,
+  photoAnalysisResultRoute,
+  trackingShareRoute,
+  locationSelectRoute,
+  buddyTrackingRoute,
+]);
 export const router = createRouter({ routeTree });
 
 declare module '@tanstack/react-router' {
