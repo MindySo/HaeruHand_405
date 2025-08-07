@@ -1,9 +1,7 @@
--- ------------------------------------------------------------
---  File: fish_restriction_seed.sql
---  Purpose : Seed data for fish_restriction table
---  Law announcement : 2024-05-28  (수산자원관리법 시행령 개정)
--- ------------------------------------------------------------
-
+-- 제주도 유어장 데이터 INSERT
+-- Law announcement : 2023-11-07
+-- created_at, updated_at은 @CreatedDate, @LastModifiedDate에서 자동 설정
+-- is_deleted는 BaseEntity에서 기본값 false로 자동 설정
 INSERT INTO fish_restriction (
     species_name,
     restriction_region,
@@ -16,20 +14,57 @@ INSERT INTO fish_restriction (
     note,
     image_url
 ) VALUES
--- 1. 감성돔 – 5 월 산란기 보호 (전장 25 cm 이상)
-('감성돔', 'NATIONAL', '2024-05-01', '2024-05-31',
- 25.00, NULL, 'TOTAL_LENGTH', '2024-05-28', NULL, NULL),
--- 2. 꽃게 – 두흉갑장 6.4 cm 이상, 여름 금어기
-('꽃게',   'NATIONAL', '2024-06-21', '2024-08-20',
- 6.40, NULL, 'CARAPACE_WIDTH', '2024-05-28',
- '연평 7.1~8.31 / 백령·대청·소청 7.16~9.15 지역 특례', NULL),
--- 3. 갈치 – 항문장 18 cm 이상
-('갈치',   'NATIONAL', '2024-07-01', '2024-07-31',
- 18.00, NULL, 'ANAL_LENGTH', '2024-05-28',
- '근해채낚기·연안복합 제외', NULL),
--- 4. 전복류(제주) – 각장 10 cm 이상
-('전복류', 'JEJU',     '2024-10-01', '2024-12-31',
- 10.00, NULL, 'SHELL_LENGTH', '2024-05-28', NULL, NULL),
--- 5. 참홍어 – 체반폭 42 cm 이상
-('참홍어', 'NATIONAL', '2024-06-01', '2024-07-15',
- 42.00, NULL, 'BODY_WIDTH',   '2024-05-28', NULL, NULL);
+
+-- 금어기가 있는 어종들
+('명태', 'NATIONAL', '2025-01-01', '2025-12-31', NULL, NULL, NULL, '2021-01-01', NULL, NULL),
+('대구', 'NATIONAL', '2025-01-16', '2025-02-15', 35.00, NULL, 'TOTAL_LENGTH', '2021-01-01', NULL, NULL),
+('가리비', 'NATIONAL', '2025-03-01', '2025-06-03', NULL, NULL, NULL, '2021-01-01', NULL, NULL),
+('살오징어', 'NATIONAL', '2025-04-01', '2025-05-31', 15.00, NULL, 'OUTER_MANTLE_LENGTH', '2021-01-01', '단, 근해채낚기, 연안복합, 정치망 4.1 ~ 4.30', NULL),
+('고등어', 'NATIONAL', '2025-04-01', '2025-06-30', 21.00, NULL, 'TOTAL_LENGTH', '2021-01-01', '금어기 중 1개월(수산자원의 포획금지 금지기간에 관한 고시)', NULL),
+('감성돔', 'NATIONAL', '2025-05-01', '2025-05-31', 25.00, NULL, 'TOTAL_LENGTH', '2021-01-01', NULL, NULL),
+('삼치', 'NATIONAL', '2025-05-01', '2025-05-31', NULL, NULL, NULL, '2021-01-01', NULL, NULL),
+('참문어', 'NATIONAL', '2025-05-16', '2025-06-30', NULL, NULL, NULL, '2021-01-01', '시·도지사는 5.1~9.15 중 46일 이상 지정 가능', NULL),
+('대하', 'NATIONAL', '2025-05-01', '2025-06-30', NULL, NULL, NULL, '2021-01-01', NULL, NULL),
+('전어', 'NATIONAL', '2025-05-01', '2025-07-15', NULL, NULL, NULL, '2021-01-01', '단, 강원, 경북 제외', NULL),
+('말쥐치', 'NATIONAL', '2025-05-01', '2025-07-31', 18.00, NULL, 'TOTAL_LENGTH', '2021-01-01', NULL, NULL),
+('주꾸미', 'NATIONAL', '2025-05-11', '2025-08-31', NULL, NULL, NULL, '2021-01-01', NULL, NULL),
+('낙지', 'NATIONAL', '2025-06-01', '2025-06-30', NULL, NULL, NULL, '2021-01-01', '시·도지사는 4.1~9.30 중 1개월 이상 지정 가능', NULL),
+('참홍어', 'NATIONAL', '2025-06-01', '2025-07-15', 42.00, NULL, 'TOTAL_LENGTH', '2021-01-01', NULL, NULL),
+('꽃게', 'NATIONAL', '2025-06-21', '2025-08-20', 6.40, NULL, 'CARAPACE_WIDTH', '2021-01-01', '단, 연평 7.1~8.31/백령, 대청, 소청 7.16~9.15. 수산자원의 포획금지기간에 관한 고시', NULL),
+('소라', 'NATIONAL', '2025-06-01', '2025-08-31', 7.00, NULL, 'SHELL_LENGTH', '2021-01-01', NULL, NULL),
+('새조개', 'NATIONAL', '2025-06-01', '2025-09-30', NULL, NULL, NULL, '2021-01-01', NULL, NULL),
+('대게', 'NATIONAL', '2025-06-01', '2025-11-30', 9.00, NULL, 'CARAPACE_WIDTH', '2021-01-01', NULL, NULL),
+('갈치', 'NATIONAL', '2025-07-01', '2025-07-31', 18.00, NULL, 'ANAL_LENGTH', '2021-01-01', '근해채낚기, 연안복합 제외', NULL),
+('참조기', 'NATIONAL', '2025-07-01', '2025-07-31', 15.00, NULL, 'TOTAL_LENGTH', '2021-01-01', '단, 유자망 4.22∼8.10', NULL),
+('해삼', 'NATIONAL', '2025-07-01', '2025-07-31', NULL, NULL, NULL, '2021-01-01', NULL, NULL),
+('오분자기', 'NATIONAL', '2025-07-01', '2025-08-31', 4.00, NULL, 'TOTAL_LENGTH', '2021-01-01', NULL, NULL),
+('키조개', 'NATIONAL', '2025-07-01', '2025-08-31', NULL, NULL, 'SHELL_LENGTH', '2021-01-01', NULL, NULL),
+('붉은대게', 'NATIONAL', '2025-07-10', '2025-08-25', NULL, NULL, NULL, '2021-01-01', '단, 강원 연안자망 6.1∼7.10', NULL),
+('옥돔', 'NATIONAL', '2025-07-21', '2025-08-20', NULL, NULL, NULL, '2021-01-01', NULL, NULL),
+('전복류', 'NATIONAL', '2025-10-01', '2025-12-31', 10.00, NULL, 'SHELL_LENGTH', '2021-01-01', NULL, NULL),
+('넓미역', 'NATIONAL', '2025-09-01', '2025-11-30', NULL, NULL, NULL, '2021-01-01', '단, 제주도 고시로 5.1~11.30 중 3개월 이상 지정 가능', NULL),
+('연어', 'NATIONAL', '2025-10-01', '2025-11-30', NULL, NULL, NULL, '2021-01-01', NULL, NULL),
+('톳', 'NATIONAL', '2025-10-01', '2026-01-31', NULL, NULL, NULL, '2021-01-01', NULL, NULL),
+('쥐노래미', 'NATIONAL', '2025-11-01', '2025-12-31', 20.00, NULL, 'TOTAL_LENGTH', '2021-01-01', NULL, NULL),
+('우뭇가사리', 'NATIONAL', '2025-11-01', '2026-03-31', NULL, NULL, NULL, '2021-01-01', NULL, NULL),
+('문치가자미', 'NATIONAL', '2025-12-01', '2026-01-31', 20.00, NULL, 'TOTAL_LENGTH', '2021-01-01', NULL, NULL),
+
+-- 체장 제한만 있는 어종들 (연중 적용)
+('기름가자미', 'NATIONAL', '2025-01-01', '2025-12-31', 20.00, NULL, 'TOTAL_LENGTH', '2021-01-01', NULL, NULL),
+('기수재첩', 'NATIONAL', '2025-01-01', '2025-12-31', 1.50, NULL, 'SHELL_LENGTH', '2021-01-01', NULL, NULL),
+('갯장어', 'NATIONAL', '2025-01-01', '2025-12-31', 40.00, NULL, 'TOTAL_LENGTH', '2021-01-01', NULL, NULL),
+('넙치(광어)', 'NATIONAL', '2025-01-01', '2025-12-31', 35.00, NULL, 'TOTAL_LENGTH', '2021-01-01', NULL, NULL),
+('농어', 'NATIONAL', '2025-01-01', '2025-12-31', 30.00, NULL, 'TOTAL_LENGTH', '2021-01-01', NULL, NULL),
+('도루묵', 'NATIONAL', '2025-01-01', '2025-12-31', 11.00, NULL, 'TOTAL_LENGTH', '2021-01-01', NULL, NULL),
+('대문어', 'NATIONAL', '2025-01-01', '2025-12-31', NULL, 600.0, NULL, '2021-01-01', NULL, NULL),
+('돌돔', 'NATIONAL', '2025-01-01', '2025-12-31', 24.00, NULL, 'TOTAL_LENGTH', '2021-01-01', NULL, NULL),
+('미거지', 'NATIONAL', '2025-01-01', '2025-12-31', 40.00, NULL, 'TOTAL_LENGTH', '2021-01-01', NULL, NULL),
+('민어', 'NATIONAL', '2025-01-01', '2025-12-31', 33.00, NULL, 'TOTAL_LENGTH', '2021-01-01', NULL, NULL),
+('방어', 'NATIONAL', '2025-01-01', '2025-12-31', 30.00, NULL, 'TOTAL_LENGTH', '2021-01-01', NULL, NULL),
+('볼락', 'NATIONAL', '2025-01-01', '2025-12-31', 15.00, NULL, 'TOTAL_LENGTH', '2021-01-01', NULL, NULL),
+('붕장어', 'NATIONAL', '2025-01-01', '2025-12-31', 35.00, NULL, 'TOTAL_LENGTH', '2021-01-01', NULL, NULL),
+('용가자미', 'NATIONAL', '2025-01-01', '2025-12-31', 20.00, NULL, 'TOTAL_LENGTH', '2021-01-01', NULL, NULL),
+('조피볼락(우럭)', 'NATIONAL', '2025-01-01', '2025-12-31', 23.00, NULL, 'TOTAL_LENGTH', '2021-01-01', NULL, NULL),
+('참가자미', 'NATIONAL', '2025-01-01', '2025-12-31', 20.00, NULL, 'TOTAL_LENGTH', '2021-01-01', NULL, NULL),
+('참돔', 'NATIONAL', '2025-01-01', '2025-12-31', 24.00, NULL, 'TOTAL_LENGTH', '2021-01-01', NULL, NULL),
+('청어', 'NATIONAL', '2025-01-01', '2025-12-31', 20.00, NULL, 'TOTAL_LENGTH', '2021-01-01', NULL, NULL);

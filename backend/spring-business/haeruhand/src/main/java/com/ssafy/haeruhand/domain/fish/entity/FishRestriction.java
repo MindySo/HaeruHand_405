@@ -51,4 +51,21 @@ public class FishRestriction extends BaseEntity {
 
     @Column(name = "image_url", length = 255)
     private String imageUrl;
+
+    /**
+     * 오늘(LocalDate.now 기준)이 금어기·금지체장 적용 기간인지 여부
+     */
+    public boolean isCurrentlyRestricted() {
+        return isRestrictedOn(LocalDate.now());
+    }
+
+    /**
+     * 주어진 날짜(date)가 금어기·금지체장 적용 기간인지 여부
+     *
+     * @param date 검사할 날짜
+     * @return true = 금어기(포획 금지), false = 금어기 아님
+     */
+    public boolean isRestrictedOn(LocalDate date) {
+        return !date.isBefore(restrictionStartDate) && !date.isAfter(restrictionEndDate);
+    }
 }
