@@ -7,7 +7,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 
-@Repository
+
 public interface FishRestrictionRepository extends JpaRepository<FishRestriction, Long> {
 
     Optional<FishRestriction> findBySpeciesName(String speciesName);
