@@ -13,4 +13,5 @@ import lombok.NoArgsConstructor;
 public class FishDetectionResponse {
     private String fishName;
     private FishDetailResponse regulationFish;
+    private boolean isCurrentlyRestricted;
 }
