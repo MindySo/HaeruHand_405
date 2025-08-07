@@ -1,17 +1,22 @@
 package com.ssafy.haeruhand.global.websocket.service;
 
+import com.ssafy.haeruhand.domain.location.dto.internal.MemberJoinResultDto;
+import com.ssafy.haeruhand.domain.location.dto.response.RoomInfoResponse;
 import com.ssafy.haeruhand.domain.location.service.LocationShareMemberService;
 import com.ssafy.haeruhand.global.exception.GlobalException;
 import com.ssafy.haeruhand.global.status.ErrorStatus;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 /**
  * WebSocket 세션 생명주기 관리 서비스
  * 세션 검증, 속성 관리, 연결/해제 이벤트 처리
+ * 기존 내부 DTO 제거하고 location 도메인 DTO 재활용
  */
 @Slf4j
 @Service
@@ -19,12 +24,30 @@ import java.util.Map;
 public class WebSocketSessionService {
 
     private final LocationShareMemberService memberService;
+    private final StringRedisTemplate stringRedisTemplate;
 
     /**
-     * WebSocket 연결 시 세션 초기화 처리
+     * WebSocket 연결 시 세션 초기화 처리 (JTI 중복 연결 체크 포함)
+     * @return MemberJoinResultDto 기존 SessionConnectionResult 대신 재활용
      */
-    public SessionConnectionResult handleConnect(Long userId, String roomCode, Long roomId) {
+    public MemberJoinResultDto handleConnect(Long userId, String roomCode, Long roomId, String jti) {
         try {
+            // Redis JTI 관리 (사용자별 중복 연결 추적)
+            if (jti != null) {
+                String jtiKey = String.format("jti:%s:user:%d", jti, userId);
+                
+                // 30분 TTL로 자동 정리, 동일 사용자의 중복 세션 체크
+                boolean isNewConnection = stringRedisTemplate.opsForValue()
+                        .setIfAbsent(jtiKey, "connected", 30, TimeUnit.MINUTES);
+                
+                if (!isNewConnection) {
+                    log.warn("User {} already connected with JTI {} in room {}", userId, jti, roomCode);
+                    throw new GlobalException(ErrorStatus.WEBSOCKET_DUPLICATE_CONNECTION);
+                }
+                
+                log.info("JTI registered in Redis: {} for user: {}", jti, userId);
+            }
+            
             // 최대 인원 체크 (4명 제한)
             int currentMemberCount = memberService.getActiveMemberCount(roomId);
             boolean isExistingMember = memberService.isMemberExists(roomId, userId);
@@ -37,12 +60,14 @@ public class WebSocketSessionService {
             // 멤버 UPSERT (색상 자동 할당)
             memberService.upsertMember(roomId, userId);
             
-            log.info("WebSocket connection established. User: {}, Room: {}", userId, roomCode);
-            return SessionConnectionResult.success();
+            log.info("WebSocket connection established. User: {}, Room: {}, JTI: {}", userId, roomCode, jti);
+            
+            // 기존 SessionConnectionResult.success() 대신 MemberJoinResultDto 사용
+            return MemberJoinResultDto.success(null, null, userId.toString(), roomCode);
             
         } catch (GlobalException e) {
             log.error("WebSocket connection failed: {} ({})", e.getErrorStatus().getMessage(), e.getErrorStatus().getCode());
-            return SessionConnectionResult.failure(e.getErrorStatus().getMessage());
+            return MemberJoinResultDto.failure(e.getErrorStatus().getMessage());
         } catch (Exception e) {
             log.error("Failed to handle WebSocket connection with unexpected error", e);
             throw new GlobalException(ErrorStatus.WEBSOCKET_CONNECTION_FAILED);
@@ -51,8 +76,9 @@ public class WebSocketSessionService {
 
     /**
      * 세션 속성에서 정보 추출 및 검증
+     * @return RoomInfoResponse.RoomInfo 기존 SessionInfo 대신 재활용
      */
-    public SessionInfo extractSessionInfo(Map<String, Object> sessionAttributes) {
+    public RoomInfoResponse.RoomInfo extractSessionInfo(Map<String, Object> sessionAttributes) {
         Long userId = (Long) sessionAttributes.get("userId");
         String roomCode = (String) sessionAttributes.get("roomCode");
         Long roomId = (Long) sessionAttributes.get("roomId");
@@ -61,7 +87,13 @@ public class WebSocketSessionService {
             throw new GlobalException(ErrorStatus.WEBSOCKET_SESSION_INVALID);
         }
         
-        return new SessionInfo(userId, roomCode, roomId);
+        // 리팩토링 예정
+        return RoomInfoResponse.RoomInfo.builder()
+                .roomId(roomId)
+                .roomCode(roomCode)
+                .hostUserId(userId)
+                .isActive(true)
+                .build();
     }
 
     /**
@@ -71,48 +103,5 @@ public class WebSocketSessionService {
         attributes.put("userId", userId);
         attributes.put("roomCode", roomCode);
         attributes.put("roomId", roomId);
-    }
-
-    /**
-     * 세션 연결 결과 DTO
-     */
-    public static class SessionConnectionResult {
-        private final boolean success;
-        private final String errorMessage;
-
-        private SessionConnectionResult(boolean success, String errorMessage) {
-            this.success = success;
-            this.errorMessage = errorMessage;
-        }
-
-        public static SessionConnectionResult success() {
-            return new SessionConnectionResult(true, null);
-        }
-
-        public static SessionConnectionResult failure(String errorMessage) {
-            return new SessionConnectionResult(false, errorMessage);
-        }
-
-        public boolean isSuccess() { return success; }
-        public String getErrorMessage() { return errorMessage; }
-    }
-
-    /**
-     * 세션 정보 DTO
-     */
-    public static class SessionInfo {
-        private final Long userId;
-        private final String roomCode;
-        private final Long roomId;
-
-        public SessionInfo(Long userId, String roomCode, Long roomId) {
-            this.userId = userId;
-            this.roomCode = roomCode;
-            this.roomId = roomId;
-        }
-
-        public Long getUserId() { return userId; }
-        public String getRoomCode() { return roomCode; }
-        public Long getRoomId() { return roomId; }
     }
 }
