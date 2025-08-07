@@ -10,6 +10,6 @@ import java.util.Optional;
 @Repository
 public interface UserFcmTokenRepository extends JpaRepository<UserFcmToken, Long> {
 
-    List<UserFcmToken> findActiveTokensByUserIdAndIsDeletedFalse (Long userId);
+    List<UserFcmToken> findActiveTokensByUserId(Long userId);
     Optional<UserFcmToken> findByFcmTokenAndIsDeletedFalse(String fcmToken);
 }
