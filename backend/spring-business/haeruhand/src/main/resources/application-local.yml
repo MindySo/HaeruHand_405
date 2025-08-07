@@ -24,7 +24,7 @@ spring:
         registration:
           kakao:
             client-id: ${CLIENT_ID}
-            redirect-uri: "http://localhost:5173/login"
+            redirect-uri: 'http://localhost:5173/callback.html'
             authorization-grant-type: authorization_code
             scope:
               - profile_nickname
