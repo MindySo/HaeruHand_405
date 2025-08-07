@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Mono;
 
 @RestController
-@RequestMapping("/api/v1/seafood-detect")
+@RequestMapping("/v1/seafood-detect")
 @RequiredArgsConstructor
 public class AiController {
     private final FishDetectionService service;
