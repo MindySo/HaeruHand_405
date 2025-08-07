@@ -9,7 +9,7 @@ import java.util.Map;
 @Getter
 @RequiredArgsConstructor
 public abstract class BaseNotificationEvent {
-    
+
     private final Long userId;
     private final String title;
     private final String body;
@@ -23,6 +23,6 @@ public abstract class BaseNotificationEvent {
         this.occurredAt = LocalDateTime.now();
         this.additionalData = additionalData;
     }
-    
+
     public abstract String getNotificationType();
 }
