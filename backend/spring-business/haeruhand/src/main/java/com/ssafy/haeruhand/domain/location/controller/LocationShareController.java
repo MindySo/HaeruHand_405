@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 @Tag(name = "위치 공유", description = "실시간 위치 공유 관련 API")
 @RestController
-@RequestMapping("/api/v1/location")
+@RequestMapping("/v1/location")
 @RequiredArgsConstructor
 public class LocationShareController {
 
