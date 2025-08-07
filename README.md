@@ -32,6 +32,8 @@
 
 ## 🚀 핵심 기능
 
+<video controls src="버디 기능 테스트.mp4" title="Title"></video>
+
 ### 1. 🗺️ 실시간 위치 공유 시스템
 - **WebSocket/STOMP 기반 실시간 통신**
 - 최대 4명까지 동시 위치 공유
