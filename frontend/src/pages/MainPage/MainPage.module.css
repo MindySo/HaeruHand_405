@@ -15,6 +15,7 @@
   height: 72px;
   flex-shrink: 0;
   margin-top: 20px;
+  margin-bottom: 12px;
 }
 
 .header {
@@ -22,10 +23,14 @@
   align-items: center;
   justify-content: space-between;
   position: relative;
-  /* width: 100%; */
-  /* max-width: 360px; */
   box-sizing: border-box;
   margin-bottom: 12px;
+}
+
+.bellButton {
+  background: none;
+  border: none;
+  cursor: pointer;
 }
 
 .bellIcon {
@@ -48,13 +53,26 @@
   z-index: 101;
 }
 
-.goBack {
+.backButtonContainer {
   display: flex;
+  align-items: center;
   justify-content: flex-start;
-  /* width: 100%; */
+}
+
+.backButton {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 8px;
+  padding-left: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.backButtonIcon {
+  width: 12px;
   height: auto;
-  gap: 8px;
-  margin: 12px 0px;
 }
 
 /* --------------------------------------------- */
