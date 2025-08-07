@@ -40,40 +40,34 @@ public class OAuthServiceImpl implements OAuthService {
 
     @Override
     public IssueResponseDto authorizeKakaoAndIssueToken(String code, HttpServletResponse response) {
-        log.info("카카오 OAuth 인증 시작 - 인가코드 수신: {}", code.substring(0, Math.min(10, code.length())) + "...");
+        log.info("카카오 OAuth 인증 시작 - 인가코드 수신: {}, redirectUri : {}", code.substring(0, Math.min(10, code.length())) + "...", redirectUri);
 
         try {
             // 카카오 AccessToken 요청
-            log.info("카카오 액세스 토큰 요청 시작 - clientId: {}, redirectUri: {}", clientId, redirectUri);
             String kakaoAccessToken = requestKakaoToken(code);
             log.info("카카오 액세스 토큰 발급 성공 - 토큰 길이: {}", kakaoAccessToken.length());
 
             // 사용자 정보 조회
-            log.info("카카오 사용자 정보 조회 시작");
             KakaoUserInfoDto kakaoUserInfoDto = requestKakaoUserInfo(kakaoAccessToken);
             log.info("카카오 사용자 정보 조회 성공 - kakaoSub: {}, nickname: {}",
                     kakaoUserInfoDto.getKakaoSub(), kakaoUserInfoDto.getNickname());
 
             // 유저 조회/생성
-            log.info("데이터베이스 유저 조회/생성 시작 - kakaoSub: {}", kakaoUserInfoDto.getKakaoSub());
             User user = findOrCreateUserFromKakao(kakaoUserInfoDto);
             log.info("유저 처리 완료 - userId: {}, 신규 유저: {}", user.getId(),
                     user.getCreatedAt().equals(user.getUpdatedAt()));
 
             // JWT 발급
-            log.info("JWT 토큰 생성 시작 - userId: {}", user.getId());
             String accessToken = jwtProvider.createAccessToken(user.getId());
             String refreshToken = jwtProvider.createRefreshToken(user.getId());
             long accessTokenExpiresIn = jwtProvider.getAccessTokenExpirationMilliSec();
             log.info("JWT 토큰 생성 완료 - 액세스 토큰 만료시간: {}ms", accessTokenExpiresIn);
 
             // 리프레시 토큰 저장
-            log.info("리프레시 토큰 저장 시작 - userId: {}", user.getId());
             refreshTokenRepository.save(String.valueOf(user.getId()), refreshToken);
             log.info("리프레시 토큰 저장 완료");
 
             // 응답 구성
-            log.info("응답 DTO 구성 시작");
             IssueResponseDto responseDto = buildIssueResponse(accessToken, refreshToken, user, accessTokenExpiresIn / 1000);
             log.info("카카오 OAuth 인증 완료 - userId: {}", user.getId());
 
@@ -91,7 +85,6 @@ public class OAuthServiceImpl implements OAuthService {
 
         try {
             // rtk 유효성 검사
-            log.info("리프레시 토큰 유효성 검증 시작");
             if (!jwtProvider.validateToken(refreshToken)) {
                 log.warn("리프레시 토큰 유효성 검증 실패");
                 throw new GlobalException(ErrorStatus.INVALID_TOKEN);
@@ -99,7 +92,6 @@ public class OAuthServiceImpl implements OAuthService {
             log.info("리프레시 토큰 유효성 검증 성공");
 
             // 저장된 리프레시 토큰과 일치하는지 확인
-            log.info("저장된 리프레시 토큰 조회 시작");
             Long userId = jwtProvider.getUserIdFromToken(refreshToken);
             log.info("리프레시 토큰에서 userId 추출 완료: {}", userId);
 
@@ -113,14 +105,12 @@ public class OAuthServiceImpl implements OAuthService {
             log.info("리프레시 토큰 일치 확인 완료");
 
             // 새로운 토큰들 발급
-            log.info("새 토큰 생성 시작 - userId: {}", userId);
             String newRefreshToken = jwtProvider.createRefreshToken(userId);
             String newAccessToken = jwtProvider.createAccessToken(userId);
             long accessTokenExpiresIn = jwtProvider.getAccessTokenExpirationMilliSec();
             log.info("새 토큰 생성 완료 - 액세스 토큰 만료시간: {}ms", accessTokenExpiresIn);
 
             // 새로운 리프레시 토큰 저장
-            log.info("새 리프레시 토큰 저장 시작 - userId: {}", userId);
             refreshTokenRepository.save(String.valueOf(userId), newRefreshToken);
             log.info("새 리프레시 토큰 저장 완료");
 
@@ -137,11 +127,8 @@ public class OAuthServiceImpl implements OAuthService {
 
     @Override
     public UserInfoDto getUserInfo(String accessToken) {
-        log.info("사용자 정보 조회 시작 - 액세스 토큰 길이: {}", accessToken.length());
-
         try {
             // atk 유효성 검사
-            log.info("액세스 토큰 유효성 검증 시작");
             if (!jwtProvider.validateToken(accessToken)) {
                 log.warn("액세스 토큰 유효성 검증 실패");
                 throw new GlobalException(ErrorStatus.INVALID_TOKEN);
@@ -149,11 +136,9 @@ public class OAuthServiceImpl implements OAuthService {
             log.info("액세스 토큰 유효성 검증 성공");
 
             // 사용자 조회
-            log.info("토큰에서 userId 추출 시작");
             Long userId = jwtProvider.getUserIdFromToken(accessToken);
             log.info("userId 추출 완료: {}", userId);
 
-            log.info("데이터베이스에서 사용자 조회 시작 - userId: {}", userId);
             User user = userRepository.findById(userId)
                     .orElseThrow(() -> new GlobalException(ErrorStatus.USER_NOT_FOUND));
             log.info("사용자 조회 완료 - nickname: {}", user.getNickname());
@@ -176,7 +161,6 @@ public class OAuthServiceImpl implements OAuthService {
     }
 
     private String requestKakaoToken(String code) throws Exception {
-        log.info("카카오 토큰 API 호출 시작");
         String tokenUrl = "https://kauth.kakao.com/oauth/token";
 
         HttpHeaders headers = new HttpHeaders();
@@ -201,7 +185,6 @@ public class OAuthServiceImpl implements OAuthService {
     }
 
     private KakaoUserInfoDto requestKakaoUserInfo(String accessToken) throws Exception {
-        log.info("카카오 사용자 정보 API 호출 시작");
         String userInfoUrl = "https://kapi.kakao.com/v2/user/me";
 
         HttpHeaders headers = new HttpHeaders();
@@ -226,15 +209,12 @@ public class OAuthServiceImpl implements OAuthService {
     }
 
     private User findOrCreateUserFromKakao(KakaoUserInfoDto kakaoUserInfoDto) {
-        log.info("기존 사용자 조회 시작 - kakaoSub: {}", kakaoUserInfoDto.getKakaoSub());
-
         return userRepository.findByKakaoSub(kakaoUserInfoDto.getKakaoSub())
                 .map(existingUser -> {
                     log.info("기존 사용자 발견 - userId: {}, nickname: {}", existingUser.getId(), existingUser.getNickname());
                     return existingUser;
                 })
                 .orElseGet(() -> {
-                    log.info("신규 사용자 생성 시작 - nickname: {}", kakaoUserInfoDto.getNickname());
                     User newUser = userRepository.save(
                             User.builder()
                                     .kakaoSub(kakaoUserInfoDto.getKakaoSub())
@@ -248,8 +228,6 @@ public class OAuthServiceImpl implements OAuthService {
     }
 
     private IssueResponseDto buildIssueResponse(String accessToken, String refreshToken, User user, long accessTokenExpiresIn) {
-        log.info("IssueResponseDto 구성 시작 - userId: {}", user.getId());
-
         UserInfoDto userInfo = UserInfoDto.builder()
                 .userId(user.getId())
                 .kakaoSub(user.getKakaoSub())
@@ -273,8 +251,6 @@ public class OAuthServiceImpl implements OAuthService {
     }
 
     private ReissueResponseDto buildReissueResponse(String accessToken, String refreshToken, long accessTokenExpiresIn) {
-        log.info("ReissueResponseDto 구성 시작");
-
         ReissueResponseBodyDto responseBodyDto = ReissueResponseBodyDto.builder()
                 .accessTokenExpiresIn(accessTokenExpiresIn)
                 .build();
