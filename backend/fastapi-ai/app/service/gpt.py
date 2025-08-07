@@ -29,7 +29,7 @@ async def detect_fish(signed_url: str, prompt: str, mime_subtype: str) -> str:
             [prompt, image_part],
             stream=False
         )
-        result_text = response.text  # 이 줄이 빠져있었음
+        result_text = response.text  
         cleaned_result = result_text.strip().replace('\n', '').replace('\r', '')
         return cleaned_result
     except Exception as e:
