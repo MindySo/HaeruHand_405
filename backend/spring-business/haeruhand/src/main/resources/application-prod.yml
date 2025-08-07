@@ -5,7 +5,7 @@ spring:
     password: ${MYSQL_PASSWORD}
     driver-class-name: com.mysql.cj.jdbc.Driver
     hikari:
-      connection-init-sql: "SET NAMES utf8mb4 COLLATE utf8mb4_unicode_ci"
+      connection-init-sql: "SET NAMES 'utf8mb4' COLLATE 'utf8mb4_unicode_ci'"
   data:
     redis:
       host: ${REDIS_HOST}
