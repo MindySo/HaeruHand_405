@@ -1,3 +1,4 @@
+import { useNavigate } from '@tanstack/react-router';
 import { Button } from '../../components/atoms';
 import { Text } from '../../components/atoms';
 import styles from './PhotoAnalysisResultPage.module.css';
@@ -21,11 +22,17 @@ const mockData: AnalysisResult = {
 
 const PhotoAnalysisResultPage = () => {
   const { isAllowed, species, banPeriod, sizeLimit, imageUrl } = mockData;
+  const navigate = useNavigate();
+
+  const handleBackButtonClick = () => {
+    navigate({ to: '/main' });
+  };
+
   return (
     <div className={styles.container}>
       {/* Header */}
       <div className={styles.header}>
-        <button className={styles.backButton}>
+        <button className={styles.backButton} onClick={handleBackButtonClick}>
           <img src="/backButton.svg" alt="뒤로가기" className={styles.backButtonIcon} />
         </button>
       </div>

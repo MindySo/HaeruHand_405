@@ -1,6 +1,7 @@
 import { Button, Text } from '../../components/atoms';
 import styles from './BuddyTrackingPage.module.css';
 import { useEffect } from 'react';
+import { useNavigate } from '@tanstack/react-router';
 
 const buddyData = [
   { name: '이규민', latitude: 37.501, longitude: 127.0368861, color: 'red' },
@@ -80,17 +81,30 @@ const BuddyTrackingPage = () => {
     document.head.appendChild(script);
   }, []);
 
+  const navigate = useNavigate();
+
+  const buddyButtonClick = () => {
+    navigate({ to: '/tracking-share' });
+  };
+
+  const handleBackButtonClick = () => {
+    navigate({ to: '/main' });
+  };
+
   return (
     <div className={styles.container}>
       <div id="map" className={styles.map} />
       <div className={styles.wrapper}>
+        <button className={styles.backButton} onClick={handleBackButtonClick}>
+          <img src="/backButton.svg" alt="뒤로가기" className={styles.backButtonIcon} />
+        </button>
         <div className={styles.buddyList}>
           {buddyData.map((buddy) => (
             <Buddy key={buddy.name} name={buddy.name} color={buddy.color} />
           ))}
         </div>
         <div className={styles.buttonSection}>
-          <Button size="large" variant="primary" fullWidth>
+          <Button size="large" variant="primary" fullWidth onClick={buddyButtonClick}>
             함께 해루하기
           </Button>
         </div>

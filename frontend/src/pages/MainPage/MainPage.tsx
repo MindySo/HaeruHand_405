@@ -9,6 +9,7 @@ import {
 } from '../../components/molecules';
 import styles from './MainPage.module.css';
 import { InfoModal } from '../../components/molecules/InfoModal/InfoModal';
+import { useNavigate } from '@tanstack/react-router';
 
 // 특보 배너 props
 export interface WarningBannerProps {
@@ -20,10 +21,29 @@ export interface WarningBannerProps {
 }
 
 export const MainPage = () => {
+  const navigate = useNavigate();
+
   // 모달 창 띄우기 state
   const [isInfoModalOpen, setIsInfoModalOpen] = useState(false);
   const openInfoModal = () => setIsInfoModalOpen(true);
   const closeInfoModal = () => setIsInfoModalOpen(false);
+
+  // 위치 트래킹 버튼 클릭 핸들러
+  const handleTrackingClick = () => {
+    navigate({ to: '/buddy-tracking' });
+  };
+
+  const handleAnalysisButtonClick = () => {
+    navigate({ to: '/photo-analysis' });
+  };
+
+  const handleWeatherAlertClick = () => {
+    navigate({ to: '/weather-alert' });
+  };
+
+  const handleBackButtonClick = () => {
+    navigate({ to: '/location-select' });
+  };
 
   // -------------------------------------------------------------------------------------
   // [메인 페이지 반환]
@@ -35,25 +55,34 @@ export const MainPage = () => {
         <div className={styles.header}>
           <Text size="xl">해루핸 로고</Text>
           {/* 종 모양 아이콘(특보 조회 페이지 이동) */}
-          <div>
+          <button className={styles.bellButton} onClick={handleWeatherAlertClick}>
             <img src="/bell.svg" alt="특보 조회" className={styles.bellIcon} />
             {/* 폴링 시 표시할 마커(빨간 점)-> state로 수정 예정 */}
             <div className={styles.bellMarker} />
-          </div>
+          </button>
         </div>
 
         {/* a-2. 어장 이름(뒤로가기) */}
-        <div className={styles.goBack}>
-          <img src="/backButton.svg" alt="뒤로가기" />
-          <Text>애월3리 어촌계</Text>
+        <div className={styles.backButtonContainer}>
+          <button className={styles.backButton} onClick={handleBackButtonClick}>
+            <img src="/backButton.svg" alt="뒤로가기" className={styles.backButtonIcon} />
+          </button>
+          <Text size="xl" weight="bold" color="dark">
+            애월3리 어촌계
+          </Text>
         </div>
       </div>
 
       {/* B. 스크롤 가능한 영역 */}
       <div className={styles.scrollContent}>
         {/* b-1. 특보 배너 -> 임시 데이터(나중에 설정해놓은 props로 받기) */}
-        <div className={styles.warningBanner}>
-          <WarningBanner type="호우주의보" date="08월 06일 22시 00분" location="안양" />
+        <div className={styles.warningBanner} onClick={handleWeatherAlertClick}>
+          <WarningBanner
+            type="호우주의보"
+            date="08월 06일 22시 00분"
+            location="안양"
+            variant="info"
+          />
         </div>
 
         {/* b-2. 위젯: 해루 가능 시간, 현재 수온 */}
@@ -105,7 +134,7 @@ export const MainPage = () => {
 
         {/* b-4. 수확물 확인하기 */}
         <div className={styles.harvestButton}>
-          <HarvestButton />
+          <HarvestButton onClick={handleAnalysisButtonClick} />
         </div>
 
         {/* b-5. 버튼: 채집 안내서, 위치 트래킹 */}
@@ -113,7 +142,7 @@ export const MainPage = () => {
           {/* 채집 안내서 -> 모달 창 열기 */}
           <InfoButton onClick={openInfoModal} />
           {/* 위치 트래킹 -> 트래핑 페이지 이동 */}
-          <TrackingButton />
+          <TrackingButton onClick={handleTrackingClick} />
         </div>
 
         {/* 채집 안내서 모달(InfoModal) 로직 */}

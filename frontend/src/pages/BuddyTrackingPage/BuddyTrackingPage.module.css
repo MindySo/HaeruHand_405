@@ -16,6 +16,25 @@
   pointer-events: none;
 }
 
+.buttonSection {
+  height: 56px;
+}
+
+.backButton {
+  background: none;
+  padding-left: 0;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  margin-top: 11px;
+  pointer-events: auto;
+}
+
+.backButtonIcon {
+  width: 12px;
+  height: auto;
+}
+
 .map {
   position: absolute;
   top: 0;
@@ -58,4 +77,5 @@
   position: absolute;
   bottom: 60px;
   width: 100%;
+  pointer-events: auto;
 }

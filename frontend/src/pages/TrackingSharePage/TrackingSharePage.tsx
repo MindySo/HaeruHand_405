@@ -1,13 +1,20 @@
 import { Button } from '../../components/atoms';
 import { Text } from '../../components/atoms';
 import styles from './TrackingSharePage.module.css';
+import { useNavigate } from '@tanstack/react-router';
 
 const TrackingSharePage = () => {
+  const navigate = useNavigate();
+
+  const handleBackButtonClick = () => {
+    navigate({ to: '/buddy-tracking' });
+  };
+
   return (
     <div className={styles.container}>
       {/* Header */}
       <div className={styles.header}>
-        <button className={styles.backButton}>
+        <button className={styles.backButton} onClick={handleBackButtonClick}>
           <img src="/backButton.svg" alt="뒤로가기" className={styles.backButtonIcon} />
         </button>
       </div>
@@ -37,7 +44,7 @@ const TrackingSharePage = () => {
 
       {/* Bottom Button */}
       <div className={styles.buttonSection}>
-        <Button size="large" variant="primary" fullWidth>
+        <Button size="large" variant="primary" fullWidth onClick={handleBackButtonClick}>
           돌아가기
         </Button>
       </div>

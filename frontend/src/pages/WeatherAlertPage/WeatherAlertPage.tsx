@@ -3,6 +3,7 @@ import { Text } from '../../components/atoms';
 import { WarningBanner } from '../../components/molecules';
 import dummyData from '../../data/dummy.json';
 import styles from './WeatherAlertPage.module.css';
+import { useNavigate } from '@tanstack/react-router';
 
 interface WeatherAlert {
   id: number;
@@ -22,6 +23,7 @@ interface Filter {
 const WeatherAlertPage: React.FC = () => {
   const [filters, setFilters] = useState<Filter[]>(dummyData.filters);
   const [alerts] = useState<WeatherAlert[]>(dummyData.weatherAlerts);
+  const navigate = useNavigate();
 
   const handleFilterClick = (filterId: string) => {
     setFilters((prev) =>
@@ -32,11 +34,15 @@ const WeatherAlertPage: React.FC = () => {
     );
   };
 
+  const handleBackButtonClick = () => {
+    navigate({ to: '/main' });
+  };
+
   return (
     <div className={styles.container}>
       {/* Header */}
       <div className={styles.header}>
-        <button className={styles.backButton}>
+        <button className={styles.backButton} onClick={handleBackButtonClick}>
           <img src="/backButton.svg" alt="뒤로가기" className={styles.backButtonIcon} />
         </button>
         <Text size="xl" color="dark" weight="bold" className={styles.title}>
