@@ -29,7 +29,7 @@ public class LocationShareMemberService {
 
 
     public int getActiveMemberCount(Long roomId) {
-        return memberRepository.countActiveMembers(roomId);
+        return memberRepository.countByRoomIdAndIsDeletedFalse(roomId);
     }
 
     public boolean isMemberExists(Long roomId, Long userId) {
@@ -54,7 +54,7 @@ public class LocationShareMemberService {
                             .orElseThrow(() -> new GlobalException(ErrorStatus.USER_NOT_FOUND));
                     
                     // 색상 할당 (현재 멤버 수에 따라)
-                    int currentCount = memberRepository.countActiveMembers(roomId);
+                    int currentCount = memberRepository.countByRoomIdAndIsDeletedFalse(roomId);
                     String color = MemberColor.getColorByIndex(currentCount);
                     
                     LocationShareMember newMember = LocationShareMember.builder()
@@ -74,7 +74,10 @@ public class LocationShareMemberService {
         LocationShareRoom room = roomRepository.findByRoomCodeAndIsDeletedFalse(roomCode)
                 .orElseThrow(() -> new GlobalException(ErrorStatus.WEBSOCKET_ROOM_NOT_FOUND));
         
-        memberRepository.softDeleteByRoomIdAndUserId(room.getId(), userId);
+        LocationShareMember member = memberRepository.findByRoomIdAndUserIdAndIsDeletedFalse(room.getId(), userId)
+                .orElseThrow(() -> new GlobalException(ErrorStatus.WEBSOCKET_MEMBER_NOT_FOUND));
+        
+        member.softDelete();
         log.info("Member removed. User: {}, Room: {}", userId, roomCode);
     }
 
