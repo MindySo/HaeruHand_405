@@ -12,9 +12,9 @@ import com.ssafy.haeruhand.domain.user.repository.UserRepository;
 import com.ssafy.haeruhand.global.exception.GlobalException;
 import com.ssafy.haeruhand.global.jwt.JwtProvider;
 import com.ssafy.haeruhand.global.status.ErrorStatus;
+import com.ssafy.haeruhand.domain.location.enums.MemberColor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -36,14 +36,6 @@ public class LocationShareRoomService {
     private final JwtProvider jwtProvider;
 
 
-    private static final String[] MEMBER_COLORS = {
-        "#FF0000", // 빨강 (호스트)
-        "#0084FF", // 파랑
-        "#00C851", // 초록
-        "#FF6900"  // 주황
-    };
-
-    private static final int MAX_MEMBERS = 4;
 
     @Transactional
     public CreateRoomResponse createRoom(String bearerToken) {
@@ -74,7 +66,7 @@ public class LocationShareRoomService {
                 .room(room)
                 .user(hostUser)
                 .isHost(true)
-                .color(MEMBER_COLORS[0])
+                .color(MemberColor.HOST.getColorCode())
                 .lastActiveAt(now)
                 .build();
         
@@ -131,7 +123,7 @@ public class LocationShareRoomService {
                 .isActive(room.getIsActive())
                 .startedAt(room.getStartedAt())
                 .elapsedMin(elapsedMin)
-                .maxMembers(MAX_MEMBERS)
+                .maxMembers(MemberColor.getMaxMembers())
                 .currentMemberCount(members.size())
                 .build();
         
