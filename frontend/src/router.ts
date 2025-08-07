@@ -22,7 +22,7 @@ const kyuminRoute = createRoute({
   component: Kyumin,
 });
 
-const chaeunRoute = createRoute({
+const chaeeunRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: '/chaeeun',
   component: Chaeeun,

@@ -1,18 +1,42 @@
+/* 화면 전체를 덮는 반투명 오버레이 */
+.overlay {
+  position: fixed;
+  /* 화면 꽉 채우기 */
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+}
+
+/* 모달 창 */
 .modalWindow {
-  margin: 16px;
   background-color: #20aeea;
   border-radius: 16px;
-  padding-top: 16px;
-  padding-bottom: 0;
+  padding: 16px 0;
 
   /* 닫기 버튼 배치를 위한 설정 */
   position: relative;
 
-  /* 모달 창 크기(고정) */
-  width: 360px;
+  /* 모달 창 크기 */
+  width: 90%;
+  max-width: 315px;
   height: 400px;
-  /* padding을 포함한 크기 계산 */
-  box-sizing: border-box;
+  box-sizing: border-box; /* padding을 포함한 크기 계산 */
+
+  /* 모달 창 위치 조정 */
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%); /* 정중앙 위치 */
+  z-index: 1001;
+
+  /* 내부 박스 위치 조정 */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  overflow: hidden;
 }
 
 .headerTitle {
@@ -31,24 +55,30 @@
   height: 25px;
 }
 
+/* 모달 창 내부 박스 */
 .boxInWindow {
   background-color: white;
   border-radius: 16px;
   padding: 16px;
-  /* 내부 박스 크기 */
-  margin: 0px 16px;
-  height: 324px;
-  /* 리스트 스크롤바를 위한 설정(높이 고정) */
+  width: 90%;
+  max-width: 290px;
+  height: 90%;
+  overflow: hidden;
+
   display: flex;
   flex-direction: column;
+  align-items: center;
 }
 
 .toggleButton {
   display: flex;
   justify-content: space-evenly;
+  top: 0;
   font-size: 18px;
   color: gray;
-  margin-bottom: 8px;
+
+  /* 화면이 (가로로) 줄어들 경우 */
+  white-space: nowrap;
 
   /* 리스트 스크롤바를 위한 설정(높이 고정) */
   /* 해당 영역은 고정시켜서 스크롤이 남은 공간만 차지하도록 설정
@@ -58,15 +88,28 @@
 
 .list {
   font-size: 18px;
-  margin-top: 8px;
+  padding: 0px 16px;
+  width: 100%;
+  max-width: 284px;
+
   /* 내부 콘텐츠가 크기를 넘으면 스크롤바 표시(높이 설정을 해주어야 가능) */
-  height: 210px;
-  overflow: auto;
+  height: 200px;
+  overflow-y: auto;
+  overflow-x: auto;
   /* background-color: bisque; */
+  box-sizing: border-box;
+
+  white-space: nowrap;
 
   scrollbar-width: none; /* Firefox */
   -ms-overflow-style: none; /* IE/Edge */
 }
 .list::-webkit-scrollbar {
   display: none; /* Chrome/Safari */
+}
+
+.listItem {
+  display: flex;
+  text-overflow: ellipsis;
+  justify-content: flex-start;
 }

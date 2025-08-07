@@ -1,6 +1,6 @@
 .container {
   width: 100%;
-  max-width: 360px;
+  /* max-width: 360px; */
   height: 68px;
   background: #20aeea;
   border: none;
