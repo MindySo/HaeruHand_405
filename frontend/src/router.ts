@@ -8,6 +8,7 @@ import TrackingSharePage from './pages/TrackingSharePage/TrackingSharePage';
 import LocationSelectPage from './pages/LocationSelectPage/LocationSelectPage';
 import BuddyTrackingPage from './pages/BuddyTrackingPage/BuddyTrackingPage';
 import { MainPage } from './pages/MainPage/MainPage';
+import { LoginPage } from './pages/LoginPage/LoginPage';
 
 const rootRoute = createRootRoute();
 
@@ -65,6 +66,12 @@ const mainRoute = createRoute({
   component: MainPage,
 });
 
+const loginRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: '/login',
+  component: LoginPage,
+});
+
 const routeTree = rootRoute.addChildren([
   homeRoute,
   kyuminRoute,
@@ -75,6 +82,7 @@ const routeTree = rootRoute.addChildren([
   locationSelectRoute,
   buddyTrackingRoute,
   mainRoute,
+  loginRoute,
 ]);
 export const router = createRouter({ routeTree });
 
