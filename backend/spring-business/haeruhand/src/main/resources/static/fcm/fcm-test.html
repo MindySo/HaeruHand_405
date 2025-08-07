@@ -97,7 +97,7 @@
             try {
                 updateStatus('백엔드로 알림을 전송하고 있습니다...');
                 
-                const response = await fetch('http://localhost:8080/api/v1/notifications/send', {
+                const response = await fetch('http://localhost:8080/v1/notifications/send', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
