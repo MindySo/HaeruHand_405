@@ -58,7 +58,12 @@ public class FcmTokenServiceImpl implements FcmTokenService {
         try {
             UserFcmToken savedToken = fcmTokenRepository.save(newToken);
             log.info("FCM 토큰 등록 완료 - userId: {}, tokenId: {}", userId, savedToken.getId());
-            return FcmTokenResponseDto.from(savedToken);
+            return FcmTokenResponseDto.builder()
+                    .tokenId(savedToken.getId())
+                    .maskedToken(maskToken(savedToken.getFcmToken()))
+                    .isActive(!savedToken.isDeleted())
+                    .lastUsedAt(savedToken.getLastUsedAt())
+                    .build();
         } catch (DataIntegrityViolationException e) {
             log.warn("FCM 토큰 등록 중 데이터 제약 조건 위반 - userId: {}", userId);
             throw new GlobalException(ErrorStatus.FCM_TOKEN_DUPLICATE);
@@ -79,7 +84,12 @@ public class FcmTokenServiceImpl implements FcmTokenService {
         token.setLastUsedAt(LocalDateTime.now());
 
         log.info("FCM 토큰 갱신 완료 - tokenId: {}, userId: {}", tokenId, token.getUserId());
-        return FcmTokenResponseDto.from(token);
+        return FcmTokenResponseDto.builder()
+                .tokenId(token.getId())
+                .maskedToken(maskToken(token.getFcmToken()))
+                .isActive(!token.isDeleted())
+                .lastUsedAt(token.getLastUsedAt())
+                .build();
     }
 
     @Override
@@ -98,7 +108,7 @@ public class FcmTokenServiceImpl implements FcmTokenService {
 
     @Override
     public List<UserFcmToken> getUserActiveTokens(Long userId) {
-        List<UserFcmToken> activeTokens = fcmTokenRepository.findActiveTokensByUserId(userId);
+        List<UserFcmToken> activeTokens = fcmTokenRepository.findActiveTokensByUserIdAndIsDeletedFalse(userId);
         log.debug("사용자 활성 FCM 토큰 조회 - userId: {}, tokenCount: {}", userId, activeTokens.size());
         return activeTokens;
     }
