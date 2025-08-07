@@ -64,7 +64,7 @@ public class FishDetectionService {
                 .build();
 
         return webClient.post()
-                .uri("http://i13a405.p.ssafy.io/detection/")
+                .uri("http://i13a405.p.ssafy.io/ai/detection/")
                 .bodyValue(apiRequest)
                 .retrieve()
                 .bodyToMono(FishDetectionFastApiResponse.class);
