@@ -109,7 +109,7 @@ public class FishDetectionService {
                 .restrictionEndDate(fish.getRestrictionEndDate())
                 .minimumLengthCentimeter(fish.getMinimumLengthCentimeter())
                 .minimumWeightGram(fish.getMinimumWeightGram())
-                .measurementType(fish.getMeasurementType().label())
+                .measurementType(fish.getMeasurementType() != null ? fish.getMeasurementType().label() : null)
                 .lawAnnouncementDate(fish.getLawAnnouncementDate())
                 .note(fish.getNote())
                 .imageUrl(fish.getImageUrl())
