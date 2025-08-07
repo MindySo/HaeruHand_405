@@ -42,11 +42,6 @@ function App() {
               WeatherAlertPage
             </Button>
           </Link>
-          <Link to="/kyumin" style={{ textDecoration: 'none' }}>
-            <Button variant="secondary" size="medium">
-              Kyumin Page
-            </Button>
-          </Link>
           <Link to="/photo-analysis" style={{ textDecoration: 'none' }}>
             <Button variant="primary" size="medium">
               PhotoAnalysisPage
