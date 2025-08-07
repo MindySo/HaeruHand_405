@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/v1/notifications/")
 @RequiredArgsConstructor
-@Tag(name = "FCM Test", description = "FCM 알림 테스트 API")
+@Tag(name = "FCM notification", description = "FCM 알림 API")
 public class FCMController {
 
     private final FCMService fcmService;
