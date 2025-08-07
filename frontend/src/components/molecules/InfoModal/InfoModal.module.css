@@ -89,6 +89,7 @@
 .list {
   font-size: 18px;
   padding: 0px 16px;
+  width: 100%;
   max-width: 284px;
 
   /* 내부 콘텐츠가 크기를 넘으면 스크롤바 표시(높이 설정을 해주어야 가능) */
@@ -110,4 +111,5 @@
 .listItem {
   display: flex;
   text-overflow: ellipsis;
+  justify-content: flex-start;
 }

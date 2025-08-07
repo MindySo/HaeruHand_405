@@ -48,42 +48,42 @@ export const InfoModal: FC<InfoModalProps> = ({ onClose }) => {
         <Text
           size="md"
           style={{
-            padding: theme.spacing.sm,
+            padding: theme.spacing.md,
             margin: `${theme.spacing.sm} ${theme.spacing.sm} ${theme.spacing.xs}`,
+            height: '60px',
             flex: '0 0 auto',
             display: 'flex',
             justifyContent: 'center',
+            alignItems: 'center',
           }}
         >
-          보호 중인 친구들이에요, 눈으로만 봐 주세요!
+          보호 중인 친구들이에요, 눈으로만 봐주세요!
         </Text>
-        {/* 내용1(목록) */}
+        {/* 내용1(목록) -> 추후 데이터 받아올 때 구조 수정 예정 */}
         <div className={styles.list}>
-          <div className={styles.listContainer}>
-            <p className={styles.listItem}>
-              채집 금지 구역 리스트: 길이 테스트 어케 나오려나아아아아
-            </p>
-            <p className={styles.listItem}>
-              채집 금지 구역 리스트: 길이 테스트 어케 나오려나아아아아
-            </p>
-            <p className={styles.listItem}>
-              채집 금지 구역 리스트: 길이 테스트 어케 나오려나아아아아
-            </p>
-            <li className={styles.listItem}>채집 금지 구역 리스트</li>
-            <li className={styles.listItem}>채집 금지 구역 리스트</li>
-            <li>채집 금지 구역 리스트</li>
-            <li>채집 금지 구역 리스트</li>
-            <li>채집 금지 구역 리스트</li>
-            <li>채집 금지 구역 리스트</li>
-            <li>채집 금지 구역 리스트</li>
-            <li>채집 금지 구역 리스트</li>
-            <li>채집 금지 구역 리스트</li>
-            <li>채집 금지 구역 리스트</li>
-            <li>채집 금지 구역 리스트</li>
-            <li>채집 금지 구역 리스트</li>
-            <li>채집 금지 구역 리스트</li>
-            <li>채집 금지 구역 리스트</li>
-          </div>
+          <p className={styles.listItem}>
+            채집 금지 구역 리스트: 길이 테스트 어케 나오려나아아아아
+          </p>
+          <p className={styles.listItem}>
+            채집 금지 구역 리스트: 길이 테스트 어케 나오려나아아아아
+          </p>
+          <p className={styles.listItem}>
+            채집 금지 구역 리스트: 길이 테스트 어케 나오려나아아아아
+          </p>
+          <li className={styles.listItem}>채집 금지 구역 리스트</li>
+          <li className={styles.listItem}>채집 금지 구역 리스트</li>
+          <li>채집 금지 구역 리스트</li>
+          <li>채집 금지 구역 리스트</li>
+          <li>채집 금지 구역 리스트</li>
+          <li>채집 금지 구역 리스트</li>
+          <li>채집 금지 구역 리스트</li>
+          <li>채집 금지 구역 리스트</li>
+          <li>채집 금지 구역 리스트</li>
+          <li>채집 금지 구역 리스트</li>
+          <li>채집 금지 구역 리스트</li>
+          <li>채집 금지 구역 리스트</li>
+          <li>채집 금지 구역 리스트</li>
+          <li>채집 금지 구역 리스트</li>
         </div>
       </div>
     );
@@ -97,20 +97,25 @@ export const InfoModal: FC<InfoModalProps> = ({ onClose }) => {
         <Text
           size="md"
           style={{
-            padding: theme.spacing.sm,
+            padding: theme.spacing.md,
             margin: `${theme.spacing.sm} ${theme.spacing.sm} ${theme.spacing.xs}`,
+            height: '60px',
             flex: '0 0 auto',
             display: 'flex',
             justifyContent: 'center',
+            alignItems: 'center',
           }}
         >
           이건 써도 괜찮아요!
         </Text>
-        {/* 내용2(목록) -> static data */}
+        {/* 내용2(목록) -> static data / 추후 데이터 받아올 때 구조 수정 예정 */}
         <div className={styles.list}>
           <li className={styles.listItem}>사용 가능 도구 리스트</li>
           <li className={styles.listItem}>사용 가능 도구 리스트</li>
           <li className={styles.listItem}>사용 가능 도구 리스트</li>
+          <p className={styles.listItem}>
+            사용 가능 도구 리스트: 길이 테스트 어케 나오려나아아아아
+          </p>
         </div>
       </div>
     );
