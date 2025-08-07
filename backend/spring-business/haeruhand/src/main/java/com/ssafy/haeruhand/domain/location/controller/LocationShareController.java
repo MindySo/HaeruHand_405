@@ -10,7 +10,6 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 @Tag(name = "위치 공유", description = "실시간 위치 공유 관련 API")
@@ -23,12 +22,10 @@ public class LocationShareController {
 
     @Operation(summary = "방 생성", description = "위치 공유를 위한 방을 생성합니다")
     @PostMapping("/rooms")
-    public ResponseEntity<ApiResponse<CreateRoomResponse>> createRoom() {
+    public ResponseEntity<ApiResponse<CreateRoomResponse>> createRoom(
+            @RequestHeader("Authorization") String bearerToken) {
         
-        // 테스트용 임시 사용자 ID (실제 배포 시 Authentication에서 추출)
-        Long userId = 1L;
-        CreateRoomResponse response = roomService.createRoom(userId);
-        
+        CreateRoomResponse response = roomService.createRoom(bearerToken);
         return ApiResponse.success(SuccessStatus.OK, response);
     }
 

@@ -1,5 +1,6 @@
 package com.ssafy.haeruhand.domain.location.service;
 
+import com.ssafy.haeruhand.domain.location.dto.internal.LocationBatchDto;
 import com.ssafy.haeruhand.domain.location.dto.websocket.LocationUpdateRequest;
 import com.ssafy.haeruhand.domain.location.entity.LocationShareRoom;
 import com.ssafy.haeruhand.domain.location.entity.UserLocationLog;
@@ -28,11 +29,11 @@ public class LocationUpdateService {
     private final LocationShareRoomRepository roomRepository;
     private final JdbcTemplate jdbcTemplate;
     
-    private final BlockingQueue<LocationDto> locationQueue = new LinkedBlockingQueue<>();
+    private final BlockingQueue<LocationBatchDto> locationQueue = new LinkedBlockingQueue<>();
     
     // 위치 정보를 큐에 추가
     public void enqueueLocation(Long roomId, Long userId, LocationUpdateRequest request) {
-        LocationDto locationDto = LocationDto.builder()
+        LocationBatchDto locationDto = LocationBatchDto.builder()
                 .roomId(roomId)
                 .userId(userId)
                 .latitude(request.getLatitude())
@@ -50,7 +51,7 @@ public class LocationUpdateService {
     // 3초마다 배치 처리
     @Scheduled(fixedRate = 3000)
     public void flushLocationBatch() {
-        List<LocationDto> batch = new ArrayList<>();
+        List<LocationBatchDto> batch = new ArrayList<>();
         locationQueue.drainTo(batch, 1000); // 최대 1000개
         
         if (batch.isEmpty()) {
@@ -66,7 +67,7 @@ public class LocationUpdateService {
                 """,
                 batch,
                 batch.size(),
-                (PreparedStatement ps, LocationDto location) -> {
+                (PreparedStatement ps, LocationBatchDto location) -> {
                     LocalDateTime now = LocalDateTime.now();
                     ps.setLong(1, location.getRoomId());
                     ps.setLong(2, location.getUserId());
@@ -84,16 +85,5 @@ public class LocationUpdateService {
         } catch (Exception e) {
             log.error("Failed to batch insert location updates", e);
         }
-    }
-    
-    @lombok.Data
-    @lombok.Builder
-    private static class LocationDto {
-        private Long roomId;
-        private Long userId;
-        private java.math.BigDecimal latitude;
-        private java.math.BigDecimal longitude;
-        private java.math.BigDecimal accuracy;
-        private LocalDateTime timestamp;
     }
 }
