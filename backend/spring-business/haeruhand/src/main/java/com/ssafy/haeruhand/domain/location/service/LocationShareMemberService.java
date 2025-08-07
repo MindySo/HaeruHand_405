@@ -4,6 +4,11 @@ import com.ssafy.haeruhand.domain.location.entity.LocationShareMember;
 import com.ssafy.haeruhand.domain.location.entity.LocationShareRoom;
 import com.ssafy.haeruhand.domain.location.repository.LocationShareMemberRepository;
 import com.ssafy.haeruhand.domain.location.repository.LocationShareRoomRepository;
+import com.ssafy.haeruhand.domain.user.entity.User;
+import com.ssafy.haeruhand.domain.user.repository.UserRepository;
+import com.ssafy.haeruhand.domain.location.enums.MemberColor;
+import com.ssafy.haeruhand.global.exception.GlobalException;
+import com.ssafy.haeruhand.global.status.ErrorStatus;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -20,16 +25,11 @@ public class LocationShareMemberService {
 
     private final LocationShareMemberRepository memberRepository;
     private final LocationShareRoomRepository roomRepository;
+    private final UserRepository userRepository;
 
-    private static final String[] MEMBER_COLORS = {
-        "#FF0000", // 빨강 (호스트)
-        "#0084FF", // 파랑
-        "#00C851", // 초록
-        "#FF6900"  // 주황
-    };
 
     public int getActiveMemberCount(Long roomId) {
-        return memberRepository.countActiveMembers(roomId);
+        return memberRepository.countByRoomIdAndIsDeletedFalse(roomId);
     }
 
     public boolean isMemberExists(Long roomId, Long userId) {
@@ -37,9 +37,9 @@ public class LocationShareMemberService {
     }
 
     @Transactional
-    public LocationShareMember upsertMember(Long roomId, Long userId) {
+    public void upsertMember(Long roomId, Long userId) {
         // 기존 멤버인지 확인
-        return memberRepository.findByRoomIdAndUserIdAndIsDeletedFalse(roomId, userId)
+        memberRepository.findByRoomIdAndUserIdAndIsDeletedFalse(roomId, userId)
                 .map(member -> {
                     // 기존 멤버면 last_active_at 업데이트
                     member.updateLastActiveAt();
@@ -48,20 +48,23 @@ public class LocationShareMemberService {
                 .orElseGet(() -> {
                     // 새 멤버면 추가
                     LocationShareRoom room = roomRepository.findById(roomId)
-                            .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 방입니다."));
-                    
+                            .orElseThrow(() -> new GlobalException(ErrorStatus.WEBSOCKET_ROOM_NOT_FOUND));
+
+                    User user = userRepository.findById(userId)
+                            .orElseThrow(() -> new GlobalException(ErrorStatus.USER_NOT_FOUND));
+
                     // 색상 할당 (현재 멤버 수에 따라)
-                    int currentCount = memberRepository.countActiveMembers(roomId);
-                    String color = MEMBER_COLORS[Math.min(currentCount, MEMBER_COLORS.length - 1)];
-                    
+                    int currentCount = memberRepository.countByRoomIdAndIsDeletedFalse(roomId);
+                    String color = MemberColor.getColorByIndex(currentCount);
+
                     LocationShareMember newMember = LocationShareMember.builder()
                             .room(room)
-                            .userId(userId)
+                            .user(user)
                             .isHost(false)
                             .color(color)
                             .lastActiveAt(LocalDateTime.now())
                             .build();
-                    
+
                     return memberRepository.save(newMember);
                 });
     }
@@ -69,9 +72,12 @@ public class LocationShareMemberService {
     @Transactional
     public void removeMember(String roomCode, Long userId) {
         LocationShareRoom room = roomRepository.findByRoomCodeAndIsDeletedFalse(roomCode)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 방입니다."));
+                .orElseThrow(() -> new GlobalException(ErrorStatus.WEBSOCKET_ROOM_NOT_FOUND));
         
-        memberRepository.softDeleteByRoomIdAndUserId(room.getId(), userId);
+        LocationShareMember member = memberRepository.findByRoomIdAndUserIdAndIsDeletedFalse(room.getId(), userId)
+                .orElseThrow(() -> new GlobalException(ErrorStatus.WEBSOCKET_MEMBER_NOT_FOUND));
+        
+        member.softDelete();
         log.info("Member removed. User: {}, Room: {}", userId, roomCode);
     }
 
