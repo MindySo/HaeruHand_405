@@ -7,6 +7,7 @@ import PhotoAnalysisResultPage from './pages/PhotoAnalysisResultPage/PhotoAnalys
 import TrackingSharePage from './pages/TrackingSharePage/TrackingSharePage';
 import LocationSelectPage from './pages/LocationSelectPage/LocationSelectPage';
 import BuddyTrackingPage from './pages/BuddyTrackingPage/BuddyTrackingPage';
+import { MainPage } from './pages/MainPage/MainPage';
 
 const rootRoute = createRootRoute();
 
@@ -58,15 +59,22 @@ const buddyTrackingRoute = createRoute({
   component: BuddyTrackingPage,
 });
 
+const mainRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: '/main',
+  component: MainPage,
+});
+
 const routeTree = rootRoute.addChildren([
   homeRoute,
   kyuminRoute,
-  chaeunRoute,
+  chaeeunRoute,
   weatherAlertRoute,
   photoAnalysisResultRoute,
   trackingShareRoute,
   locationSelectRoute,
   buddyTrackingRoute,
+  mainRoute,
 ]);
 export const router = createRouter({ routeTree });
 

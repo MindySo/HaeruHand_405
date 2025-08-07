@@ -1,12 +1,3 @@
-html,
-body,
-#root {
-  height: 100%;
-  width: 100%;
-  box-sizing: border-box;
-  overflow: hidden;
-}
-
 /* MainPage 컨테이너 */
 .container {
   width: 100%;
@@ -14,16 +5,16 @@ body,
   display: flex;
   flex-direction: column;
   min-width: 280px;
+  padding: 16px 16px 0 16px;
 }
 
-/* --------------------------------------------- */
 /* A. 고정 영역 */
 .fixedContent {
   position: sticky;
   top: 0;
-  /* width: 100%; */
-  height: 85px;
+  height: 72px;
   flex-shrink: 0;
+  margin-top: 20px;
 }
 
 .header {
@@ -34,7 +25,7 @@ body,
   /* width: 100%; */
   /* max-width: 360px; */
   box-sizing: border-box;
-  margin-bottom: 16px;
+  margin-bottom: 12px;
 }
 
 .bellIcon {
@@ -73,7 +64,8 @@ body,
   /* width: 100%; */
   min-height: 0;
   overflow-y: auto;
-  padding-bottom: 20px; /* 하단 콘텐츠 짤림 방지용 여백 */
+  /* 하단 콘텐츠 짤림 방지용 여백 */
+  padding-bottom: 20px;
 }
 .scrollContent::-webkit-scrollbar {
   display: none;
