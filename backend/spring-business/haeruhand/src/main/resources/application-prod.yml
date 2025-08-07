@@ -22,7 +22,7 @@ spring:
         registration:
           kakao:
             client-id: ${CLIENT_ID}
-            redirect-uri: 'http://http://i13a405.p.ssafy.io/login'
+            redirect-uri: 'http://localhost:5173/login'
             authorization-grant-type: authorization_code
             scope:
               - profile_nickname
@@ -55,8 +55,3 @@ springdoc:
   swagger-ui:
     path: /swagger-ui.html
     url: /api/v3/api-docs
-
-logging:
-  level:
-    com.ssafy.haeruhand: DEBUG
-    org.springframework.web.client: DEBUG
