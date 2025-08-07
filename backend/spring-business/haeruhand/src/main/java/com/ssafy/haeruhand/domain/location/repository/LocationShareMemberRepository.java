@@ -10,12 +10,12 @@ import java.util.Optional;
 @Repository
 public interface LocationShareMemberRepository extends JpaRepository<LocationShareMember, Long> {
     
-    Optional<LocationShareMember> findByRoomIdAndUserIdAndIsDeletedFalse(Long roomId, Long userId);
+    Optional<LocationShareMember> findByRoom_IdAndUser_IdAndIsDeletedFalse(Long roomId, Long userId);
     
-    List<LocationShareMember> findByRoomIdAndIsDeletedFalse(Long roomId);
+    List<LocationShareMember> findByRoom_IdAndIsDeletedFalse(Long roomId);
     
-    int countByRoomIdAndIsDeletedFalse(Long roomId);
+    int countByRoom_IdAndIsDeletedFalse(Long roomId);
     
-    boolean existsByRoomIdAndUserIdAndIsDeletedFalse(Long roomId, Long userId);
+    boolean existsByRoom_IdAndUser_IdAndIsDeletedFalse(Long roomId, Long userId);
     
 }

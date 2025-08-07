@@ -90,7 +90,7 @@ public class LocationShareRoomService {
         LocationShareRoom room = roomRepository.findByRoomCodeAndIsDeletedFalse(roomCode)
                 .orElseThrow(() -> new GlobalException(ErrorStatus.WEBSOCKET_ROOM_NOT_FOUND));
         
-        List<LocationShareMember> members = memberRepository.findByRoomIdAndIsDeletedFalse(room.getId());
+        List<LocationShareMember> members = memberRepository.findByRoom_IdAndIsDeletedFalse(room.getId());
         
         // 경과 시간 계산
         long elapsedMin = ChronoUnit.MINUTES.between(room.getStartedAt(), LocalDateTime.now());

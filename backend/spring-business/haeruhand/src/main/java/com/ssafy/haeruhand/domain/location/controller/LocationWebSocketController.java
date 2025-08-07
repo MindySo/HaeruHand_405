@@ -1,6 +1,7 @@
 package com.ssafy.haeruhand.domain.location.controller;
 
 import com.ssafy.haeruhand.domain.location.dto.internal.MemberJoinResultDto;
+import com.ssafy.haeruhand.domain.location.dto.response.RoomInfoResponse;
 import com.ssafy.haeruhand.domain.location.dto.websocket.LocationMessage;
 import com.ssafy.haeruhand.domain.location.dto.websocket.LocationUpdateRequest;
 import com.ssafy.haeruhand.domain.location.service.LocationRoomEventService;
@@ -30,14 +31,14 @@ public class LocationWebSocketController {
     public void handleJoin(@Header("simpSessionAttributes") Map<String, Object> sessionAttributes) {
         try {
             // 세션 정보 추출
-            WebSocketSessionService.SessionInfo sessionInfo = 
+            RoomInfoResponse.RoomInfo sessionInfo = 
                     sessionService.extractSessionInfo(sessionAttributes);
             
-            log.info("User {} joining room {}", sessionInfo.getUserId(), sessionInfo.getRoomCode());
+            log.info("User {} joining room {}", sessionInfo.getHostUserId(), sessionInfo.getRoomCode());
             
             // 멤버 참가 처리
             MemberJoinResultDto joinResult = 
-                    roomEventService.handleMemberJoin(sessionInfo.getUserId(), 
+                    roomEventService.handleMemberJoin(sessionInfo.getHostUserId(), 
                             sessionInfo.getRoomCode(), sessionInfo.getRoomId());
             
             if (!joinResult.isSuccess()) {
@@ -62,20 +63,20 @@ public class LocationWebSocketController {
                                     @Payload LocationUpdateRequest request) {
         try {
             // 세션 정보 추출
-            WebSocketSessionService.SessionInfo sessionInfo = 
+            RoomInfoResponse.RoomInfo sessionInfo = 
                     sessionService.extractSessionInfo(sessionAttributes);
             
             // 위치 정보를 배치 처리기에 추가
             locationUpdateService.enqueueLocation(sessionInfo.getRoomId(), 
-                    sessionInfo.getUserId(), request);
+                    sessionInfo.getHostUserId(), request);
             
             // 위치 업데이트 메시지 생성 및 브로드캐스트
             LocationMessage locationMessage = roomEventService.createLocationUpdateMessage(
-                    sessionInfo.getUserId(), request.getLatitude(), 
+                    sessionInfo.getHostUserId(), request.getLatitude(), 
                     request.getLongitude(), request.getAccuracy());
             
             messageService.broadcastLocationUpdate(sessionInfo.getRoomCode(), 
-                    sessionInfo.getUserId().toString(), locationMessage);
+                    sessionInfo.getHostUserId().toString(), locationMessage);
             
         } catch (Exception e) {
             log.error("Error handling location update", e);
@@ -86,10 +87,10 @@ public class LocationWebSocketController {
     public void handleLeave(@Header("simpSessionAttributes") Map<String, Object> sessionAttributes) {
         try {
             // 세션 정보 추출
-            WebSocketSessionService.SessionInfo sessionInfo = 
+            RoomInfoResponse.RoomInfo sessionInfo = 
                     sessionService.extractSessionInfo(sessionAttributes);
             
-            log.info("User {} leaving room {}", sessionInfo.getUserId(), sessionInfo.getRoomCode());
+            log.info("User {} leaving room {}", sessionInfo.getHostUserId(), sessionInfo.getRoomCode());
             
             // 멤버 제거 및 방 종료 처리는 SessionDisconnectEvent에서 처리
             // 여기서는 명시적 퇴장 의도만 로깅
