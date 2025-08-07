@@ -37,9 +37,9 @@ public class LocationShareMemberService {
     }
 
     @Transactional
-    public LocationShareMember upsertMember(Long roomId, Long userId) {
+    public void upsertMember(Long roomId, Long userId) {
         // 기존 멤버인지 확인
-        return memberRepository.findByRoomIdAndUserIdAndIsDeletedFalse(roomId, userId)
+        memberRepository.findByRoomIdAndUserIdAndIsDeletedFalse(roomId, userId)
                 .map(member -> {
                     // 기존 멤버면 last_active_at 업데이트
                     member.updateLastActiveAt();
@@ -49,14 +49,14 @@ public class LocationShareMemberService {
                     // 새 멤버면 추가
                     LocationShareRoom room = roomRepository.findById(roomId)
                             .orElseThrow(() -> new GlobalException(ErrorStatus.WEBSOCKET_ROOM_NOT_FOUND));
-                    
+
                     User user = userRepository.findById(userId)
                             .orElseThrow(() -> new GlobalException(ErrorStatus.USER_NOT_FOUND));
-                    
+
                     // 색상 할당 (현재 멤버 수에 따라)
                     int currentCount = memberRepository.countByRoomIdAndIsDeletedFalse(roomId);
                     String color = MemberColor.getColorByIndex(currentCount);
-                    
+
                     LocationShareMember newMember = LocationShareMember.builder()
                             .room(room)
                             .user(user)
@@ -64,7 +64,7 @@ public class LocationShareMemberService {
                             .color(color)
                             .lastActiveAt(LocalDateTime.now())
                             .build();
-                    
+
                     return memberRepository.save(newMember);
                 });
     }
