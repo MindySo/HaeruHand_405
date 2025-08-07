@@ -5,6 +5,7 @@ import com.ssafy.haeruhand.domain.ai.dto.FishDetectionFastApiResponse;
 import com.ssafy.haeruhand.domain.ai.dto.FishDetectionRequest;
 import com.ssafy.haeruhand.domain.ai.dto.FishDetectionResponse;
 import com.ssafy.haeruhand.domain.fish.dto.FishDetailResponse;
+import com.ssafy.haeruhand.domain.fish.entity.FishRestriction;
 import com.ssafy.haeruhand.domain.fish.repository.FishRestrictionRepository;
 import com.ssafy.haeruhand.global.config.WebClientConfig;
 import com.ssafy.haeruhand.global.exception.GlobalException;
@@ -19,6 +20,10 @@ import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Scheduler;
 import reactor.core.scheduler.Schedulers;
 
+import java.time.Duration;
+import java.util.Optional;
+import java.util.concurrent.TimeoutException;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -28,58 +33,57 @@ public class FishDetectionService {
     private final WebClient webClient;
     private final FishRestrictionRepository fishRestrictionRepository;
 
-    public Mono<FishDetectionResponse> detectFish(FishDetectionRequest request){
+    public Mono<FishDetectionResponse> detectFish(FishDetectionRequest request) {
         String objectKey = gcsUtil.extractObjectKey(request.getImageUrl());
         String extension = gcsUtil.extractExtension(objectKey);
         String signedUrl = signedUrlService.createSignedGetUrl(objectKey);
 
         return requestFishNameFromFastApi(signedUrl, extension)
-                .doOnNext(apiResponse -> {
-                    log.info("FastAPI 응답 받음 - 어종명: {}", apiResponse.getFishName());
-                })
                 .flatMap(apiResponse ->
                         Mono.fromCallable(() -> {
-                                    log.info("DB에서 어종 정보 조회 시작: {}", apiResponse.getFishName());
-                                    return fishRestrictionRepository.findBySpeciesName(apiResponse.getFishName())
-                                            .orElse(null);
-                                })
-                                .subscribeOn(Schedulers.boundedElastic())
-                                .doOnNext(fish -> {
-                                    if (fish != null) {
-                                        log.info("DB에서 어종 정보 찾음: {}", fish.getSpeciesName());
-                                        log.info("현재 금어기 여부: {}", fish.isCurrentlyRestricted());
-                                    } else {
-                                        log.info("DB에서 어종 정보를 찾을 수 없음");
-                                    }
-                                })
-                                .map(fish -> {
-                                    FishDetectionResponse response = FishDetectionResponse.builder()
-                                            .fishName(apiResponse.getFishName())
-                                            .regulationFish(fish != null ? FishDetailResponse.builder()
-                                                    .speciesName(fish.getSpeciesName())
-                                                    .restrictionRegion(fish.getRestrictionRegion().label())
-                                                    .restrictionStartDate(fish.getRestrictionStartDate())
-                                                    .restrictionEndDate(fish.getRestrictionEndDate())
-                                                    .minimumLengthCentimeter(fish.getMinimumLengthCentimeter())
-                                                    .minimumWeightGram(fish.getMinimumWeightGram())
-                                                    .measurementType(fish.getMeasurementType().label())
-                                                    .lawAnnouncementDate(fish.getLawAnnouncementDate())
-                                                    .note(fish.getNote())
-                                                    .imageUrl(fish.getImageUrl())
-                                                    .build() : null)
-                                            .isCurrentlyRestricted(fish != null && fish.isCurrentlyRestricted())
-                                            .build();
+                            try {
+                                Optional<FishRestriction> result = fishRestrictionRepository.findBySpeciesName(apiResponse.getFishName());
+                                FishRestriction fish = result.orElse(null);
 
-                                    log.info("최종 응답 생성 완료 - 어종: {}, 금어기: {}",
-                                            response.getFishName(), response.isCurrentlyRestricted());
-                                    log.info("=== Fish Detection 완료 ===");
+                                FishDetailResponse regulationFish = null;
+                                boolean isCurrentlyRestricted = false;
 
-                                    return response;
-                                })
-                )
-                .doOnError(error -> {
-                    log.error("Fish Detection 중 오류 발생: ", error);
-                });
+                                if (fish != null) {
+                                    isCurrentlyRestricted = fish.isCurrentlyRestricted();
+                                    regulationFish = buildFishDetailResponse(fish);
+                                }
+
+                                return FishDetectionResponse.builder()
+                                        .fishName(apiResponse.getFishName())
+                                        .regulationFish(regulationFish)
+                                        .isCurrentlyRestricted(isCurrentlyRestricted)
+                                        .build();
+
+                            } catch (Exception e) {
+                                // 예외 발생 시에도 기본 응답 반환
+                                return FishDetectionResponse.builder()
+                                        .fishName(apiResponse.getFishName())
+                                        .regulationFish(null)
+                                        .isCurrentlyRestricted(false)
+                                        .build();
+                            }
+                        }).subscribeOn(Schedulers.boundedElastic())
+                );
+    }
+
+    private FishDetailResponse buildFishDetailResponse(FishRestriction fish) {
+        return FishDetailResponse.builder()
+                .speciesName(fish.getSpeciesName())
+                .restrictionRegion(fish.getRestrictionRegion().label())
+                .restrictionStartDate(fish.getRestrictionStartDate())
+                .restrictionEndDate(fish.getRestrictionEndDate())
+                .minimumLengthCentimeter(fish.getMinimumLengthCentimeter())
+                .minimumWeightGram(fish.getMinimumWeightGram())
+                .measurementType(fish.getMeasurementType().label())
+                .lawAnnouncementDate(fish.getLawAnnouncementDate())
+                .note(fish.getNote())
+                .imageUrl(fish.getImageUrl())
+                .build();
     }
 
     public Mono<FishDetectionFastApiResponse> requestFishNameFromFastApi(String signedUrl, String extension){
@@ -89,7 +93,7 @@ public class FishDetectionService {
                 .build();
 
         return webClient.post()
-                .uri("http://i13a405.p.ssafy.io/ai/detection/")
+                .uri("http://localhost:8000/detection/")
                 .bodyValue(apiRequest)
                 .retrieve()
                 .bodyToMono(FishDetectionFastApiResponse.class);
