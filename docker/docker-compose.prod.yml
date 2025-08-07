@@ -1,0 +1,82 @@
+# docker compose --env-file .env.prod -f docker-compose.prod.yml up -d --remove-orphans
+# docker compose --env-file .env.prod -f docker-compose.prod.yml down -v --remove-orphans
+#############################
+#  NETWORKS & VOLUMES
+#############################
+networks:
+  backend:
+    driver: bridge
+
+volumes:
+  mysql-prod-data:
+  redis-prod-data:
+
+#############################
+#  SERVICES
+#############################
+services:
+  # ---------- Database ----------
+  mysql:
+    image: mysql:8.0
+    container_name: haeruhand-db
+    restart: always
+    env_file: .env.prod
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    command: --default-authentication-plugin=mysql_native_password
+    volumes:
+      - mysql-prod-data:/var/lib/mysql
+    networks:
+      - backend
+
+  # ---------- Cache ----------
+  redis:
+    image: redis:7.2
+    container_name: haeruhand-redis
+    restart: always
+    volumes:
+      - redis-prod-data:/data
+    networks:
+      - backend
+
+  # ---------- Spring Boot API ----------
+  spring:
+    image: ${REGISTRY}/haeruhand-spring:latest
+    container_name: haeruhand-spring
+    restart: always
+    env_file: .env.prod
+    environment:
+      - SPRING_PROFILES_ACTIVE=prod
+    depends_on:
+      - mysql
+      - redis
+    networks:
+      - backend
+
+  # ---------- FastAPI AI Service ----------
+  fastapi:
+    image: ${REGISTRY}/haeruhand-ai:latest
+    container_name: haeruhand-ai
+    restart: always
+    env_file: .env.prod
+    depends_on:
+      - redis
+    networks:
+      - backend
+
+  # ---------- Nginx Gateway ----------
+  nginx:
+    image: ${REGISTRY}/haeruhand-nginx:latest
+    container_name: haeruhand-nginx
+    restart: always
+    env_file: .env.prod
+    depends_on:
+      - spring
+      - fastapi
+    ports:
+      - "80:80"
+    networks:
+      - backend

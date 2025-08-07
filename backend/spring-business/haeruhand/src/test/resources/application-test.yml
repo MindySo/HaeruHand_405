@@ -1,0 +1,50 @@
+spring:
+  application:
+    name: haeruhand-test
+  datasource:
+    url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;MODE=MYSQL
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+  data:
+    redis:
+      host: localhost
+      port: 6370
+  jpa:
+    hibernate:
+      ddl-auto: create-drop  # 테스트 시작 시 스키마 생성, 종료 시 삭제
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.H2Dialect
+        format_sql: true
+        default_batch_fetch_size: 100
+    open-in-view: false
+  security:
+    oauth2:
+      client:
+        registration:
+          kakao:
+            client-id: dummy-test-client-id
+            redirect-uri: "http://localhost/login/oauth2/code/kakao"
+            authorization-grant-type: authorization_code
+            scope:
+              - profile_nickname
+              - profile_image
+            client-name: Kakao
+        provider:
+          kakao:
+            authorization-uri: https://kauth.kakao.com/oauth/authorize
+            token-uri: https://kauth.kakao.com/oauth/token
+            user-info-uri: https://kapi.kakao.com/v2/user/me
+            user-name-attribute: id
+server:
+  port: 0  # 무작위 포트 사용 (테스트 충돌 방지)
+jwt:
+  secret: dGVzdC1qd3Qtc2VjcmV0LWtleS1mb3ItdGVzdGluZy1vbmx5LW1pbmltdW0tMzItY2hhcmFjdGVycy1yZXF1aXJlZC1mb3ItaG1hYy1zaGEyNTY # 가상 키
+  access-token-expiration: 3600000
+  refresh-token-expiration: 604800000
+firebase:
+  service-account-key: "classpath:test-firebase-key.json"
+springdoc:
+  api-docs:
+    path: /v3/api-docs
