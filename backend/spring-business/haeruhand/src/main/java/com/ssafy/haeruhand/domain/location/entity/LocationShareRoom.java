@@ -43,12 +43,6 @@ public class LocationShareRoom extends BaseEntity {
     @Builder.Default
     private List<LocationShareMember> members = new ArrayList<>();
 
-
-    // 편의 메서드: Host User의 ID를 반환
-    public Long getHostUserId() {
-        return hostUser != null ? hostUser.getId() : null;
-    }
-
     public void close() {
         this.isActive = false;
         this.closedAt = LocalDateTime.now();

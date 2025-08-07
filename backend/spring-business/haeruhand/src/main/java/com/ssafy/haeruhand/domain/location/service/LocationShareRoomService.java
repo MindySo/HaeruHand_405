@@ -96,17 +96,17 @@ public class LocationShareRoomService {
         long elapsedMin = ChronoUnit.MINUTES.between(room.getStartedAt(), LocalDateTime.now());
         
         // joinToken 재생성 (24시간 유효)
-        String joinToken = jwtProvider.createJoinToken(roomCode, room.getHostUserId(), 1440);
+        String joinToken = jwtProvider.createJoinToken(roomCode, room.getHostUser().getId(), 1440);
         String deepLink = String.format("seafeet://join?code=%s&token=%s", roomCode, joinToken);
         
         // 멤버 정보 변환
         List<RoomInfoResponse.MemberInfo> memberInfos = members.stream()
                 .map(member -> {
-                    User user = userRepository.findById(member.getUserId())
+                    User user = userRepository.findById(member.getUser().getId())
                             .orElseThrow(() -> new GlobalException(ErrorStatus.USER_NOT_FOUND));
                     
                     return RoomInfoResponse.MemberInfo.builder()
-                            .userId(member.getUserId())
+                            .userId(member.getUser().getId())
                             .nickname(user.getNickname())
                             .color(member.getColor())
                             .isHost(member.getIsHost())
@@ -119,7 +119,7 @@ public class LocationShareRoomService {
         RoomInfoResponse.RoomInfo roomInfo = RoomInfoResponse.RoomInfo.builder()
                 .roomId(room.getId())
                 .roomCode(room.getRoomCode())
-                .hostUserId(room.getHostUserId())
+                .hostUserId(room.getHostUser().getId())
                 .isActive(room.getIsActive())
                 .startedAt(room.getStartedAt())
                 .elapsedMin(elapsedMin)
