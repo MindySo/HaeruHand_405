@@ -23,7 +23,7 @@ public class UserController {
             @RequestBody @Valid IssueRequestDto request,
             HttpServletResponse response) {
 
-        IssueResponseDto responseDto = oAuthService.authorizeKakaoAndIssueToken(request.getCode(), response);
+        IssueResponseDto responseDto = oAuthService.authorizeKakaoAndIssueToken(request, response);
         return ApiResponse.successWithToken(
                 SuccessStatus.LOGIN_SUCCESS,
                 responseDto.getResponseBodyDto(),

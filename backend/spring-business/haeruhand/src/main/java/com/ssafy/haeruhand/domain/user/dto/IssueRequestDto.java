@@ -11,4 +11,5 @@ import lombok.Setter;
 @AllArgsConstructor
 public class IssueRequestDto {
     private String code;
+    private String fcmToken;
 }

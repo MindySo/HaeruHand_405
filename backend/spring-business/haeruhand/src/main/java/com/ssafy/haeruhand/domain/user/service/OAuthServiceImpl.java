@@ -39,10 +39,10 @@ public class OAuthServiceImpl implements OAuthService {
     private final String redirectUri = "http://localhost:3000/callback.html";
 
     @Override
-    public IssueResponseDto authorizeKakaoAndIssueToken(String code, HttpServletResponse response) {
+    public IssueResponseDto authorizeKakaoAndIssueToken(IssueRequestDto request, HttpServletResponse response) {
         try {
             // 카카오 AccessToken 요청
-            String kakaoAccessToken = requestKakaoToken(code);
+            String kakaoAccessToken = requestKakaoToken(request.getCode());
 
             // 사용자 정보 조회
             KakaoUserInfoDto kakaoUserInfoDto = requestKakaoUserInfo(kakaoAccessToken);
@@ -55,6 +55,20 @@ public class OAuthServiceImpl implements OAuthService {
             String refreshToken = jwtProvider.createRefreshToken(user.getId());
             long accessTokenExpiresIn = jwtProvider.getAccessTokenExpirationMilliSec();
             refreshTokenRepository.save(String.valueOf(user.getId()), refreshToken);
+
+            String fcmToken = request.getFcmToken();
+            if (fcmToken != null && !fcmToken.trim().isEmpty()) {
+//                try {
+//                    fcmTokenService.upsertToken(user.getId(), fcmToken);
+//                    fcmTokenRegistered = true;
+//                    fcmTokenStatus = "registered";
+//                    log.info("FCM 토큰 등록 성공 - userId: {}", user.getId());
+//                } catch (Exception e) {
+//                    log.error("FCM 토큰 등록 실패 - userId: {}, error: {}", user.getId(), e.getMessage());
+//                    fcmTokenStatus = "failed";
+//                    // FCM 실패해도 로그인은 성공으로 처리
+//                }
+            }
 
             // 응답 구성
             return buildIssueResponse(accessToken, refreshToken, user, accessTokenExpiresIn / 1000);
