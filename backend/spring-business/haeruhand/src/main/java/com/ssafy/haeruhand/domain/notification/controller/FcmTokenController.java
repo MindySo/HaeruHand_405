@@ -14,7 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/v1/notifications/tokens")
+@RequestMapping("/v1/notifications/tokens")
 @RequiredArgsConstructor
 @Tag(name = "FCM Token Management", description = "FCM 토큰 관리 API")
 public class FcmTokenController {
