@@ -29,17 +29,17 @@ public class LocationShareMemberService {
 
 
     public int getActiveMemberCount(Long roomId) {
-        return memberRepository.countByRoomIdAndIsDeletedFalse(roomId);
+        return memberRepository.countByRoom_IdAndIsDeletedFalse(roomId);
     }
 
     public boolean isMemberExists(Long roomId, Long userId) {
-        return memberRepository.existsByRoomIdAndUserIdAndIsDeletedFalse(roomId, userId);
+        return memberRepository.existsByRoom_IdAndUser_IdAndIsDeletedFalse(roomId, userId);
     }
 
     @Transactional
     public void upsertMember(Long roomId, Long userId) {
         // 기존 멤버인지 확인
-        memberRepository.findByRoomIdAndUserIdAndIsDeletedFalse(roomId, userId)
+        memberRepository.findByRoom_IdAndUser_IdAndIsDeletedFalse(roomId, userId)
                 .map(member -> {
                     // 기존 멤버면 last_active_at 업데이트
                     member.updateLastActiveAt();
@@ -54,7 +54,7 @@ public class LocationShareMemberService {
                             .orElseThrow(() -> new GlobalException(ErrorStatus.USER_NOT_FOUND));
 
                     // 색상 할당 (현재 멤버 수에 따라)
-                    int currentCount = memberRepository.countByRoomIdAndIsDeletedFalse(roomId);
+                    int currentCount = memberRepository.countByRoom_IdAndIsDeletedFalse(roomId);
                     String color = MemberColor.getColorByIndex(currentCount);
 
                     LocationShareMember newMember = LocationShareMember.builder()
@@ -74,7 +74,7 @@ public class LocationShareMemberService {
         LocationShareRoom room = roomRepository.findByRoomCodeAndIsDeletedFalse(roomCode)
                 .orElseThrow(() -> new GlobalException(ErrorStatus.WEBSOCKET_ROOM_NOT_FOUND));
         
-        LocationShareMember member = memberRepository.findByRoomIdAndUserIdAndIsDeletedFalse(room.getId(), userId)
+        LocationShareMember member = memberRepository.findByRoom_IdAndUser_IdAndIsDeletedFalse(room.getId(), userId)
                 .orElseThrow(() -> new GlobalException(ErrorStatus.WEBSOCKET_MEMBER_NOT_FOUND));
         
         member.softDelete();
@@ -82,6 +82,6 @@ public class LocationShareMemberService {
     }
 
     public List<LocationShareMember> getMembersByRoomId(Long roomId) {
-        return memberRepository.findByRoomIdAndIsDeletedFalse(roomId);
+        return memberRepository.findByRoom_IdAndIsDeletedFalse(roomId);
     }
 }
