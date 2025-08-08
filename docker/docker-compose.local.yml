@@ -18,7 +18,7 @@ services:
     ports: ["3307:3306"]
     volumes: 
       - mysql-dev-data:/var/lib/mysql
-      - ./init-sql:/docker-entrypoint-initdb.d
+      - ./init-sql:/docker-entrypoint-initdb.d:ro
 
   redis:
     image: redis:7.2

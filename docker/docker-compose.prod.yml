@@ -32,7 +32,7 @@ services:
       - --collation-server=utf8mb4_unicode_ci
     volumes:
       - mysql-prod-data:/var/lib/mysql
-      - ./init-sql:/docker-entrypoint-initdb.d
+      - ./init-sql:/docker-entrypoint-initdb.d:ro
     networks:
       - backend
 

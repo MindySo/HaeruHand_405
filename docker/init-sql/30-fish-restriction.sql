@@ -10,7 +10,7 @@ SET character_set_connection = utf8mb4;
 SET character_set_results = utf8mb4;
 SET collation_connection = utf8mb4_unicode_ci;
 
-USE `${MYSQL_DATABASE}`;
+USE haeruhand;
 
 TRUNCATE TABLE fish_restriction;
 
