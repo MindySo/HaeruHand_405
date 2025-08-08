@@ -13,7 +13,7 @@ const rootRoute = createRootRoute();
 const homeRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: '/',
-  component: MainPage,
+  component: LoginPage,
 });
 
 const weatherAlertRoute = createRoute({
