@@ -6,7 +6,7 @@ import lombok.Builder;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
-@Buigilder
+@Builder
 public record TideResponse(
         Long id,
         String stationCode,
