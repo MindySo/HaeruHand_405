@@ -2,6 +2,18 @@
 -- Law announcement : 2023-11-07
 -- created_at, updated_at은 @CreatedDate, @LastModifiedDate에서 자동 설정
 -- is_deleted는 BaseEntity에서 기본값 false로 자동 설정
+
+SET NAMES utf8mb4;
+SET CHARACTER SET utf8mb4;
+SET character_set_client = utf8mb4;
+SET character_set_connection = utf8mb4;
+SET character_set_results = utf8mb4;
+SET collation_connection = utf8mb4_unicode_ci;
+
+TRUNCATE TABLE fish_restriction;
+
+USE `${MYSQL_DATABASE}`;
+
 INSERT INTO fish_restriction (
     species_name,
     restriction_region,

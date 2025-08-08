@@ -2,6 +2,17 @@
 -- created_at, updated_at은 @CreatedDate, @LastModifiedDate에서 자동 설정
 -- is_deleted는 BaseEntity에서 기본값 false로 자동 설정
 
+SET NAMES utf8mb4;
+SET CHARACTER SET utf8mb4;
+SET character_set_client = utf8mb4;
+SET character_set_connection = utf8mb4;
+SET character_set_results = utf8mb4;
+SET collation_connection = utf8mb4_unicode_ci;
+
+USE `${MYSQL_DATABASE}`;
+
+DELETE FROM fishery WHERE region_code = 'S1323100' OR region_code = 'S1323400';
+
 INSERT INTO fishery (name, address, latitude, longitude, station_code, region_code)
 VALUES ('구업어촌계유어장', '제주시 애월읍 애월해안로 715-1', 33.484180, 126.377371, 'DT_0004', 'S1323100'),
        ('고내어촌계유어장', '제주시 애월읍 고내리 1158', 33.467116, 126.336516, 'DT_0004', 'S1323100'),
