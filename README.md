@@ -12,13 +12,17 @@
   <img src="https://img.shields.io/badge/Capacitor-7.4.2-119EFF?style=for-the-badge&logo=capacitor" alt="Capacitor">
 </div>
 
+## 공통프로젝트 진행상황 요약
+- [핵심 기능](#-핵심-기능)의 개발이 프론트/백엔드 각자 완료되었으며, 연동작업을 진행중입니다.
+- 이번주 주말까지 핵심 기능의 MVP 개발을 완료하고 테스트를 진행할 예정입니다.
+
 ## 📋 목차
 - [프로젝트 소개](#-프로젝트-소개)
 - [핵심 기능](#-핵심-기능)
 - [시스템 아키텍처](#-시스템-아키텍처)
 - [기술 스택](#-기술-스택)
 - [API 명세](#-api-명세)
-- [개발팀](#-개발팀)
+
 
 ## 🎯 프로젝트 소개
 
@@ -32,7 +36,6 @@
 
 ## 🚀 핵심 기능
 
-<video controls src="버디 기능 테스트.mp4" title="Title"></video>
 
 ### 1. 🗺️ 실시간 위치 공유 시스템
 - **WebSocket/STOMP 기반 실시간 통신**
@@ -40,6 +43,8 @@
 - 호스트 기반 방 관리 시스템
 - 딥링크를 통한 간편한 방 참가
 - 멤버별 색상 구분 시스템
+
+[동영상 보기](버디%20기능%20테스트.mp4)
 
 ### 2. 🤖 AI 어종 판별 시스템
 - **FastAPI AI 서버 연동**
@@ -69,10 +74,7 @@
 - Redis 기반 토큰 관리
 
 ## 🏗️ 시스템 아키텍처
-
-```mermaid
-여기 예림이가 그린 아키텍처 추가
-```
+![alt text](image.png)
 
 ### 백엔드 아키텍처 - 도메인 중심 설계 (DDD)
 ```
@@ -253,20 +255,4 @@ http://i13a405.p.ssafy.io/api/swagger-ui/index.html
 - **Virtual Scrolling** - 대량 데이터 렌더링 최적화
 - **React.memo** - 불필요한 리렌더링 방지
 
-## 🔄 CI/CD
-
-### Jekins
-
-## 👥 개발팀
-
-### 팀 구성
-- **백엔드 개발** - Spring Boot, WebSocket, JWT, FCM
-- **프론트엔드 개발** - React, TypeScript, Capacitor
-- **AI/ML** - FastAPI, 어종 판별 모델
-- **DevOps** - Jenkins, Docker, AWS
-
 ---
-
-<div align="center">
-  <sub>Built with ❤️ by SSAFY A405 Team</sub>
-</div>
