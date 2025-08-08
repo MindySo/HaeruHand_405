@@ -6,6 +6,8 @@ import lombok.*;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.Objects;
+import java.util.Optional;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -38,5 +40,13 @@ public class Tide {
     @Column(name = "second_low_tide_time")
     private LocalTime secondLowTideTime;
 
+    public Optional<LocalTime> getFishingStartTime() {
+        return Optional.ofNullable(firstLowTideTime)
+                .map(time -> time.minusHours(2));
+    }
 
+    public Optional<LocalTime> getFishingEndTime() {
+        return Optional.ofNullable(firstLowTideTime)
+                .map(time -> time.plusHours(2));
+    }
 }
