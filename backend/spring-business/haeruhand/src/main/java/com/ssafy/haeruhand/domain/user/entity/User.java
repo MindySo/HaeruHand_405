@@ -15,6 +15,7 @@ public class User extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(name = "kakao_sub", unique = true, nullable = false)
     private Long kakaoSub;
     private String nickname;
     private String profileImage;
