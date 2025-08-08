@@ -10,9 +10,9 @@ SET character_set_connection = utf8mb4;
 SET character_set_results = utf8mb4;
 SET collation_connection = utf8mb4_unicode_ci;
 
-TRUNCATE TABLE fish_restriction;
-
 USE `${MYSQL_DATABASE}`;
+
+TRUNCATE TABLE fish_restriction;
 
 INSERT INTO fish_restriction (
     species_name,
