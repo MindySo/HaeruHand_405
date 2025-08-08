@@ -58,6 +58,9 @@ public enum ErrorStatus implements BaseErrorStatus {
     WEBSOCKET_DUPLICATE_CONNECTION(HttpStatus.CONFLICT, 409, "이미 같은 토큰으로 연결된 사용자입니다."),
     WEBSOCKET_EVENT_PROCESSING_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, 500, "WebSocket 이벤트 처리 중 오류가 발생했습니다."),
 
+    // fishery
+    FISHERY_NOT_FOUND(HttpStatus.NOT_FOUND, 404, "존재하지 않는 어장입니다."),
+
     TIDE_NOT_FOUND(HttpStatus.NOT_FOUND, 404, "조석 정보를 찾을 수 없습니다.");
 
     private final HttpStatus httpStatus;

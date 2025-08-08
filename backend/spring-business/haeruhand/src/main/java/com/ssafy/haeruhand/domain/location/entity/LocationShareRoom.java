@@ -1,5 +1,6 @@
 package com.ssafy.haeruhand.domain.location.entity;
 
+import com.ssafy.haeruhand.domain.fishery.entity.Fishery;
 import com.ssafy.haeruhand.domain.user.entity.User;
 import com.ssafy.haeruhand.global.domain.BaseEntity;
 import jakarta.persistence.*;
@@ -25,8 +26,9 @@ public class LocationShareRoom extends BaseEntity {
     @Column(name = "room_code", nullable = false, unique = true, length = 16)
     private String roomCode;
 
-    @Column(name = "station_code", nullable = false, length = 20)
-    private String stationCode;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "fishery_id", nullable = false)
+    private Fishery fishery;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "host_user_id", nullable = false)

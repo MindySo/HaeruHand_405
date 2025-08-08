@@ -1,5 +1,7 @@
 package com.ssafy.haeruhand.domain.location.service;
 
+import com.ssafy.haeruhand.domain.fishery.entity.Fishery;
+import com.ssafy.haeruhand.domain.fishery.repository.FisheryRepository;
 import com.ssafy.haeruhand.domain.location.dto.request.CreateRoomRequest;
 import com.ssafy.haeruhand.domain.location.dto.response.CloseRoomResponse;
 import com.ssafy.haeruhand.domain.location.dto.response.CreateRoomResponse;
@@ -34,6 +36,7 @@ public class LocationShareRoomService {
     private final LocationShareRoomRepository roomRepository;
     private final LocationShareMemberRepository memberRepository;
     private final UserRepository userRepository;
+    private final FisheryRepository fisheryRepository;
     private final JwtProvider jwtProvider;
 
 
@@ -53,10 +56,14 @@ public class LocationShareRoomService {
         User hostUser = userRepository.findById(userId)
                 .orElseThrow(() -> new GlobalException(ErrorStatus.USER_NOT_FOUND));
         
+        // 어장 조회
+        Fishery fishery = fisheryRepository.findById(request.getFisheryId())
+                .orElseThrow(() -> new GlobalException(ErrorStatus.FISHERY_NOT_FOUND));
+        
         // 방 생성
         LocationShareRoom room = LocationShareRoom.builder()
                 .roomCode(roomCode)
-                .stationCode(request.getStationCode())
+                .fishery(fishery)
                 .hostUser(hostUser)
                 .startedAt(now)
                 .build();

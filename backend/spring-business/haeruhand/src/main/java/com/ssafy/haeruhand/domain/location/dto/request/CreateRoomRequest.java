@@ -1,6 +1,6 @@
 package com.ssafy.haeruhand.domain.location.dto.request;
 
-import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 @Getter
@@ -9,6 +9,6 @@ import lombok.*;
 @Builder
 public class CreateRoomRequest {
     
-    @NotBlank(message = "역 코드는 필수입니다")
-    private String stationCode;
+    @NotNull(message = "어장 ID는 필수입니다")
+    private Long fisheryId;
 }
