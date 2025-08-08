@@ -1,6 +1,5 @@
 package com.ssafy.haeruhand.domain.weather.entity;
 
-import com.ssafy.haeruhand.domain.fishery.entity.Fishery;
 import com.ssafy.haeruhand.global.domain.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
@@ -20,10 +19,6 @@ public class FisheryWeather extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "fishery_weather_id")
     private Long id;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "fishery_id", nullable = false)
-    private Fishery fishery;
 
     @Column(name = "forecast_date", nullable = false)
     private LocalDate forecastDate;
