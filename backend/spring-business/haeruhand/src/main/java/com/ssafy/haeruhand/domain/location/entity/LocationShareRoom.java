@@ -25,6 +25,9 @@ public class LocationShareRoom extends BaseEntity {
     @Column(name = "room_code", nullable = false, unique = true, length = 16)
     private String roomCode;
 
+    @Column(name = "station_code", nullable = false, length = 20)
+    private String stationCode;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "host_user_id", nullable = false)
     private User hostUser;

@@ -1,5 +1,6 @@
 package com.ssafy.haeruhand.domain.location.service;
 
+import com.ssafy.haeruhand.domain.location.dto.request.CreateRoomRequest;
 import com.ssafy.haeruhand.domain.location.dto.response.CloseRoomResponse;
 import com.ssafy.haeruhand.domain.location.dto.response.CreateRoomResponse;
 import com.ssafy.haeruhand.domain.location.dto.response.RoomInfoResponse;
@@ -38,7 +39,7 @@ public class LocationShareRoomService {
 
 
     @Transactional
-    public CreateRoomResponse createRoom(String bearerToken) {
+    public CreateRoomResponse createRoom(String bearerToken, CreateRoomRequest request) {
         // 토큰에서 사용자 ID 추출
         String accessToken = bearerToken.replace("Bearer ", "");
         Long userId = jwtProvider.validateAndGetUserId(accessToken);
@@ -55,6 +56,7 @@ public class LocationShareRoomService {
         // 방 생성
         LocationShareRoom room = LocationShareRoom.builder()
                 .roomCode(roomCode)
+                .stationCode(request.getStationCode())
                 .hostUser(hostUser)
                 .startedAt(now)
                 .build();
