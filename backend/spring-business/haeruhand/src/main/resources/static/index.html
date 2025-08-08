@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>카카오 로그인 테스트</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .container {
+            background: white;
+            padding: 40px;
+            border-radius: 16px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            text-align: center;
+            max-width: 400px;
+            width: 100%;
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 30px;
+        }
+        .kakao-btn {
+            background-color: #FEE500;
+            border: none;
+            padding: 14px 28px;
+            font-size: 16px;
+            font-weight: 600;
+            color: #000000;
+            cursor: pointer;
+            border-radius: 8px;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            transition: transform 0.2s;
+            text-decoration: none;
+        }
+        .kakao-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        .kakao-icon {
+            width: 20px;
+            height: 20px;
+        }
+        .divider {
+            margin: 30px 0;
+            color: #999;
+            font-size: 14px;
+        }
+        .test-section {
+            margin-top: 30px;
+            padding-top: 30px;
+            border-top: 1px solid #eee;
+        }
+        .test-section h3 {
+            color: #666;
+            font-size: 16px;
+            margin-bottom: 20px;
+        }
+        .test-btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            margin: 5px;
+            font-size: 14px;
+            transition: background 0.2s;
+        }
+        .test-btn:hover {
+            background: #5a67d8;
+        }
+        .response {
+            margin-top: 20px;
+            padding: 15px;
+            background: #f7f7f7;
+            border-radius: 8px;
+            text-align: left;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            max-height: 300px;
+            overflow-y: auto;
+            display: none;
+        }
+        .response.show {
+            display: block;
+        }
+        .user-info {
+            display: none;
+            margin-top: 20px;
+            padding: 20px;
+            background: #f0f8ff;
+            border-radius: 8px;
+        }
+        .user-info.show {
+            display: block;
+        }
+        .user-info img {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            margin-bottom: 10px;
+        }
+        .status {
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            display: inline-block;
+            margin-top: 10px;
+        }
+        .status.success {
+            background: #10b981;
+            color: white;
+        }
+        .status.error {
+            background: #ef4444;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔐 해루한디 로그인</h1>
+        
+        <a href="#" id="kakaoLoginBtn" class="kakao-btn">
+            <svg class="kakao-icon" viewBox="0 0 24 24">
+                <path d="M12 3c5.514 0 10 3.476 10 7.747 0 4.272-4.48 7.748-9.986 7.748-.62 0-1.092-.046-1.759-.097-1 .776-1.774 1.403-3.485 1.962.26-1.383-.113-2.259-.514-3.259-2.383-1.505-4.256-3.411-4.256-6.354 0-4.271 4.486-7.747 10-7.747z"/>
+            </svg>
+            카카오 로그인
+        </a>
+
+        <div class="test-section">
+            <h3>테스트 도구</h3>
+            <button class="test-btn" onclick="getUserInfo()">사용자 정보 조회</button>
+            <button class="test-btn" onclick="refreshToken()">토큰 갱신</button>
+            <button class="test-btn" onclick="clearTokens()">토큰 초기화</button>
+            <button class="test-btn" onclick="goToWebSocketTest()" style="background: #10b981;">웹소켓 테스트</button>
+            
+            <div id="userInfo" class="user-info"></div>
+            <div id="response" class="response"></div>
+        </div>
+    </div>
+
+    <script>
+        // 카카오 앱 키 설정 (백엔드와 동일한 CLIENT_ID 사용)
+        const KAKAO_CLIENT_ID = '434231d018b4c369436c39181c2be5e3'; // 실제 CLIENT_ID로 변경 필요
+        const REDIRECT_URI = 'http://localhost:5500/backend/spring-business/haeruhand/src/main/resources/static/callback.html';
+        const BACKEND_URL = 'http://localhost:8080';
+        
+        // 로컬 스토리지 키
+        const STORAGE_KEYS = {
+            ACCESS_TOKEN: 'accessToken',
+            REFRESH_TOKEN: 'refreshToken',
+            USER_INFO: 'userInfo'
+        };
+
+        // 카카오 로그인 버튼 클릭 이벤트
+        document.getElementById('kakaoLoginBtn').addEventListener('click', function(e) {
+            e.preventDefault();
+            const kakaoAuthUrl = `https://kauth.kakao.com/oauth/authorize?client_id=${KAKAO_CLIENT_ID}&redirect_uri=${REDIRECT_URI}&response_type=code`;
+            window.location.href = kakaoAuthUrl;
+        });
+
+        // 페이지 로드 시 저장된 토큰 확인
+        window.onload = function() {
+            checkLoginStatus();
+        };
+
+        function checkLoginStatus() {
+            const accessToken = localStorage.getItem(STORAGE_KEYS.ACCESS_TOKEN);
+            if (accessToken) {
+                showStatus('로그인 상태', 'success');
+                displayStoredUserInfo();
+            }
+        }
+
+        function displayStoredUserInfo() {
+            const userInfo = localStorage.getItem(STORAGE_KEYS.USER_INFO);
+            if (userInfo) {
+                const user = JSON.parse(userInfo);
+                document.getElementById('userInfo').innerHTML = `
+                    <img src="${user.profileImageUrl}" alt="프로필">
+                    <h4>${user.nickname}</h4>
+                    <p>User ID: ${user.userId}</p>
+                    <p>Kakao ID: ${user.kakaoSub}</p>
+                `;
+                document.getElementById('userInfo').classList.add('show');
+            }
+        }
+
+        async function getUserInfo() {
+            const accessToken = localStorage.getItem(STORAGE_KEYS.ACCESS_TOKEN);
+            if (!accessToken) {
+                showResponse({error: '로그인이 필요합니다.'});
+                return;
+            }
+
+            try {
+                const response = await fetch(`${BACKEND_URL}/v1/user/userinfo`, {
+                    headers: {
+                        'Authorization': `Bearer ${accessToken}`
+                    }
+                });
+
+                const data = await response.json();
+                if (data.success) {
+                    localStorage.setItem(STORAGE_KEYS.USER_INFO, JSON.stringify(data.data));
+                    displayStoredUserInfo();
+                    showResponse(data);
+                    showStatus('사용자 정보 조회 성공', 'success');
+                } else {
+                    showResponse(data);
+                    showStatus('사용자 정보 조회 실패', 'error');
+                }
+            } catch (error) {
+                showResponse({error: error.message});
+                showStatus('요청 실패', 'error');
+            }
+        }
+
+        async function refreshToken() {
+            const refreshToken = localStorage.getItem(STORAGE_KEYS.REFRESH_TOKEN);
+            if (!refreshToken) {
+                showResponse({error: '리프레시 토큰이 없습니다.'});
+                return;
+            }
+
+            try {
+                const response = await fetch(`${BACKEND_URL}/v1/user/reissue`, {
+                    method: 'POST',
+                    headers: {
+                        'X-Refresh-Token': refreshToken
+                    }
+                });
+
+                const data = await response.json();
+                if (data.success) {
+                    // 새 토큰 저장
+                    if (response.headers.get('Authorization')) {
+                        localStorage.setItem(STORAGE_KEYS.ACCESS_TOKEN, response.headers.get('Authorization').replace('Bearer ', ''));
+                    }
+                    if (response.headers.get('X-Refresh-Token')) {
+                        localStorage.setItem(STORAGE_KEYS.REFRESH_TOKEN, response.headers.get('X-Refresh-Token'));
+                    }
+                    showResponse(data);
+                    showStatus('토큰 갱신 성공', 'success');
+                } else {
+                    showResponse(data);
+                    showStatus('토큰 갱신 실패', 'error');
+                }
+            } catch (error) {
+                showResponse({error: error.message});
+                showStatus('요청 실패', 'error');
+            }
+        }
+
+        function clearTokens() {
+            localStorage.removeItem(STORAGE_KEYS.ACCESS_TOKEN);
+            localStorage.removeItem(STORAGE_KEYS.REFRESH_TOKEN);
+            localStorage.removeItem(STORAGE_KEYS.USER_INFO);
+            document.getElementById('userInfo').classList.remove('show');
+            showResponse({message: '토큰이 초기화되었습니다.'});
+            showStatus('로그아웃 완료', 'success');
+        }
+
+        function showResponse(data) {
+            const responseDiv = document.getElementById('response');
+            responseDiv.textContent = JSON.stringify(data, null, 2);
+            responseDiv.classList.add('show');
+        }
+
+        function showStatus(message, type) {
+            const existingStatus = document.querySelector('.status');
+            if (existingStatus) {
+                existingStatus.remove();
+            }
+            
+            const status = document.createElement('div');
+            status.className = `status ${type}`;
+            status.textContent = message;
+            document.querySelector('.container').appendChild(status);
+            
+            setTimeout(() => {
+                status.remove();
+            }, 3000);
+        }
+        
+        function goToWebSocketTest() {
+            const accessToken = localStorage.getItem(STORAGE_KEYS.ACCESS_TOKEN);
+            if (!accessToken) {
+                showStatus('먼저 로그인해주세요', 'error');
+                return;
+            }
+            window.location.href = 'websocket-test.html';
+        }
+    </script>
+</body>
+</html>

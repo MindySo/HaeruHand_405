@@ -45,11 +45,6 @@ public class LocationShareMember extends BaseEntity {
     @Column(name = "color", nullable = false, length = 7)
     private String color;
 
-    // 편의 메서드: User의 ID를 반환
-    public Long getUserId() {
-        return user != null ? user.getId() : null;
-    }
-
     public void updateLastActiveAt() {
         this.lastActiveAt = LocalDateTime.now();
     }

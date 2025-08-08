@@ -61,7 +61,7 @@ public class LocationRoomEventService {
                     .orElseThrow(() -> new GlobalException(ErrorStatus.USER_NOT_FOUND));
             
             LocationShareMember newMember = members.stream()
-                    .filter(m -> m.getUserId().equals(userId))
+                    .filter(m -> m.getUser().getId().equals(userId))
                     .findFirst()
                     .orElseThrow(() -> new GlobalException(ErrorStatus.WEBSOCKET_MEMBER_NOT_FOUND));
             
@@ -164,11 +164,11 @@ public class LocationRoomEventService {
     private List<LocationMessage.MemberInfo> convertToMemberInfos(List<LocationShareMember> members) {
         return members.stream()
                 .map(member -> {
-                    User user = userRepository.findById(member.getUserId())
+                    User user = userRepository.findById(member.getUser().getId())
                             .orElseThrow(() -> new GlobalException(ErrorStatus.USER_NOT_FOUND));
                     
                     return LocationMessage.MemberInfo.builder()
-                            .userId(member.getUserId())
+                            .userId(member.getUser().getId())
                             .nickname(user.getNickname())
                             .color(member.getColor())
                             .isHost(member.getIsHost())

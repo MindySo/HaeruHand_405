@@ -1,6 +1,7 @@
 package com.ssafy.haeruhand.global.websocket;
 
 import com.ssafy.haeruhand.domain.location.dto.internal.MemberLeaveResultDto;
+import com.ssafy.haeruhand.domain.location.dto.response.RoomInfoResponse;
 import com.ssafy.haeruhand.domain.location.service.LocationRoomEventService;
 import com.ssafy.haeruhand.global.exception.GlobalException;
 import com.ssafy.haeruhand.global.status.ErrorStatus;
@@ -28,15 +29,15 @@ public class WebSocketEventListener {
         
         try {
             // 세션 정보 추출
-            WebSocketSessionService.SessionInfo sessionInfo = 
+            RoomInfoResponse.RoomInfo sessionInfo = 
                     sessionService.extractSessionInfo(headerAccessor.getSessionAttributes());
             
             log.info("Session disconnected. User: {}, Room: {}", 
-                    sessionInfo.getUserId(), sessionInfo.getRoomCode());
+                    sessionInfo.getHostUserId(), sessionInfo.getRoomCode());
             
             // 멤버 퇴장 및 방 종료 처리
             MemberLeaveResultDto leaveResult = 
-                    roomEventService.handleMemberLeave(sessionInfo.getUserId(), sessionInfo.getRoomCode());
+                    roomEventService.handleMemberLeave(sessionInfo.getHostUserId(), sessionInfo.getRoomCode());
             
             if (!leaveResult.isSuccess()) {
                 log.error("Failed to handle member leave: {}", leaveResult.getErrorMessage());
