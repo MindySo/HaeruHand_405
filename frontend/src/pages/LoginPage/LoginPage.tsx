@@ -1,89 +1,46 @@
 import React, { useEffect } from 'react';
-import { useNavigate, useSearch } from '@tanstack/react-router';
+import { useSearch, useNavigate } from '@tanstack/react-router';
 import { Button, Text } from '../../components/atoms';
 import { theme } from '../../theme';
+import { useKakaoLogin } from '../../hooks/useKakaoLogin';
+import { useAuth } from '../../hooks/useAuth';
 import styles from './LoginPage.module.css';
 
 export const LoginPage: React.FC = () => {
+  const search = useSearch({ from: '/login' }) as { code?: string };
+  const { loginWithKakao, isLoading } = useKakaoLogin();
+  const { isAuthenticated } = useAuth();
   const navigate = useNavigate();
-  const search = useSearch({ from: '/login' });
 
-  // URL에서 카카오 인증 코드 확인
+  // 이미 인증된 사용자는 LocationSelect 페이지로 리다이렉트
   useEffect(() => {
-    const code = search.code as string;
-    if (code) {
-      // 카카오 인증 코드가 있으면 로그인 처리
-      handleKakaoLogin(code);
+    if (isAuthenticated()) {
+      navigate({ to: '/location-select' });
+      console.log('이미 로그인된 사용자');
+    }
+  }, [isAuthenticated, navigate]);
+
+  // URL에서 카카오 인증 코드 확인 및 처리
+  useEffect(() => {
+    let isProcessed = false;
+
+    if (search.code && !isProcessed) {
+      isProcessed = true;
+      loginWithKakao(search.code);
     }
   }, [search.code]);
 
-  const handleKakaoLogin = async (code: string) => {
-    try {
-      console.log('카카오 인증 코드:', code);
-      console.log('로그인 처리 시작...');
-
-      const apiUrl = `${import.meta.env.VITE_API_BASE_URL}/v1/user/issue/kakao`;
-      console.log('🌐 API 요청 URL:', apiUrl);
-
-      const response = await fetch(apiUrl, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          code: code,
-        }),
-      });
-
-      console.log('📡 응답 상태:', response.status);
-      console.log('📡 응답 헤더:', Object.fromEntries(response.headers.entries()));
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const data = await response.json();
-      console.log('📊 받아온 데이터:', data);
-
-      if (data.is_success) {
-        console.log('✅ 로그인 성공!');
-        console.log('👤 사용자 정보:', data.data.user);
-        console.log('⏰ 토큰 만료 시간:', data.data.accessTokenExpiresIn);
-
-        // 토큰을 로컬 스토리지에 저장 (나중에 사용)
-        localStorage.setItem('accessToken', data.data.accessTokenExpiresIn.toString());
-        localStorage.setItem('userInfo', JSON.stringify(data.data.user));
-
-        console.log('💾 토큰과 사용자 정보를 로컬 스토리지에 저장했습니다.');
-
-        // LocationSelectionPage로 이동
-        setTimeout(() => {
-          console.log('📍 LocationSelectionPage로 이동합니다...');
-          navigate({ to: '/location-select' });
-        }, 1000);
-      } else {
-        console.error('❌ 로그인 실패:', data.message);
-        throw new Error(data.message || '로그인에 실패했습니다.');
-      }
-    } catch (error) {
-      console.error('❌ 로그인 실패:', error);
-      console.error('🚫 에러 상세 정보:', {
-        message: error instanceof Error ? error.message : 'Unknown error',
-        stack: error instanceof Error ? error.stack : undefined,
-        timestamp: new Date().toISOString(),
-      });
-    }
-  };
-
   const handleKakaoLoginClick = () => {
-    console.log('🔐 카카오 로그인 시작...');
-
-    // 카카오 로그인 URL로 리다이렉트
+    console.log('카카오 로그인 시작...');
     const kakaoLoginUrl = `https://kauth.kakao.com/oauth/authorize?client_id=${import.meta.env.VITE_KAKAO_CLIENT_ID}&redirect_uri=${import.meta.env.VITE_KAKAO_REDIRECT_URI}&response_type=code`;
-
-    console.log('🌐 카카오 로그인 URL:', kakaoLoginUrl);
+    console.log('카카오 로그인 URL:', kakaoLoginUrl);
     window.location.href = kakaoLoginUrl;
   };
+
+  // 이미 인증된 상태라면 로딩 표시
+  if (isAuthenticated()) {
+    return <div>리다이렉트 중...</div>;
+  }
 
   return (
     <div className={styles.container}>
@@ -105,9 +62,10 @@ export const LoginPage: React.FC = () => {
             size="large"
             onClick={handleKakaoLoginClick}
             className={styles.kakaoButton}
+            disabled={isLoading}
           >
             <span style={{ fontSize: '18px', fontWeight: 'bold' }}>K</span>
-            카카오로 시작하기
+            {isLoading ? '로그인 중...' : '카카오로 시작하기'}
           </Button>
         </div>
 
