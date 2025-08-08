@@ -13,6 +13,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
@@ -212,18 +213,24 @@ public class OAuthServiceImpl implements OAuthService {
         return userRepository.findByKakaoSub(kakaoUserInfoDto.getKakaoSub())
                 .map(existingUser -> {
                     log.info("기존 사용자 발견 - userId: {}, nickname: {}", existingUser.getId(), existingUser.getNickname());
-                    return existingUser;
+                    return userRepository.save(existingUser);
                 })
                 .orElseGet(() -> {
-                    User newUser = userRepository.save(
-                            User.builder()
-                                    .kakaoSub(kakaoUserInfoDto.getKakaoSub())
-                                    .nickname(kakaoUserInfoDto.getNickname())
-                                    .profileImage(kakaoUserInfoDto.getProfile_image())
-                                    .build()
-                    );
-                    log.info("신규 사용자 생성 완료 - userId: {}", newUser.getId());
-                    return newUser;
+                    try {
+                        User newUser = userRepository.save(
+                                User.builder()
+                                        .kakaoSub(kakaoUserInfoDto.getKakaoSub())
+                                        .nickname(kakaoUserInfoDto.getNickname())
+                                        .profileImage(kakaoUserInfoDto.getProfile_image())
+                                        .build()
+                        );
+                        log.info("신규 사용자 생성 완료 - userId: {}", newUser.getId());
+                        return newUser;
+                    } catch (DataIntegrityViolationException e) {
+                        log.warn("중복 사용자 생성 시도 감지 - kakaoSub: {}, 기존 사용자 조회", kakaoUserInfoDto.getKakaoSub());
+                        return userRepository.findByKakaoSub(kakaoUserInfoDto.getKakaoSub())
+                                .orElseThrow(() -> new GlobalException(ErrorStatus.USER_NOT_FOUND));
+                    }
                 });
     }
 
