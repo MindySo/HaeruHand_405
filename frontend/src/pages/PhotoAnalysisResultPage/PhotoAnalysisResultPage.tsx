@@ -7,6 +7,12 @@ import styles from './PhotoAnalysisResultPage.module.css';
 
 const PhotoAnalysisResultPage = () => {
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const [fishName, setFishName] = useState<string>('');
+  const [banStartDate, setBanStartDate] = useState<string>('');
+  const [banEndDate, setBanEndDate] = useState<string>('');
+  const [sizeLimit, setSizeLimit] = useState<string>('');
+  const [analysisCompleted, setAnalysisCompleted] = useState<boolean>(false);
+
   const fileInputRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
   const { analyzePhoto, isLoading, error } = usePhotoAnalysis();
@@ -23,6 +29,13 @@ const PhotoAnalysisResultPage = () => {
     const file = event.target.files?.[0];
     if (file) {
       try {
+        // 이전 분석 결과 초기화
+        setAnalysisCompleted(false);
+        setFishName('');
+        setBanStartDate('');
+        setBanEndDate('');
+        setSizeLimit('');
+
         // 파일을 미리보기로 표시
         const reader = new FileReader();
         reader.onload = (e) => {
@@ -33,6 +46,18 @@ const PhotoAnalysisResultPage = () => {
         // 전체 분석 프로세스 실행
         const result = await analyzePhoto(file);
         console.log('분석 완료:', result);
+        setFishName(result.analysisResult.fishName);
+        setBanStartDate(result.analysisResult.regulationFish.restrictionStartDate);
+        setBanEndDate(result.analysisResult.regulationFish.restrictionEndDate);
+
+        // minimumLengthCentimeter 처리
+        const minLength = result.analysisResult.regulationFish.minimumLengthCentimeter;
+        if (minLength === null || minLength === undefined) {
+          setSizeLimit('없음');
+        } else {
+          setSizeLimit(`${minLength}cm`);
+        }
+        setAnalysisCompleted(true);
       } catch (error) {
         console.error('파일 분석 중 오류 발생:', error);
       }
@@ -91,6 +116,20 @@ const PhotoAnalysisResultPage = () => {
         onChange={handleFileChange}
         style={{ display: 'none' }}
       />
+
+      {analysisCompleted && (
+        <div className={styles.subContentSection}>
+          <Text size="lg" weight="semiBold" color="dark">
+            이름: {fishName}
+          </Text>
+          <Text size="md" weight="regular" color="dark">
+            금어기: {banStartDate} ~ {banEndDate}
+          </Text>
+          <Text size="md" weight="regular" color="dark">
+            금지체장: {sizeLimit}
+          </Text>
+        </div>
+      )}
 
       {/* Upload Button */}
       <div className={styles.buttonSection}>
