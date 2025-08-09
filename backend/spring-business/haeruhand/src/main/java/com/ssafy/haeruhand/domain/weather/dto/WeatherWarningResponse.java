@@ -12,9 +12,9 @@ import java.time.LocalDateTime;
 public record WeatherWarningResponse(
         Long id,
         String regionCode,
-        WarningType warningType,
-        WarningLevel warningLevel,
-        WarningCommand warningCommand,
+        String warningType,
+        String warningLevel,
+        String warningCommand,
         LocalDateTime announcedAt,
         LocalDateTime effectiveAt,
         LocalDateTime expectedEndAt,
@@ -25,9 +25,9 @@ public record WeatherWarningResponse(
         return WeatherWarningResponse.builder()
                 .id(weatherWarning.getId())
                 .regionCode(weatherWarning.getRegionCode())
-                .warningType(weatherWarning.getWarningType())
-                .warningLevel(weatherWarning.getWarningLevel())
-                .warningCommand(weatherWarning.getWarningCommand())
+                .warningType(weatherWarning.getWarningType().label())
+                .warningLevel(weatherWarning.getWarningLevel().label())
+                .warningCommand(weatherWarning.getWarningCommand().label())
                 .announcedAt(weatherWarning.getAnnouncedAt())
                 .effectiveAt(weatherWarning.getEffectiveAt())
                 .expectedEndAt(weatherWarning.getExpectedEndAt())
