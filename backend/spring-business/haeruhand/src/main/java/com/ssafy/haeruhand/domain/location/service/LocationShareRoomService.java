@@ -1,5 +1,8 @@
 package com.ssafy.haeruhand.domain.location.service;
 
+import com.ssafy.haeruhand.domain.fishery.entity.Fishery;
+import com.ssafy.haeruhand.domain.fishery.repository.FisheryRepository;
+import com.ssafy.haeruhand.domain.location.dto.request.CreateRoomRequest;
 import com.ssafy.haeruhand.domain.location.dto.response.CloseRoomResponse;
 import com.ssafy.haeruhand.domain.location.dto.response.CreateRoomResponse;
 import com.ssafy.haeruhand.domain.location.dto.response.RoomInfoResponse;
@@ -33,12 +36,13 @@ public class LocationShareRoomService {
     private final LocationShareRoomRepository roomRepository;
     private final LocationShareMemberRepository memberRepository;
     private final UserRepository userRepository;
+    private final FisheryRepository fisheryRepository;
     private final JwtProvider jwtProvider;
 
 
 
     @Transactional
-    public CreateRoomResponse createRoom(String bearerToken) {
+    public CreateRoomResponse createRoom(String bearerToken, CreateRoomRequest request) {
         // 토큰에서 사용자 ID 추출
         String accessToken = bearerToken.replace("Bearer ", "");
         Long userId = jwtProvider.validateAndGetUserId(accessToken);
@@ -52,9 +56,14 @@ public class LocationShareRoomService {
         User hostUser = userRepository.findById(userId)
                 .orElseThrow(() -> new GlobalException(ErrorStatus.USER_NOT_FOUND));
         
+        // 어장 조회
+        Fishery fishery = fisheryRepository.findById(request.getFisheryId())
+                .orElseThrow(() -> new GlobalException(ErrorStatus.FISHERY_NOT_FOUND));
+        
         // 방 생성
         LocationShareRoom room = LocationShareRoom.builder()
                 .roomCode(roomCode)
+                .fishery(fishery)
                 .hostUser(hostUser)
                 .startedAt(now)
                 .build();
