@@ -25,9 +25,9 @@ public class TideController {
     @Operation(summary = "특정 날짜와 관측소의 조석 조회", description = "특정 날짜와 관측소의 조석 정보를 조회합니다. 날짜가 없으면 오늘 날짜를 기준으로 합니다")
     @GetMapping("/station/{stationCode}")
     public ResponseEntity<ApiResponse<TideResponse>> getTideByDateAndStation(
-            @Parameter(description = "관측소 코드", required = true, example = "DT_0001")
+            @Parameter(description = "관측소 코드", required = true, example = "DT_0004")
             @PathVariable String stationCode,
-            @Parameter(description = "조회할 날짜 (YYYY-MM-DD 형식, 없으면 오늘 날짜)", example = "2024-12-25")
+            @Parameter(description = "조회할 날짜 (YYYY-MM-DD 형식, 없으면 오늘 날짜)", example = "2025-08-08")
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
         TideResponse tide = tideService.getTideByDateAndStation(date, stationCode);
         return ApiResponse.success(SuccessStatus.OK, tide);

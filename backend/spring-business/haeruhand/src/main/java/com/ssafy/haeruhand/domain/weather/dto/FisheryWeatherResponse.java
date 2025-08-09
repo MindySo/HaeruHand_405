@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 public record FisheryWeatherResponse(
         Long id,
         LocalDate forecastDate,
-        ForecastTimePeriod forecastTimePeriod,
+        String forecastTimePeriod,
         BigDecimal averageAirTemperature,
         BigDecimal averageWaterTemperature,
         BigDecimal averageWaveHeight,
@@ -26,7 +26,7 @@ public record FisheryWeatherResponse(
         return FisheryWeatherResponse.builder()
                 .id(fisheryWeather.getId())
                 .forecastDate(fisheryWeather.getForecastDate())
-                .forecastTimePeriod(fisheryWeather.getForecastTimePeriod())
+                .forecastTimePeriod(fisheryWeather.getForecastTimePeriod().label())
                 .averageAirTemperature(fisheryWeather.getAverageAirTemperature())
                 .averageWaterTemperature(fisheryWeather.getAverageWaterTemperature())
                 .averageWaveHeight(fisheryWeather.getAverageWaveHeight())

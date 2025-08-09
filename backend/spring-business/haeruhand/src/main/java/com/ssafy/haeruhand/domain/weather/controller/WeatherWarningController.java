@@ -37,7 +37,7 @@ public class WeatherWarningController {
     @Operation(summary = "지역별 기상특보 조회", description = "특정 지역의 기상특보 목록을 조회합니다 (페이지네이션)")
     @GetMapping("/region/{regionCode}")
     public ResponseEntity<ApiResponse<Page<WeatherWarningResponse>>> getWeatherWarningsByRegion(
-            @Parameter(description = "지역코드", required = true, example = "11B00000")
+            @Parameter(description = "지역코드", required = true, example = "S1323100")
             @PathVariable String regionCode,
             @Parameter(description = "페이지 번호 (0부터 시작)", example = "0")
             @RequestParam(defaultValue = "0") int page,

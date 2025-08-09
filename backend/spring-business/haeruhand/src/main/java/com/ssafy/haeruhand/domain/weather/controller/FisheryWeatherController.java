@@ -29,7 +29,7 @@ public class FisheryWeatherController {
     @Operation(summary = "날짜별 어장 날씨 조회", description = "특정 날짜의 어장 날씨 정보를 조회합니다 (오전/오후 두 개). 날짜가 없으면 오늘 날짜를 기준으로 합니다")
     @GetMapping
     public ResponseEntity<ApiResponse<List<FisheryWeatherResponse>>> getFisheryWeatherByDate(
-            @Parameter(description = "조회할 날짜 (YYYY-MM-DD 형식, 없으면 오늘 날짜)", example = "2024-12-25")
+            @Parameter(description = "조회할 날짜 (YYYY-MM-DD 형식, 없으면 오늘 날짜)", example = "2025-08-08")
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
         List<FisheryWeatherResponse> weathers = fisheryWeatherService.getFisheryWeatherByDate(date);
         return ApiResponse.success(SuccessStatus.OK, weathers);
