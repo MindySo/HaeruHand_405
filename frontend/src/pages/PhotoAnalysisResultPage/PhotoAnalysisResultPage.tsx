@@ -12,6 +12,7 @@ const PhotoAnalysisResultPage = () => {
   const [banEndDate, setBanEndDate] = useState<string>('');
   const [sizeLimit, setSizeLimit] = useState<string>('');
   const [analysisCompleted, setAnalysisCompleted] = useState<boolean>(false);
+  const [currentlyRestricted, setCurrentlyRestricted] = useState<boolean>(false); // 추가
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
@@ -57,6 +58,7 @@ const PhotoAnalysisResultPage = () => {
         } else {
           setSizeLimit(`${minLength}cm`);
         }
+        setCurrentlyRestricted(result.analysisResult.currentlyRestricted); // 추가
         setAnalysisCompleted(true);
       } catch (error) {
         console.error('파일 분석 중 오류 발생:', error);
@@ -92,7 +94,16 @@ const PhotoAnalysisResultPage = () => {
       <div className={styles.imageSection}>
         <div className={styles.imageContainer}>
           {selectedImage ? (
-            <img src={selectedImage} alt="선택된 이미지" className={styles.previewImage} />
+            <>
+              <img src={selectedImage} alt="선택된 이미지" className={styles.previewImage} />
+              {analysisCompleted && currentlyRestricted && (
+                <div className={styles.restrictionOverlay}>
+                  <Text size="xxl" weight="bold" className={styles.warningText}>
+                    채집 금지기간
+                  </Text>
+                </div>
+              )}
+            </>
           ) : (
             <div className={styles.placeholder}>
               <Text size="lg" weight="regular" color="gray">
@@ -122,7 +133,12 @@ const PhotoAnalysisResultPage = () => {
           <Text size="lg" weight="semiBold" color="dark">
             이름: {fishName}
           </Text>
-          <Text size="md" weight="regular" color="dark">
+          <Text
+            size="md"
+            weight={currentlyRestricted ? 'bold' : 'regular'}
+            color="dark"
+            className={currentlyRestricted ? styles.warningText : undefined}
+          >
             금어기: {banStartDate} ~ {banEndDate}
           </Text>
           <Text size="md" weight="regular" color="dark">

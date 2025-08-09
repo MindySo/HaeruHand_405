@@ -18,31 +18,31 @@ const homeRoute = createRoute({
 
 const weatherAlertRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/weather-alert',
+  path: '/weather',
   component: WeatherAlertPage,
 });
 
 const photoAnalysisResultRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/photo-analysis',
+  path: '/photo',
   component: PhotoAnalysisResultPage,
 });
 
 const trackingShareRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/tracking-share',
+  path: '/share',
   component: TrackingSharePage,
 });
 
 const locationSelectRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/location-select',
+  path: '/map',
   component: LocationSelectPage,
 });
 
 const buddyTrackingRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/buddy-tracking',
+  path: '/buddy',
   component: BuddyTrackingPage,
 });
 
