@@ -3,7 +3,7 @@ import { theme } from '../../../theme';
 
 export interface ButtonProps {
   children: React.ReactNode;
-  variant?: 'primary' | 'secondary' | 'error' | 'success' | 'warning';
+  variant?: 'primary' | 'secondary' | 'error' | 'success' | 'warning' | 'kakao';
   size?: 'small' | 'medium' | 'large';
   disabled?: boolean;
   onClick?: () => void;
@@ -32,9 +32,9 @@ const Button: React.FC<ButtonProps> = ({
         };
       case 'secondary':
         return {
-          backgroundColor: theme.colors.white,
-          color: theme.colors.dark,
-          border: `1px solid ${theme.colors.middleGray}`,
+          backgroundColor: '#acacac',
+          color: theme.colors.white,
+          border: `none`,
         };
       case 'error':
         return {
@@ -53,6 +53,12 @@ const Button: React.FC<ButtonProps> = ({
           backgroundColor: theme.colors.white,
           color: theme.colors.dark,
           border: `1px solid ${theme.colors.warning}`,
+        };
+      case 'kakao':
+        return {
+          backgroundColor: '#fee500',
+          color: '#191919',
+          border: 'none',
         };
       default:
         return {

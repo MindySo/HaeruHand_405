@@ -2,6 +2,8 @@ import { Button, Text } from '../../components/atoms';
 import styles from './BuddyTrackingPage.module.css';
 import { useEffect } from 'react';
 import { useNavigate } from '@tanstack/react-router';
+import { useAuth } from '../../hooks/useAuth';
+import { LoginModal } from '../../components/molecules/LoginModal/LoginModal';
 
 const buddyData = [
   { name: '이규민', latitude: 37.501, longitude: 127.0368861, color: 'red' },
@@ -22,6 +24,9 @@ const Buddy = ({ name, color }: { name: string; color: string }) => {
 };
 
 const BuddyTrackingPage = () => {
+  const navigate = useNavigate();
+  const { isAuthenticated } = useAuth();
+
   useEffect(() => {
     const script = document.createElement('script');
     script.src = `//dapi.kakao.com/v2/maps/sdk.js?appkey=${import.meta.env.VITE_KAKAO_MAP_API_KEY}&autoload=false`;
@@ -81,8 +86,6 @@ const BuddyTrackingPage = () => {
     document.head.appendChild(script);
   }, []);
 
-  const navigate = useNavigate();
-
   const buddyButtonClick = () => {
     navigate({ to: '/tracking-share' });
   };
@@ -92,21 +95,26 @@ const BuddyTrackingPage = () => {
   };
 
   return (
-    <div className={styles.container}>
-      <div id="map" className={styles.map} />
-      <div className={styles.wrapper}>
-        <button className={styles.backButton} onClick={handleBackButtonClick}>
-          <img src="/backButton.svg" alt="뒤로가기" className={styles.backButtonIcon} />
-        </button>
-        <div className={styles.buddyList}>
-          {buddyData.map((buddy) => (
-            <Buddy key={buddy.name} name={buddy.name} color={buddy.color} />
-          ))}
-        </div>
-        <div className={styles.buttonSection}>
-          <Button size="large" variant="primary" fullWidth onClick={buddyButtonClick}>
-            함께 해루하기
-          </Button>
+    <div>
+      {/* 로그인 안 된 경우에만 모달 표시 */}
+      {!isAuthenticated() && <LoginModal message="위치 트래킹을 시작" />}
+
+      <div className={styles.container}>
+        <div id="map" className={styles.map} />
+        <div className={styles.wrapper}>
+          <button className={styles.backButton} onClick={handleBackButtonClick}>
+            <img src="/backButton.svg" alt="뒤로가기" className={styles.backButtonIcon} />
+          </button>
+          <div className={styles.buddyList}>
+            {buddyData.map((buddy) => (
+              <Buddy key={buddy.name} name={buddy.name} color={buddy.color} />
+            ))}
+          </div>
+          <div className={styles.buttonSection}>
+            <Button size="large" variant="primary" fullWidth onClick={buddyButtonClick}>
+              함께 해루하기
+            </Button>
+          </div>
         </div>
       </div>
     </div>
