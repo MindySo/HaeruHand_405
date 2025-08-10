@@ -26,12 +26,20 @@ public class FisheryWeatherController {
 
     private final FisheryWeatherService fisheryWeatherService;
 
-    @Operation(summary = "날짜별 어장 날씨 조회", description = "특정 날짜의 어장 날씨 정보를 조회합니다 (오전/오후 두 개). 날짜가 없으면 오늘 날짜를 기준으로 합니다")
+    @Operation(
+            summary = "날짜별 지역 날씨 조회",
+            description = "지정한 지역(area_name)과 날짜에 대한 어장 날씨를 조회합니다. "
+                    + "하루에 오전/오후 또는 일일(ALL) 1~2건이 반환됩니다. "
+                    + "파라미터가 없으면 기본값: 오늘 / '제주북서'."
+    )
     @GetMapping
     public ResponseEntity<ApiResponse<List<FisheryWeatherResponse>>> getFisheryWeatherByDate(
             @Parameter(description = "조회할 날짜 (YYYY-MM-DD 형식, 없으면 오늘 날짜)", example = "2025-08-08")
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
-        List<FisheryWeatherResponse> weathers = fisheryWeatherService.getFisheryWeatherByDate(date);
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
+            @Parameter(description = "지역명, 없으면 '제주북서' 기본값", example = "제주북서")
+            @RequestParam(required = false, defaultValue = "제주북서") String area
+    ) {
+        List<FisheryWeatherResponse> weathers = fisheryWeatherService.getFisheryWeatherByDate(area, date);
         return ApiResponse.success(SuccessStatus.OK, weathers);
     }
 }

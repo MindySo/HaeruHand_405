@@ -15,4 +15,7 @@ public interface FisheryRepository extends JpaRepository<Fishery, Long> {
 
     @Query("select distinct f.stationCode from Fishery f where f.stationCode is not null")
     List<String> findDistinctStationCodes();
+
+    @Query("select distinct f.areaName from Fishery f where f.areaName is not null")
+    List<String> findDistinctAreaNames();
 }

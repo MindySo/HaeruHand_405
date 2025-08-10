@@ -11,7 +11,10 @@ import java.time.LocalDate;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder
-@Table(name = "fishery_weather")
+@Table(
+        name = "fishery_weather",
+        uniqueConstraints = @UniqueConstraint(columnNames = {"area_name", "forecast_date", "forecast_time_period"})
+)
 @Entity
 public class FisheryWeather extends BaseEntity {
 
@@ -19,6 +22,9 @@ public class FisheryWeather extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "fishery_weather_id")
     private Long id;
+
+    @Column(name = "area_name", nullable = false, length = 50)
+    private String areaName;
 
     @Column(name = "forecast_date", nullable = false)
     private LocalDate forecastDate;
@@ -44,4 +50,19 @@ public class FisheryWeather extends BaseEntity {
 
     @Column(name = "sea_travel_index", length = 10)
     private String seaTravelIndex;
+
+    public void apply(
+            BigDecimal averageAirTemperature,
+            BigDecimal averageWaterTemperature,
+            BigDecimal averageWaveHeight,
+            BigDecimal averageWindSpeed,
+            String weatherDescription,
+            String seaTravelIndex) {
+        this.averageAirTemperature = averageAirTemperature;
+        this.averageWaterTemperature = averageWaterTemperature;
+        this.averageWaveHeight = averageWaveHeight;
+        this.averageWindSpeed = averageWindSpeed;
+        this.weatherDescription = weatherDescription;
+        this.seaTravelIndex = seaTravelIndex;
+    }
 }

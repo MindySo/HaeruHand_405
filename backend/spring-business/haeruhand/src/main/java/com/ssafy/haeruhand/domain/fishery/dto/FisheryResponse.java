@@ -9,6 +9,7 @@ public record FisheryResponse(
         BigDecimal latitude,
         BigDecimal longitude,
         String stationCode,
-        String regionCode
+        String regionCode,
+        String areaName
 ) {
 }
