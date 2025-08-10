@@ -48,12 +48,12 @@ public class FisheryWeatherRefreshService {
             try {
                 for (JsonNode item : items) {
                     String itemArea = text(item, "sareaDtlNm");
-                    if (!area.equals(itemArea)) {
+                    if (itemArea == null || !itemArea.trim().equals(area.trim())) {
                         continue;
                     }
 
                     LocalDate itemDate = parseDate(text(item, "predcYmd"));
-                    if (itemDate == null || !itemDate.equals(targetDate)) {
+                    if (itemDate == null) {
                         continue;
                     }
 
