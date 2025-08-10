@@ -61,7 +61,7 @@ export const useKakaoLogin = () => {
         // LocationSelectionPage로 이동
         setTimeout(() => {
           console.log('LocationSelectionPage로 이동합니다...');
-          navigate({ to: '/location-select' });
+          navigate({ to: '/map' });
         }, 1000);
       } else {
         console.error('로그인 실패:', data.message);

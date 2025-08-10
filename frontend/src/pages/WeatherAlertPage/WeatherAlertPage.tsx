@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Text } from '../../components/atoms';
 import { WarningBanner } from '../../components/molecules';
 import {
@@ -15,18 +15,79 @@ interface Filter {
   active: boolean;
 }
 
-const initialFilters: Filter[] = [
-  { id: 'all', name: '전체', active: false },
-  { id: 'gueom', name: '구엄', active: false },
-  { id: 'gonae', name: '고내', active: false },
-  { id: 'aewol', name: '애월', active: true },
-  { id: 'suwon', name: '수원', active: false },
-];
+interface LocationInfo {
+  id: string;
+  name: string;
+  displayName: string;
+}
 
 const WeatherAlertPage: React.FC = () => {
-  const [filters, setFilters] = useState<Filter[]>(initialFilters);
+  const [filters, setFilters] = useState<Filter[]>([]);
   const [currentFilter, setCurrentFilter] = useState<string>('aewol'); // 기본값
+  const [selectedLocation, setSelectedLocation] = useState<LocationInfo | null>(null);
   const navigate = useNavigate();
+
+  // 컴포넌트 마운트 시 localStorage에서 선택된 지역 정보 가져오기
+  useEffect(() => {
+    const savedLocation = localStorage.getItem('selectedLocation');
+    if (savedLocation) {
+      try {
+        const locationInfo = JSON.parse(savedLocation);
+        setSelectedLocation(locationInfo);
+
+        // 선택된 어장에 따라 초기 필터 설정
+        const initialFilters: Filter[] = [
+          { id: 'all', name: '전체', active: false },
+          { id: 'gueom', name: '구업', active: locationInfo.id === 'gueom' },
+          { id: 'gonae', name: '고내', active: locationInfo.id === 'gonae' },
+          { id: 'aewol', name: '애월', active: locationInfo.id === 'aewol' },
+          { id: 'suwon', name: '수원', active: locationInfo.id === 'suwon' },
+        ];
+
+        setFilters(initialFilters);
+        setCurrentFilter(locationInfo.id);
+      } catch (error) {
+        console.error('저장된 지역 정보를 파싱할 수 없습니다:', error);
+        // 기본값 설정
+        const defaultLocation = {
+          id: 'aewol',
+          name: '애월',
+          displayName: '애월3리 어촌계',
+        };
+        setSelectedLocation(defaultLocation);
+
+        const defaultFilters: Filter[] = [
+          { id: 'all', name: '전체', active: false },
+          { id: 'gueom', name: '구업', active: false },
+          { id: 'gonae', name: '고내', active: false },
+          { id: 'aewol', name: '애월', active: true },
+          { id: 'suwon', name: '수원', active: false },
+        ];
+
+        setFilters(defaultFilters);
+        setCurrentFilter('aewol');
+      }
+    } else {
+      // 저장된 정보가 없으면 기본값 설정
+      const defaultLocation = {
+        id: 'aewol',
+        name: '애월',
+        displayName: '애월3리 어촌계',
+      };
+      setSelectedLocation(defaultLocation);
+
+      const defaultFilters: Filter[] = [
+        { id: 'all', name: '전체', active: false },
+        { id: 'gueom', name: '구업', active: false },
+        { id: 'gonae', name: '고내', active: false },
+        { id: 'aewol', name: '애월', active: true },
+        { id: 'suwon', name: '수원', active: false },
+      ];
+
+      setFilters(defaultFilters);
+      setCurrentFilter('aewol');
+    }
+  }, []);
 
   // 전체 특보 조회
   const allWarningsQuery = useWeatherWarnings(0, 20);
@@ -64,7 +125,7 @@ const WeatherAlertPage: React.FC = () => {
           <img src="/backButton.svg" alt="뒤로가기" className={styles.backButtonIcon} />
         </button>
         <Text size="xl" color="dark" weight="bold" className={styles.title}>
-          애월3리 어촌계
+          {selectedLocation?.displayName || '애월3리 어촌계'}
         </Text>
       </div>
 

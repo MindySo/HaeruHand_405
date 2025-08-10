@@ -8,6 +8,10 @@ import {
   WeatherWidgets,
 } from '../../components/molecules';
 import { useTides, formatTimeArray } from '../../hooks/useTides';
+import {
+  useWeatherWarningsByRegion,
+  transformWeatherWarnings,
+} from '../../hooks/useWeatherWarnings';
 import styles from './MainPage.module.css';
 import { InfoModal } from '../../components/molecules/InfoModal/InfoModal';
 import { useNavigate } from '@tanstack/react-router';
@@ -32,9 +36,17 @@ export const MainPage = () => {
   const [selectedLocation, setSelectedLocation] = useState<LocationInfo | null>(null);
   const [weatherData, setWeatherData] = useState<any[]>([]);
   const [selectedFishery, setSelectedFishery] = useState<any>(null);
+  const [hasNewWarning, setHasNewWarning] = useState<boolean>(false);
 
   // 조석 데이터 가져오기 (기본 stationCode: DT_0004)
   const { data: tidesData, isLoading: tidesLoading, error: tidesError } = useTides('DT_0004');
+
+  // 특보 데이터 가져오기 (L1090700 지역)
+  const {
+    data: warningsData,
+    isLoading: warningsLoading,
+    error: warningsError,
+  } = useWeatherWarningsByRegion('L1090700', 0, 20);
 
   // 모달 창 띄우기 state
   const [isInfoModalOpen, setIsInfoModalOpen] = useState(false);
@@ -87,6 +99,61 @@ export const MainPage = () => {
     }
   }, []);
 
+  // 새로운 특보 감지
+  useEffect(() => {
+    if (!warningsData?.data || warningsData.data.length === 0) {
+      setHasNewWarning(false);
+      return;
+    }
+
+    // 현재 최신 특보 정보
+    const currentLatestWarning = warningsData.data[0];
+
+    // currentLatestWarning이 유효한지 확인
+    if (
+      !currentLatestWarning ||
+      !currentLatestWarning.warningType ||
+      !currentLatestWarning.warningLevel ||
+      !currentLatestWarning.announcedAt
+    ) {
+      setHasNewWarning(false);
+      return;
+    }
+
+    const currentWarningKey = `${currentLatestWarning.warningType}${currentLatestWarning.warningLevel}_${currentLatestWarning.announcedAt.join('_')}`;
+
+    // localStorage에서 마지막으로 확인한 특보 정보 가져오기
+    const lastCheckedWarning = localStorage.getItem('lastCheckedWarning');
+
+    if (lastCheckedWarning !== currentWarningKey) {
+      // 새로운 특보가 있음
+      setHasNewWarning(true);
+    } else {
+      // 새로운 특보 없음
+      setHasNewWarning(false);
+    }
+  }, [warningsData]);
+
+  // 특보 페이지로 이동 시 마지막 확인 시간 업데이트
+  const handleWeatherAlertClick = () => {
+    if (warningsData?.data && warningsData.data.length > 0) {
+      const currentLatestWarning = warningsData.data[0];
+
+      // currentLatestWarning이 유효한지 확인
+      if (
+        currentLatestWarning &&
+        currentLatestWarning.warningType &&
+        currentLatestWarning.warningLevel &&
+        currentLatestWarning.announcedAt
+      ) {
+        const currentWarningKey = `${currentLatestWarning.warningType}${currentLatestWarning.warningLevel}_${currentLatestWarning.announcedAt.join('_')}`;
+        localStorage.setItem('lastCheckedWarning', currentWarningKey);
+        setHasNewWarning(false);
+      }
+    }
+    navigate({ to: '/weather' });
+  };
+
   // 카카오 지도 초기화
   useEffect(() => {
     if (!selectedFishery) return;
@@ -129,6 +196,14 @@ export const MainPage = () => {
     return currentWeather ? `${currentWeather.averageWaterTemperature}℃` : '22.7℃';
   }, [weatherData]);
 
+  // 최신 특보 데이터 (첫 번째 항목)
+  const latestWarning = useMemo(() => {
+    if (!warningsData?.data || warningsData.data.length === 0) return null;
+
+    const alerts = transformWeatherWarnings(warningsData.data);
+    return alerts.length > 0 ? alerts[0] : null;
+  }, [warningsData]);
+
   // 위치 트래킹 버튼 클릭 핸들러
   const handleTrackingClick = () => {
     navigate({ to: '/buddy' });
@@ -136,10 +211,6 @@ export const MainPage = () => {
 
   const handleAnalysisButtonClick = () => {
     navigate({ to: '/photo' });
-  };
-
-  const handleWeatherAlertClick = () => {
-    navigate({ to: '/weather' });
   };
 
   const handleBackButtonClick = () => {
@@ -168,7 +239,7 @@ export const MainPage = () => {
           <Text size="xl">해루핸 로고</Text>
           <button className={styles.bellButton} onClick={handleWeatherAlertClick}>
             <img src="/bell.svg" alt="특보 조회" className={styles.bellIcon} />
-            <div className={styles.bellMarker} />
+            {hasNewWarning && <div className={styles.bellMarker} />}
           </button>
         </div>
 
@@ -187,12 +258,39 @@ export const MainPage = () => {
       <div className={styles.scrollContent}>
         {/* b-1. 특보 배너 */}
         <div className={styles.warningBanner} onClick={handleWeatherAlertClick}>
-          <WarningBanner
-            type="호우주의보"
-            date="08월 06일 22시 00분"
-            location="안양"
-            variant="info"
-          />
+          {warningsLoading ? (
+            <WarningBanner
+              type={'정보' as any}
+              date="특보 정보 로딩 중..."
+              location=""
+              variant="info"
+              suffix=""
+            />
+          ) : warningsError ? (
+            <WarningBanner
+              type={'정보' as any}
+              date="특보 정보를 불러올 수 없습니다"
+              location=""
+              variant="info"
+              suffix=""
+            />
+          ) : latestWarning ? (
+            <WarningBanner
+              type={latestWarning.type as any}
+              date={latestWarning.date}
+              location={latestWarning.location}
+              variant="latest"
+              suffix="발효"
+            />
+          ) : (
+            <WarningBanner
+              type="정보"
+              date="현재 발효 중인 특보가 없습니다"
+              location=""
+              variant="info"
+              suffix=""
+            />
+          )}
         </div>
 
         {/* b-2. 위젯: 해루 가능 시간, 현재 수온 */}
