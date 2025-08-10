@@ -1,9 +1,10 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { Button } from '../../components/atoms';
 import { Text } from '../../components/atoms';
 import { WarningBanner, WeatherWidgets } from '../../components/molecules';
 import { useNavigate } from '@tanstack/react-router';
 import { useFisheries, FISHERY_ID_BY_LOCATION, findFisheryById } from '../../hooks/useFisheries';
+import { useWeatherFishery } from '../../hooks/useWeatherFishery';
 import styles from './LocationSelectPage.module.css';
 
 // 지역 정보 타입 정의
@@ -16,7 +17,7 @@ interface LocationInfo {
 const locations: LocationInfo[] = [
   { id: 'gueom', name: '구업', displayName: '구업어촌계유어장' },
   { id: 'gonae', name: '고내', displayName: '고내어촌계유어장' },
-  { id: 'aewol', name: '애월', displayName: '애월3리 어촌계' },
+  { id: 'aewol', name: '애월', displayName: '애월어촌계유어장' },
   { id: 'suwon', name: '수원', displayName: '수원어촌계유어장' },
 ];
 
@@ -25,7 +26,29 @@ const LocationSelectPage = () => {
   const navigate = useNavigate();
 
   // 어장 데이터 가져오기
-  const { data: fisheriesData, isLoading, error } = useFisheries();
+  const {
+    data: fisheriesData,
+    isLoading: fisheriesLoading,
+    error: fisheriesError,
+  } = useFisheries();
+
+  // 날씨 데이터 가져오기
+  const { data: weatherData, isLoading: weatherLoading, error: weatherError } = useWeatherFishery();
+
+  // 현재 시간에 따른 날씨 데이터 선택
+  const currentWeatherData = useMemo(() => {
+    if (!weatherData?.data || weatherData.data.length === 0) return null;
+
+    const now = new Date();
+    const currentHour = now.getHours();
+
+    // 오전: 0-11시, 오후: 12-23시
+    const timePeriod = currentHour < 12 ? '오전' : '오후';
+
+    return (
+      weatherData.data.find((item) => item.forecastTimePeriod === timePeriod) || weatherData.data[0]
+    );
+  }, [weatherData]);
 
   const handleLocationClick = (locationId: string) => {
     setSelectedLocation(locationId);
@@ -42,6 +65,11 @@ const LocationSelectPage = () => {
         }
       }
     }
+
+    // 날씨 데이터가 로드되었을 때만 콘솔 출력
+    if (weatherData?.data) {
+      console.log(`${locationId} 선택 - 날씨 정보:`, weatherData.data);
+    }
   };
 
   const handleStartHarvesting = () => {
@@ -57,9 +85,34 @@ const LocationSelectPage = () => {
       localStorage.setItem('selectedLocation', JSON.stringify(selectedLocationInfo));
     }
 
+    // 선택된 어장 정보를 localStorage에 저장
+    if (fisheriesData?.data) {
+      const fisheryId = FISHERY_ID_BY_LOCATION[selectedLocation];
+      if (fisheryId) {
+        const fishery = findFisheryById(fisheriesData.data, fisheryId);
+        if (fishery) {
+          localStorage.setItem('selectedFishery', JSON.stringify(fishery));
+        }
+      }
+    }
+
+    // 현재 날씨 정보를 localStorage에 저장
+    if (currentWeatherData) {
+      localStorage.setItem('currentWeather', JSON.stringify(currentWeatherData));
+    }
+
+    // 전체 날씨 데이터를 localStorage에 저장
+    if (weatherData?.data) {
+      localStorage.setItem('weatherData', JSON.stringify(weatherData.data));
+    }
+
     // MainPage로 이동
     navigate({ to: '/main' });
   };
+
+  // 로딩 상태 통합
+  const isLoading = fisheriesLoading || weatherLoading;
+  const hasError = fisheriesError || weatherError;
 
   return (
     <div className={styles.container}>
@@ -98,16 +151,16 @@ const LocationSelectPage = () => {
       {isLoading && (
         <div className={styles.loadingMessage}>
           <Text size="md" color="gray">
-            어장 정보를 불러오는 중...
+            정보를 불러오는 중...
           </Text>
         </div>
       )}
 
       {/* 에러 상태 표시 */}
-      {error && (
+      {hasError && (
         <div className={styles.errorMessage}>
           <Text size="md" color="red">
-            어장 정보를 불러올 수 없습니다.
+            정보를 불러올 수 없습니다.
           </Text>
         </div>
       )}
@@ -127,13 +180,15 @@ const LocationSelectPage = () => {
               {
                 icon: (
                   <img
-                    src="/sunIcon.svg"
-                    alt="태양 아이콘"
+                    src="/seaTemp.svg"
+                    alt="수온 아이콘"
                     style={{ width: '24px', height: '24px' }}
                   />
                 ),
                 subtitle: '현재 날씨',
-                data: '32.7℃ / 맑음',
+                data: currentWeatherData
+                  ? `${currentWeatherData.averageWaterTemperature}℃ / ${currentWeatherData.weatherDescription}`
+                  : '32.7℃ / 맑음',
               },
               {
                 icon: (
@@ -144,7 +199,7 @@ const LocationSelectPage = () => {
                   />
                 ),
                 subtitle: '위험도',
-                data: '보통',
+                data: currentWeatherData?.seaTravelIndex || '보통',
               },
             ]}
           />
