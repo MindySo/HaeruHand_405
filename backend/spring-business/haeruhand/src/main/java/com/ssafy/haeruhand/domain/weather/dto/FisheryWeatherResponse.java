@@ -11,6 +11,7 @@ import java.time.LocalDateTime;
 @Builder
 public record FisheryWeatherResponse(
         Long id,
+        String areaName,
         LocalDate forecastDate,
         String forecastTimePeriod,
         BigDecimal averageAirTemperature,

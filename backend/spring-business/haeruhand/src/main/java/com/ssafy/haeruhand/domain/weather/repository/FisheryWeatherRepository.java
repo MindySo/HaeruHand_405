@@ -8,5 +8,5 @@ import java.util.List;
 
 public interface FisheryWeatherRepository extends JpaRepository<FisheryWeather, Long> {
 
-    List<FisheryWeather> findByForecastDateOrderByForecastTimePeriod(LocalDate forecastDate);
+    List<FisheryWeather> findByAreaNameAndForecastDateOrderByForecastTimePeriod(String areaName, LocalDate forecastDate);
 }

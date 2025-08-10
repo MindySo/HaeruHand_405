@@ -36,4 +36,7 @@ public class Fishery extends BaseEntity {
 
     @Column(name = "region_code", length = 8, nullable = false)
     private String regionCode;
+
+    @Column(name = "area_name", length = 50, nullable = false) // ★ 추가
+    private String areaName;
 }

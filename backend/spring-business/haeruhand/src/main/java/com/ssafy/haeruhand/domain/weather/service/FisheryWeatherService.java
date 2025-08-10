@@ -17,9 +17,11 @@ public class FisheryWeatherService {
 
     private final FisheryWeatherRepository fisheryWeatherRepository;
 
-    public List<FisheryWeatherResponse> getFisheryWeatherByDate(LocalDate date) {
+    public List<FisheryWeatherResponse> getFisheryWeatherByDate(String area, LocalDate date) {
         LocalDate targetDate = date != null ? date : LocalDate.now();
-        List<FisheryWeather> weathers = fisheryWeatherRepository.findByForecastDateOrderByForecastTimePeriod(targetDate);
+        String targetArea = (area == null || area.isBlank()) ? "제주북서" : area.trim();
+        List<FisheryWeather> weathers =
+                fisheryWeatherRepository.findByAreaNameAndForecastDateOrderByForecastTimePeriod(targetArea, targetDate);
         return weathers.stream()
                 .map(FisheryWeatherResponse::from)
                 .toList();

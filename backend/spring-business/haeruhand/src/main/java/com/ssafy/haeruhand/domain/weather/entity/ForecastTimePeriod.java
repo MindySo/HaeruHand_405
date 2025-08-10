@@ -6,7 +6,8 @@ import java.util.Optional;
 public enum ForecastTimePeriod {
 
     MORNING("AM", "오전"),
-    AFTERNOON("PM", "오후");
+    AFTERNOON("PM", "오후"),
+    ALL("ALL", "일일");
 
     private final String code;
     private final String label;
@@ -27,6 +28,15 @@ public enum ForecastTimePeriod {
     public static Optional<ForecastTimePeriod> fromCode(String code) {
         return Arrays.stream(values())
                 .filter(period -> period.code.equalsIgnoreCase(code))
+                .findFirst();
+    }
+
+    public static Optional<ForecastTimePeriod> fromLabel(String label) {
+        if (label == null || label.isBlank()) {
+            return Optional.empty();
+        }
+        return Arrays.stream(values())
+                .filter(period -> period.label.equals(label.trim()))
                 .findFirst();
     }
 
