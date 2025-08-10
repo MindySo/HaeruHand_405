@@ -106,7 +106,7 @@ public class TideRefreshService {
 
         List<RawPoint> points = new ArrayList<>();
         for (JsonNode node : data) {
-            String code = text(node, "h1_code");
+            String code = text(node, "hl_code");
             String time = text(node, "tph_time");
             if (code == null || time == null) {
                 continue;
