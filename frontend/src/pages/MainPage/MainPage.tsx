@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Badge, Text } from '../../components/atoms';
 import {
   HarvestButton,
@@ -20,29 +20,64 @@ export interface WarningBannerProps {
   variant?: 'latest' | 'past' | 'info';
 }
 
+interface LocationInfo {
+  id: string;
+  name: string;
+  displayName: string;
+}
+
 export const MainPage = () => {
   const navigate = useNavigate();
+  const [selectedLocation, setSelectedLocation] = useState<LocationInfo | null>(null);
 
   // 모달 창 띄우기 state
   const [isInfoModalOpen, setIsInfoModalOpen] = useState(false);
   const openInfoModal = () => setIsInfoModalOpen(true);
   const closeInfoModal = () => setIsInfoModalOpen(false);
 
+  // 컴포넌트 마운트 시 localStorage에서 선택된 지역 정보 가져오기
+  useEffect(() => {
+    const savedLocation = localStorage.getItem('selectedLocation');
+    if (savedLocation) {
+      try {
+        const locationInfo = JSON.parse(savedLocation);
+        setSelectedLocation(locationInfo);
+      } catch (error) {
+        console.error('저장된 지역 정보를 파싱할 수 없습니다:', error);
+        // 기본값 설정
+        setSelectedLocation({
+          id: 'aewol',
+          name: '애월',
+          displayName: '애월3리 어촌계',
+        });
+      }
+    } else {
+      // 저장된 정보가 없으면 기본값 설정
+      setSelectedLocation({
+        id: 'aewol',
+        name: '애월',
+        displayName: '애월3리 어촌계',
+      });
+    }
+  }, []);
+
   // 위치 트래킹 버튼 클릭 핸들러
   const handleTrackingClick = () => {
-    navigate({ to: '/buddy-tracking' });
+    navigate({ to: '/buddy' });
   };
 
   const handleAnalysisButtonClick = () => {
-    navigate({ to: '/photo-analysis' });
+    navigate({ to: '/photo' });
   };
 
   const handleWeatherAlertClick = () => {
-    navigate({ to: '/weather-alert' });
+    navigate({ to: '/weather' });
   };
 
   const handleBackButtonClick = () => {
-    navigate({ to: '/location-select' });
+    // localStorage에서 선택된 지역 정보 삭제
+    localStorage.removeItem('selectedLocation');
+    navigate({ to: '/map' });
   };
 
   // -------------------------------------------------------------------------------------
@@ -68,7 +103,7 @@ export const MainPage = () => {
             <img src="/backButton.svg" alt="뒤로가기" className={styles.backButtonIcon} />
           </button>
           <Text size="xl" weight="bold" color="dark">
-            애월3리 어촌계
+            {selectedLocation?.displayName || '애월3리 어촌계'}
           </Text>
         </div>
       </div>

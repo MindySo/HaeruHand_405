@@ -15,7 +15,7 @@ export const LoginPage: React.FC = () => {
   // 이미 인증된 사용자는 LocationSelect 페이지로 리다이렉트
   useEffect(() => {
     if (isAuthenticated()) {
-      navigate({ to: '/location-select' });
+      navigate({ to: '/map' });
       console.log('이미 로그인된 사용자');
     }
   }, [isAuthenticated, navigate]);
