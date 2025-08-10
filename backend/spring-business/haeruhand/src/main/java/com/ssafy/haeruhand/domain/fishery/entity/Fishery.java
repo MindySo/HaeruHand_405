@@ -3,8 +3,6 @@ package com.ssafy.haeruhand.domain.fishery.entity;
 import com.ssafy.haeruhand.global.domain.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.SQLDelete;
-import org.hibernate.annotations.Where;
 
 import java.math.BigDecimal;
 
