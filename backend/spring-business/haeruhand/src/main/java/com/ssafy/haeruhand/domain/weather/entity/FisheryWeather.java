@@ -50,4 +50,19 @@ public class FisheryWeather extends BaseEntity {
 
     @Column(name = "sea_travel_index", length = 10)
     private String seaTravelIndex;
+
+    public void apply(
+            BigDecimal averageAirTemperature,
+            BigDecimal averageWaterTemperature,
+            BigDecimal averageWaveHeight,
+            BigDecimal averageWindSpeed,
+            String weatherDescription,
+            String seaTravelIndex) {
+        this.averageAirTemperature = averageAirTemperature;
+        this.averageWaterTemperature = averageWaterTemperature;
+        this.averageWaveHeight = averageWaveHeight;
+        this.averageWindSpeed = averageWindSpeed;
+        this.weatherDescription = weatherDescription;
+        this.seaTravelIndex = seaTravelIndex;
+    }
 }

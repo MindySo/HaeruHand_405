@@ -7,7 +7,7 @@ public enum ForecastTimePeriod {
 
     MORNING("AM", "오전"),
     AFTERNOON("PM", "오후"),
-    ALL("ALL", "일일");
+    ALL("ALL", "일");
 
     private final String code;
     private final String label;

@@ -60,3 +60,6 @@ springdoc:
 khoa:
   api:
     key: ${KHOA_API_KEY}
+seatrip:
+  api:
+    key: ${SEATRIP_API_KEY}

@@ -52,4 +52,14 @@ public class Tide {
         return Optional.ofNullable(firstLowTideTime)
                 .map(time -> time.plusHours(2));
     }
+
+    public void apply(LocalTime firstHighTideTime,
+                      LocalTime firstLowTideTime,
+                      LocalTime secondHighTideTime,
+                      LocalTime secondLowTideTime) {
+        this.firstHighTideTime = firstHighTideTime;
+        this.firstLowTideTime = firstLowTideTime;
+        this.secondHighTideTime = secondHighTideTime;
+        this.secondLowTideTime = secondLowTideTime;
+    }
 }
