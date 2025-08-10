@@ -60,7 +60,10 @@ public enum ErrorStatus implements BaseErrorStatus {
 
     // 조석
     TIDE_NOT_FOUND(HttpStatus.NOT_FOUND, 404, "조석 정보를 찾을 수 없습니다."),
-    KHOA_BAD_RESPONSE(HttpStatus.BAD_GATEWAY, 502, "KHOA 응답이 올바르지 않습니다.");
+    KHOA_BAD_RESPONSE(HttpStatus.BAD_GATEWAY, 502, "KHOA 응답이 올바르지 않습니다."),
+
+    // fishery
+    FISHERY_NOT_FOUND(HttpStatus.NOT_FOUND, 404, "존재하지 않는 어장입니다.");
 
     private final HttpStatus httpStatus;
     private final Integer code;
