@@ -58,14 +58,14 @@
 .filterTab {
   background: none;
   border: none;
-  padding: 8px;
-  border-radius: 8px;
+  padding: 8px 24px;
+  border-radius: 12px;
   cursor: pointer;
   white-space: nowrap;
 }
 
 .filterTab.active {
-  background-color: #f0f0f0;
+  background-color: #e7e9ec;
 }
 
 .alertList {
