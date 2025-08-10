@@ -7,8 +7,6 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity
 @Table(name = "location_share_room")
@@ -43,10 +41,6 @@ public class LocationShareRoom extends BaseEntity {
 
     @Column(name = "closed_at")
     private LocalDateTime closedAt;
-
-    @OneToMany(mappedBy = "room", cascade = CascadeType.PERSIST)
-    @Builder.Default
-    private List<LocationShareMember> members = new ArrayList<>();
 
     public void close() {
         this.isActive = false;
