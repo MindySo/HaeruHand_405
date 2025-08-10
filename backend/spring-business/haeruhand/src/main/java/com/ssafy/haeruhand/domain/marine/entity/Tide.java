@@ -13,7 +13,10 @@ import java.util.Optional;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder
-@Table(name = "tide")
+@Table(
+        name = "tide",
+        uniqueConstraints = @UniqueConstraint(columnNames = {"station_code", "observation_date"})
+)
 @Entity
 public class Tide {
 
