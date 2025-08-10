@@ -26,6 +26,7 @@ public record FisheryWeatherResponse(
     public static FisheryWeatherResponse from(FisheryWeather fisheryWeather) {
         return FisheryWeatherResponse.builder()
                 .id(fisheryWeather.getId())
+                .areaName(fisheryWeather.getAreaName())
                 .forecastDate(fisheryWeather.getForecastDate())
                 .forecastTimePeriod(fisheryWeather.getForecastTimePeriod().label())
                 .averageAirTemperature(fisheryWeather.getAverageAirTemperature())
