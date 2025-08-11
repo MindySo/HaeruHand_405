@@ -35,6 +35,15 @@ public enum WarningCommand {
                 .findFirst();
     }
 
+    public static Optional<WarningCommand> fromLabel(String label) {
+        if (label == null || label.isBlank()) {
+            return Optional.empty();
+        }
+        return Arrays.stream(values())
+                .filter(command -> command.label.equals(label.trim()))
+                .findFirst();
+    }
+
     @Override
     public String toString() {
         return label + " (" + code + ")";

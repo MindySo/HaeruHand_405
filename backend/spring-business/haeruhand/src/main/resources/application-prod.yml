@@ -63,3 +63,6 @@ khoa:
 seatrip:
   api:
     key: ${SEATRIP_API_KEY}
+kma:
+  api:
+    key: ${KMA_API_KEY}

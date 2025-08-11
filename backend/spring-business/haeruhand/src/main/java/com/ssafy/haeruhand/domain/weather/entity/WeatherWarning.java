@@ -10,7 +10,12 @@ import java.time.LocalDateTime;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder
-@Table(name = "weather_warning")
+@Table(
+        name = "weather_warning",
+        uniqueConstraints = @UniqueConstraint(
+                columnNames = {"region_code", "announced_at", "warning_type", "warning_command"}
+        )
+)
 @Entity
 public class WeatherWarning extends BaseEntity {
 
