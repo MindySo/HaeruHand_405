@@ -70,13 +70,13 @@
 <script>
     // Firebase 설정
     const firebaseConfig = {
-        apiKey: "AIzaSyD6V17pyg4QNyV_QQXV5if9brML8nGEu5c",
-        authDomain: "haeruhand-b0ca7.firebaseapp.com",
-        projectId: "haeruhand-b0ca7",
-        storageBucket: "haeruhand-b0ca7.firebasestorage.app",
-        messagingSenderId: "983094973633",
-        appId: "1:983094973633:web:3b81d27322fff0b581b040",
-        measurementId: "G-F4VLBQBWMN"
+        apiKey: "AIzaSyB6zO4euaX3bhPUBi-HFuF7rlkPs4AoKjk",
+        authDomain: "haeruhand-e75bf.firebaseapp.com",
+        projectId: "haeruhand-e75bf",
+        storageBucket: "haeruhand-e75bf.firebasestorage.app",
+        messagingSenderId: "418951530336",
+        appId: "1:418951530336:web:81509cfbac299a6d4ac005",
+        measurementId: "G-6H0X5S11CR"
     };
 
     // 전역 변수
@@ -145,6 +145,7 @@
 
             // 2. FCM 토큰 생성
             updateStatus('FCM 토큰을 생성하고 있습니다...');
+            addLog('FCM 토큰 생성 시작');
             currentToken = await messaging.getToken();
 
             if (!currentToken) {
@@ -157,7 +158,7 @@
             // 3. 백엔드에 토큰 등록 (User ID는 1로 고정)
             updateStatus('백엔드에 토큰을 등록하고 있습니다...');
 
-            const registerResponse = await fetch('http://localhost:8080/api/v1/notifications/tokens', {
+            const registerResponse = await fetch('http://i13a405.p.ssafy.io/api/v1/notifications/tokens', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -199,7 +200,7 @@
             addLog('테스트 이벤트 발생 요청...');
             updateStatus('테스트 이벤트를 발생시키고 있습니다...');
 
-            const eventResponse = await fetch(`http://localhost:8080/api/v1/test/test-alert?userId=${FIXED_USER_ID}`, {
+            const eventResponse = await fetch(`http://i13a405.p.ssafy.io/api/v1/test/test-alert?userId=${FIXED_USER_ID}`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -226,13 +227,38 @@
         console.log('FCM 메시지 수신(foreground):', payload);
         addLog('실시간 FCM 메시지 수신: ' + payload.notification?.title);
 
-        // 브라우저 알림 표시
-        if (payload.notification) {
-            new Notification(payload.notification.title, {
-                body: payload.notification.body,
+        // 개선된 코드
+        if (Notification.permission === 'granted') {
+            // Service Worker를 통해 알림 표시 (더 안정적)
+            navigator.serviceWorker.ready.then(registration => {
+                registration.showNotification(payload.notification?.title || '알림', {
+                    body: payload.notification?.body || '새로운 메시지가 도착했습니다.',
+                    icon: '/firebase-logo.png',
+                    tag: 'fcm-notification',
+                    requireInteraction: true,
+                    data: payload.data || {}
+                });
             });
+        } else {
+            // 권한이 없으면 페이지 내에서 시각적 알림 표시
+            showInPageNotification(payload.notification?.title, payload.notification?.body);
         }
     });
+
+    function showInPageNotification(title, body) {
+        // 페이지 내 알림 UI 표시 (fallback)
+        const notification = document.createElement('div');
+        notification.style.cssText = `
+            position: fixed; top: 20px; right: 20px;
+            background: #333; color: white; padding: 15px;
+            border-radius: 5px; z-index: 9999; max-width: 300px;
+        `;
+        notification.innerHTML = `<strong>${title}</strong><br>${body}`;
+        document.body.appendChild(notification);
+
+        setTimeout(() => notification.remove(), 5000);
+    }
+
 
     // 초기화
     updateStatus('시스템 준비 완료. FCM 토큰을 생성하고 등록하세요.');
