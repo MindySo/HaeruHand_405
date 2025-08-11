@@ -34,7 +34,7 @@ const PhotoAnalysisResultPage = () => {
   return (
     <div>
       {/* 로그인 안 된 경우에만 모달 표시 */}
-      {!isAuthenticated() && <LoginModal message="위치 트래킹을 시작" />}
+      {!isAuthenticated() && <LoginModal message="수확물을 AI로 확인" />}
 
       <div className={styles.container}>
         {/* Header */}
