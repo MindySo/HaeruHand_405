@@ -66,7 +66,7 @@ public enum ErrorStatus implements BaseErrorStatus {
     FISHERY_NOT_FOUND(HttpStatus.NOT_FOUND, 404, "존재하지 않는 어장입니다."),
 
     // 해양
-    WEATHER_BAD_RESPONSE(HttpStatus.BAD_GATEWAY, 502, "해양여행예보 API 응답이 올바르지 않습니다.");
+    WEATHER_BAD_RESPONSE(HttpStatus.BAD_GATEWAY, 502, "해양여행예보 API 응답이 올바르지 않습니다."),
 
     // location
     LOCATION_ROOM_NOT_FOUND(HttpStatus.NOT_FOUND, 404, "위치 공유 방을 찾을 수 없습니다."),
