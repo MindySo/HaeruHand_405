@@ -1,4 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
+import { apiClient } from '../apis/apiClient';
 
 interface ApiPageable {
   pageNumber: number;
@@ -54,20 +55,9 @@ const fetchAllWarnings = async (
   page: number = 0,
   size: number = 20,
 ): Promise<WeatherWarningsResponse> => {
-  const response = await fetch(
-    `http://i13a405.p.ssafy.io/api/v1/weather/warnings?page=${page}&size=${size}`,
-    {
-      method: 'GET',
-      headers: { Accept: 'application/json' },
-    },
+  return await apiClient.get<WeatherWarningsResponse>(
+    `/v1/weather/warnings?page=${page}&size=${size}`,
   );
-
-  if (!response.ok) {
-    const errorText = await response.text();
-    throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`);
-  }
-
-  return await response.json();
 };
 
 // 지역별 기상특보 조회
@@ -76,20 +66,9 @@ const fetchWarningsByRegion = async (
   page: number = 0,
   size: number = 20,
 ): Promise<WeatherWarningsResponse> => {
-  const response = await fetch(
-    `http://i13a405.p.ssafy.io/api/v1/weather/warnings/region/${regionCode}?page=${page}&size=${size}`,
-    {
-      method: 'GET',
-      headers: { Accept: 'application/json' },
-    },
+  return await apiClient.get<WeatherWarningsResponse>(
+    `/v1/weather/warnings/region/${regionCode}?page=${page}&size=${size}`,
   );
-
-  if (!response.ok) {
-    const errorText = await response.text();
-    throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`);
-  }
-
-  return await response.json();
 };
 
 // 전체 기상특보 조회 hook

@@ -1,10 +1,11 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { Button } from '../../components/atoms';
 import { Text } from '../../components/atoms';
 import { WarningBanner, WeatherWidgets } from '../../components/molecules';
 import { useNavigate } from '@tanstack/react-router';
 import { useFisheries, FISHERY_ID_BY_LOCATION, findFisheryById } from '../../hooks/useFisheries';
 import { useWeatherFishery } from '../../hooks/useWeatherFishery';
+import { useAuth } from '../../hooks/useAuth';
 import styles from './LocationSelectPage.module.css';
 
 // 지역 정보 타입 정의
@@ -24,16 +25,28 @@ const locations: LocationInfo[] = [
 const LocationSelectPage = () => {
   const [selectedLocation, setSelectedLocation] = useState<string | null>(null);
   const navigate = useNavigate();
+  const { isAuthenticated } = useAuth();
 
-  // 어장 데이터 가져오기
+  // 어장 데이터 가져오기 (로그인 완료 후에만)
   const {
     data: fisheriesData,
     isLoading: fisheriesLoading,
     error: fisheriesError,
   } = useFisheries();
 
-  // 날씨 데이터 가져오기
+  // 날씨 데이터 가져오기 (로그인 완료 후에만)
   const { data: weatherData, isLoading: weatherLoading, error: weatherError } = useWeatherFishery();
+
+  // 로그인 상태 확인 및 리다이렉트
+  useEffect(() => {
+    if (!isAuthenticated()) {
+      console.log('로그인이 필요합니다. 로그인 페이지로 이동합니다.');
+      navigate({ to: '/login' });
+      return;
+    }
+
+    console.log('로그인 상태 확인됨, API 호출 시작');
+  }, [isAuthenticated, navigate]);
 
   // 현재 시간에 따른 날씨 데이터 선택
   const currentWeatherData = useMemo(() => {
@@ -110,9 +123,29 @@ const LocationSelectPage = () => {
     navigate({ to: '/main' });
   };
 
-  // 로딩 상태 통합
-  const isLoading = fisheriesLoading || weatherLoading;
+  // 로딩 상태 통합 (로그인 상태도 고려)
+  const isLoading = !isAuthenticated() || fisheriesLoading || weatherLoading;
   const hasError = fisheriesError || weatherError;
+
+  // 로그인되지 않은 상태면 로딩 표시
+  if (!isAuthenticated()) {
+    return (
+      <div className={styles.container}>
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            height: '100vh',
+          }}
+        >
+          <Text size="lg" color="gray">
+            로그인 확인 중...
+          </Text>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className={styles.container}>
@@ -140,7 +173,7 @@ const LocationSelectPage = () => {
               selectedLocation === location.id ? styles.selected : ''
             }`}
             onClick={() => handleLocationClick(location.id)}
-            disabled={isLoading} // 데이터 로딩 중에는 버튼 비활성화
+            disabled={isLoading}
           >
             {location.name}
           </button>
@@ -209,7 +242,7 @@ const LocationSelectPage = () => {
           variant="primary"
           fullWidth
           onClick={handleStartHarvesting}
-          disabled={!selectedLocation || isLoading} // 지역이 선택되지 않거나 로딩 중이면 버튼 비활성화
+          disabled={!selectedLocation || isLoading}
         >
           해루하러 가기
         </Button>

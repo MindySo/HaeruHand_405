@@ -1,4 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
+import { apiClient } from '../apis/apiClient';
 
 interface TideData {
   id: number;
@@ -21,17 +22,7 @@ interface TidesResponse {
 
 // 조석 데이터 조회 (기본값: 오늘 날짜)
 const fetchTides = async (stationCode: string = 'DT_0004'): Promise<TidesResponse> => {
-  const response = await fetch(`http://i13a405.p.ssafy.io/api/v1/tides/station/${stationCode}`, {
-    method: 'GET',
-    headers: { Accept: 'application/json' },
-  });
-
-  if (!response.ok) {
-    const errorText = await response.text();
-    throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`);
-  }
-
-  return await response.json();
+  return await apiClient.get<TidesResponse>(`/v1/tides/station/${stationCode}`);
 };
 
 // 조석 데이터 조회 hook

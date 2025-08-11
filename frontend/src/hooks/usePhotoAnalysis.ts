@@ -1,4 +1,5 @@
 import { useMutation } from '@tanstack/react-query';
+import { apiClient } from '../apis/apiClient';
 
 interface SignedUrlResponse {
   is_success: boolean;
@@ -36,24 +37,10 @@ interface SeafoodDetectResponse {
 
 // Signed URL 요청 함수
 const requestSignedUrl = async (imageExtension: string): Promise<SignedUrlResponse> => {
-  const response = await fetch('http://i13a405.p.ssafy.io/api/v1/storage/signed-urls', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      Accept: 'application/json',
-    },
-    body: JSON.stringify({
-      type: 'ai',
-      imageExtension: imageExtension,
-    }),
+  return await apiClient.post<SignedUrlResponse>('/v1/storage/signed-urls', {
+    type: 'ai',
+    imageExtension: imageExtension,
   });
-
-  if (!response.ok) {
-    const errorText = await response.text();
-    throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`);
-  }
-
-  return await response.json();
 };
 
 // 파일 업로드 함수
@@ -64,39 +51,14 @@ const uploadFileToSignedUrl = async ({
   signedUrl: string;
   file: File;
 }): Promise<void> => {
-  const response = await fetch(signedUrl, {
-    method: 'PUT',
-    headers: {
-      'Content-Type': file.type,
-    },
-    body: file,
-  });
-
-  if (!response.ok) {
-    const errorText = await response.text();
-    throw new Error(`Upload failed! status: ${response.status}, message: ${errorText}`);
-  }
+  return await apiClient.uploadFile(signedUrl, file);
 };
 
 // AI 분석 요청 함수
 const requestSeafoodDetection = async (imageUrl: string): Promise<SeafoodDetectResponse> => {
-  const response = await fetch('http://i13a405.p.ssafy.io/api/v1/seafood-detect', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      Accept: 'application/json',
-    },
-    body: JSON.stringify({
-      imageUrl: imageUrl,
-    }),
+  return await apiClient.post<SeafoodDetectResponse>('/v1/seafood-detect', {
+    imageUrl: imageUrl,
   });
-
-  if (!response.ok) {
-    const errorText = await response.text();
-    throw new Error(`AI analysis failed! status: ${response.status}, message: ${errorText}`);
-  }
-
-  return await response.json();
 };
 
 export const usePhotoAnalysis = () => {

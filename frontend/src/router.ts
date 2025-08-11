@@ -7,6 +7,7 @@ import LocationSelectPage from './pages/LocationSelectPage/LocationSelectPage';
 import BuddyTrackingPage from './pages/BuddyTrackingPage/BuddyTrackingPage';
 import { MainPage } from './pages/MainPage/MainPage';
 import { LoginPage } from './pages/LoginPage/LoginPage';
+import JoinPage from './pages/JoinPage/JoinPage';
 
 const rootRoute = createRootRoute();
 
@@ -58,6 +59,12 @@ const loginRoute = createRoute({
   component: LoginPage,
 });
 
+const joinRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: '/join',
+  component: JoinPage,
+});
+
 const routeTree = rootRoute.addChildren([
   homeRoute,
   weatherAlertRoute,
@@ -67,6 +74,7 @@ const routeTree = rootRoute.addChildren([
   buddyTrackingRoute,
   mainRoute,
   loginRoute,
+  joinRoute,
 ]);
 export const router = createRouter({ routeTree });
 
