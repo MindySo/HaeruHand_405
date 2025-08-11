@@ -73,6 +73,13 @@ export const useKakaoLogin = () => {
         throw new Error(body.message || '카카오 로그인 실패');
       }
 
+      // 이미 로그인된 상태인지 확인
+      if (sessionStorage.getItem('userInfo') && sessionStorage.getItem('accessToken')) {
+        console.log('이미 로그인된 상태, 리다이렉트만 수행');
+        navigate({ to: '/map' });
+        return;
+      }
+
       // 1) user 저장
       sessionStorage.setItem('userInfo', JSON.stringify(body.data.user));
 
@@ -94,14 +101,19 @@ export const useKakaoLogin = () => {
         sessionStorage.setItem('accessTokenExpiresAt', String(expiresAt));
       }
 
-      // 4) 토큰이 완전히 저장된 후 네비게이션 (약간의 지연)
+      // 4) 토큰이 완전히 저장된 후 네비게이션
       setTimeout(() => {
         navigate({ to: '/map' });
       }, 100);
     },
     onError: (error) => {
       console.error('로그인 실패:', error);
-      alert(error instanceof Error ? error.message : '로그인에 실패했습니다.');
+      // 500 에러는 서버 문제이므로 사용자에게 명확한 메시지 표시
+      if (error.message.includes('HTTP 500')) {
+        alert('서버 오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
+      } else {
+        alert(error instanceof Error ? error.message : '로그인에 실패했습니다.');
+      }
     },
   });
 

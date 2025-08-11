@@ -1,28 +1,31 @@
+// src/pages/TrackingSharePage.tsx
 import { Button, Text } from '../../components/atoms';
 import styles from './TrackingSharePage.module.css';
 import { useNavigate } from '@tanstack/react-router';
 import { useEffect, useState } from 'react';
 import QRCode from 'react-qr-code';
+import { useLocationSocket } from '../../stores/useLocationSocket';
 
 type CreateRoomResp = {
   is_success: boolean;
-  data?: {
-    roomId: number;
-    roomCode: string;
-    deepLink: string;
-    startedAt: string | number[];
-  };
+  data?: { roomId: number; roomCode: string; deepLink: string; startedAt: string | number[] };
   message?: string;
 };
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL as string;
+const makeWsUrl = () => {
+  const u = new URL(API_BASE, location.origin);
+  const scheme = u.protocol === 'https:' ? 'wss' : 'ws';
+  return `${scheme}://${u.host}/api/v1/ws`;
+};
+const WS_URL = makeWsUrl();
 
-// 토큰: 형식 가드 제거(백엔드 토큰 포맷 변경 대비)
 const getAccessToken = () =>
   sessionStorage.getItem('accessToken') || localStorage.getItem('accessToken') || '';
 
 export default function TrackingSharePage() {
   const navigate = useNavigate();
+  const { connect } = useLocationSocket();
   const [deepLink, setDeepLink] = useState('');
   const [roomCode, setRoomCode] = useState('');
 
@@ -45,18 +48,47 @@ export default function TrackingSharePage() {
         return Number(f.id) || 0;
       }
     } catch {}
-    return 0;
+    return 1; // 기본값 (테스트 HTML과 동일하게 1 사용 가능)
   };
 
   useEffect(() => {
-    const createRoom = async () => {
-      const token = getAccessToken();
+    const saved = sessionStorage.getItem('locationRoom');
+    const isHost = sessionStorage.getItem('isLocationRoomHost') === 'true';
+    const token = getAccessToken();
+
+    // STOMP가 아직이면 Buddy에서 로드됨. 여기선 연결 실패 시 무시하고 QR만 보여줘도 됨.
+    const tryConnect = async (roomCode: string, joinToken: string) => {
+      if (!token) return;
+      try {
+        await connect({ wsUrl: WS_URL, accessToken: token, room: { roomCode, joinToken } });
+        console.log('Share 페이지에서 WebSocket 연결 성공');
+      } catch (e) {
+        // 연결 실패해도 QR 공유는 가능하게 그대로 둔다.
+        console.warn('WS connect from /share failed (continue showing QR):', e);
+      }
+    };
+
+    // 방 재사용
+    if (saved && isHost) {
+      try {
+        const { roomCode, deepLink, joinToken } = JSON.parse(saved);
+        if (roomCode && deepLink) {
+          setRoomCode(roomCode);
+          setDeepLink(deepLink);
+          // 테스트 HTML처럼 /share에서도 연결을 시도
+          if (joinToken) tryConnect(roomCode, joinToken);
+          return;
+        }
+      } catch {}
+    }
+
+    // 새 방 생성
+    (async () => {
       if (!token) {
         alert('로그인이 필요합니다.');
         navigate({ to: '/login' });
         return;
       }
-
       try {
         const fisheryId = getSelectedFisheryId();
         const resp = await fetch(`${API_BASE}/v1/location/rooms`, {
@@ -86,8 +118,9 @@ export default function TrackingSharePage() {
         setDeepLink(deepLink);
         setRoomCode(roomCode);
 
-        const joinToken = extractJoinToken(deepLink);
-        // 호스트가 사용할 세션 저장
+        const joinToken = extractJoinToken(deepLink) || '';
+
+        // 세션 저장
         sessionStorage.setItem(
           'locationRoom',
           JSON.stringify({ roomId, roomCode, deepLink, joinToken }),
@@ -95,20 +128,15 @@ export default function TrackingSharePage() {
         sessionStorage.setItem('isLocationRoomHost', 'true');
         sessionStorage.setItem('hostRoomCode', roomCode);
 
-        console.log(
-          '[share] locationRoom saved:',
-          JSON.parse(sessionStorage.getItem('locationRoom')!),
-        );
+        // 테스트 HTML과 동일: 생성 즉시 WS 연결 시도
+        if (joinToken) tryConnect(roomCode, joinToken);
       } catch (e: any) {
         console.error('방 생성 에러', e);
         alert(e?.message || '방을 생성할 수 없습니다. 다시 시도해 주세요.');
         navigate({ to: '/buddy' });
       }
-    };
-
-    createRoom();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    })();
+  }, [navigate, connect]);
 
   return (
     <div className={styles.container}>

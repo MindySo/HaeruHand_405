@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useCallback, useEffect, useMemo } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from '@tanstack/react-router';
 
@@ -29,8 +29,22 @@ export const useAuth = () => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
 
-  // 토큰 재발급
-  const { mutateAsync: reissueToken } = useMutation({
+  // 인증 상태를 useMemo로 캐싱하여 불필요한 재계산 방지
+  const authState = useMemo(() => {
+    const token = getAccessToken();
+    const userInfo = sessionStorage.getItem('userInfo') || localStorage.getItem('userInfo');
+    const isAuth = Boolean(token && userInfo);
+
+    // 개발 환경에서만 한 번씩 로그 출력
+    if (import.meta.env.DEV && isAuth) {
+      console.log('Auth check:', { hasToken: !!token, hasUserInfo: !!userInfo });
+    }
+
+    return { isAuth, token, userInfo };
+  }, []);
+
+  // 토큰 재발급 mutation
+  const reissueToken = useMutation({
     mutationFn: async () => {
       const refreshToken = getRefreshToken();
       if (!refreshToken) throw new Error('Refresh token not found');
@@ -85,22 +99,21 @@ export const useAuth = () => {
     },
   });
 
-  const logout = () => {
+  const logout = useCallback(() => {
     sessionStorage.clear();
     localStorage.removeItem('accessToken');
     localStorage.removeItem('refreshToken');
     localStorage.removeItem('accessTokenExpiresAt');
     queryClient.clear();
     navigate({ to: '/login' });
-  };
+  }, [navigate, queryClient]);
 
-  const isAuthenticated = () => {
-    const token = getAccessToken();
-    const userInfo = sessionStorage.getItem('userInfo') || localStorage.getItem('userInfo');
-    console.log('Auth check:', { hasToken: !!token, hasUserInfo: !!userInfo });
-    return Boolean(token && userInfo);
-  };
+  // 인증 상태 확인 함수 - 캐시된 값 반환
+  const isAuthenticated = useCallback(() => {
+    return authState.isAuth;
+  }, [authState.isAuth]);
 
+  // 토큰 만료 체크는 5분마다만 실행
   useEffect(() => {
     const checkTokenExpiration = async () => {
       const expiresAtStr =
@@ -115,7 +128,7 @@ export const useAuth = () => {
       const now = Date.now();
       if (now >= expiresAt - 60_000) {
         try {
-          await reissueToken();
+          await reissueToken.mutateAsync();
         } catch (e) {
           console.error('Token reissue failed:', e);
           logout();
@@ -127,11 +140,11 @@ export const useAuth = () => {
     checkTokenExpiration();
     const interval = setInterval(checkTokenExpiration, 5 * 60 * 1000);
     return () => clearInterval(interval);
-  }, [reissueToken]);
+  }, [reissueToken, logout]);
 
   return {
     isAuthenticated,
     logout,
-    reissueToken,
+    reissueToken: reissueToken.mutateAsync,
   };
 };
