@@ -336,16 +336,23 @@ export const MainPage = () => {
               </div>
             )}
 
-            {/* 뱃지 */}
-            <div className={styles.mapBadges}>
-              <Badge variant="neutral" size="small" style={{ borderRadius: '100px' }}>
-                <div className={styles.badgeMarker1} />
-                채집 가능구역
-              </Badge>
-              <Badge variant="neutral" size="small" style={{ borderRadius: '100px' }}>
-                <div className={styles.badgeMarker2} />
-                채집 금지구역
-              </Badge>
+            {/* 카테고리 버튼 */}
+            <div className={styles.categorySearch}>
+              <button className={styles.categoryButton}>
+                <Badge variant="neutral" size="medium" style={{ borderRadius: '100px' }}>
+                  편의점
+                </Badge>
+              </button>
+              <button className={styles.categoryButton}>
+                <Badge variant="neutral" size="medium" style={{ borderRadius: '100px' }}>
+                  주차장
+                </Badge>
+              </button>
+              <button className={styles.categoryButton}>
+                <Badge variant="neutral" size="medium" style={{ borderRadius: '100px' }}>
+                  화장실
+                </Badge>
+              </button>
             </div>
           </div>
         </div>

@@ -45,10 +45,10 @@ export const useFisheries = () => {
 
 // 지역별 어장 매핑 (새로운 id 기준)
 export const FISHERY_ID_BY_LOCATION: Record<string, number> = {
-  gueom: 6, // 구업 -> id: 6
-  gonae: 7, // 고내 -> id: 7
-  aewol: 8, // 애월 -> id: 8 (애월스쿠버만 허용)
-  suwon: 10, // 수원 -> id: 10
+  gueom: 1, // 구업 -> id: 6
+  gonae: 2, // 고내 -> id: 7
+  aewol: 3, // 애월 -> id: 8 (애월스쿠버만 허용)
+  suwon: 5, // 수원 -> id: 10
 };
 
 // 어장 ID로 어장 정보 찾기

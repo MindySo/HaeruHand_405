@@ -123,19 +123,25 @@
   border-radius: 8px;
 }
 
-.mapBadges {
+.categorySearch {
   position: absolute;
   top: 0;
   left: 0;
   z-index: 10;
   display: flex;
   justify-content: baseline;
-  gap: 10px;
-  margin: 14px;
+  gap: 8px;
+  margin: 16px 20px;
   overflow: hidden;
 }
 
-.badgeMarker1 {
+.categoryButton {
+  cursor: pointer;
+  padding: 0;
+  background-color: transparent;
+}
+
+/* .badgeMarker1 {
   width: 8px;
   height: 8px;
   background-color: #6edf74;
@@ -149,7 +155,7 @@
   background-color: #ff0000;
   border-radius: 50%;
   margin-right: 4px;
-}
+} */
 
 .harvestButton {
   margin: 12px 0px;
