@@ -81,11 +81,14 @@ public class TideRefreshService {
                     .orElseGet(() -> Tide.builder()
                             .stationCode(stationCode)
                             .observationDate(date)
-                            .firstHighTideTime(tideTimes.firstHighTideTime)
-                            .firstLowTideTime(tideTimes.firstLowTideTime)
-                            .secondHighTideTime(tideTimes.secondHighTideTime)
-                            .secondLowTideTime(tideTimes.secondLowTideTime)
                             .build());
+            tide.apply(
+                    tideTimes.firstHighTideTime,
+                    tideTimes.firstLowTideTime,
+                    tideTimes.secondHighTideTime,
+                    tideTimes.secondLowTideTime
+            );
+
             tideRepository.save(tide);
         });
     }

@@ -54,7 +54,8 @@ public class FisheryService {
                 fishery.getLatitude(),
                 fishery.getLongitude(),
                 fishery.getStationCode(),
-                fishery.getRegionCode()
+                fishery.getRegionCode(),
+                fishery.getAreaName()
         );
     }
 }
