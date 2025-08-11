@@ -11,10 +11,12 @@ services:
       MYSQL_DATABASE: ${MYSQL_DATABASE}
       MYSQL_USER: ${MYSQL_USER}
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      TZ: Asia/Seoul
     command:
       - --default-authentication-plugin=mysql_native_password
       - --character-set-server=utf8mb4
       - --collation-server=utf8mb4_unicode_ci
+      - --default-time-zone=+09:00
     ports: ["3307:3306"]
     volumes: 
       - mysql-dev-data:/var/lib/mysql
@@ -24,6 +26,8 @@ services:
     image: redis:7.2
     container_name: haeruhand-redis
     restart: unless-stopped
+    environment:
+      - TZ=Asia/Seoul
     env_file: .env.local
     ports: ["6379:6379"]
 

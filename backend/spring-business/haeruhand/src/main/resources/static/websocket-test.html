@@ -413,14 +413,17 @@
             if (!accessToken) return;
 
             try {
-                logMessage('info', 'API 요청', '방 생성 중...');
+                logMessage('info', 'API 요청', '방 생성 중... (어장 ID: 1)');
                 
                 const response = await fetch('http://localhost:8080/v1/location/rooms', {
                     method: 'POST',
                     headers: {
                         'Authorization': `Bearer ${accessToken}`,
                         'Content-Type': 'application/json'
-                    }
+                    },
+                    body: JSON.stringify({
+                        fisheryId: 1  // 어장 ID를 1로 고정
+                    })
                 });
 
                 const data = await response.json();
