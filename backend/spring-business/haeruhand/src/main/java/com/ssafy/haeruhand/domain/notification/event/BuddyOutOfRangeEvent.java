@@ -6,14 +6,15 @@ public class BuddyOutOfRangeEvent extends BaseNotificationEvent {
 
     private static final String NOTIFICATION_TYPE = "BUDDY_OUT_OF_RANGE";
 
-    public BuddyOutOfRangeEvent(Long userId, Long buddyId, String buddyNickname) {
+    public BuddyOutOfRangeEvent(Long userId, Long buddyId, String buddyNickname, String distance) {
         super(
             userId,
-            "팀원이 너무 멀어졌어요!",
-            buddyNickname + "님이 너무 멀리 떨어져 있어요. 함께 움직여 주세요.",
+            "🚨 안전 거리 이탈",
+            "현재 그룹에서 " + distance + "m 떨어져 있습니다. 안전을 위해 그룹과 합류하세요.",
             Map.of(
                 "type", NOTIFICATION_TYPE,
                 "buddyId", String.valueOf(buddyId),
+                "distance", distance,
                 "action", "VIEW_TEAM_LOCATION"
             )
         );
