@@ -40,6 +40,15 @@ public enum WarningType {
                 .findFirst();
     }
 
+    public static Optional<WarningType> fromLabel(String label) {
+        if (label == null || label.isBlank()) {
+            return Optional.empty();
+        }
+        return Arrays.stream(values())
+                .filter(type -> type.label.equals(label.trim()))
+                .findFirst();
+    }
+
     @Override
     public String toString() {
         return label + " (" + code + ")";

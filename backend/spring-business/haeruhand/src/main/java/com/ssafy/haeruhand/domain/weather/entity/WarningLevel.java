@@ -5,8 +5,8 @@ import java.util.Optional;
 
 public enum WarningLevel {
 
-    PRELIMINARY("1", "예비특보"),
-    ADVISORY("2", "주의보"),
+    PRELIMINARY("1", "예비"),
+    ADVISORY("2", "주의"),
     WARNING("3", "경보");
 
     private final String code;
@@ -28,6 +28,15 @@ public enum WarningLevel {
     public static Optional<WarningLevel> fromCode(String code) {
         return Arrays.stream(values())
                 .filter(wl -> wl.code.equalsIgnoreCase(code))
+                .findFirst();
+    }
+
+    public static Optional<WarningLevel> fromLabel(String label) {
+        if (label == null || label.isBlank()) {
+            return Optional.empty();
+        }
+        return Arrays.stream(values())
+                .filter(level -> level.label.equals(label.trim()))
                 .findFirst();
     }
 
