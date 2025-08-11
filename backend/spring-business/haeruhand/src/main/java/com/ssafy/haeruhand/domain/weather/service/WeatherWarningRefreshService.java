@@ -1,13 +1,19 @@
 package com.ssafy.haeruhand.domain.weather.service;
 
 import com.ssafy.haeruhand.domain.weather.client.WeatherWarningFetchClient;
+import com.ssafy.haeruhand.domain.weather.dto.WeatherWarningUpsertResultResponse;
+import com.ssafy.haeruhand.domain.weather.entity.RegionSeaArea;
+import com.ssafy.haeruhand.domain.weather.entity.WarningType;
 import com.ssafy.haeruhand.domain.weather.repository.WeatherWarningRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Set;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -15,19 +21,74 @@ import java.util.Set;
 @Transactional
 public class WeatherWarningRefreshService {
 
-    // 제주도동부 "L1090800"
-    // 제주도서부 "L1090600"
-    // 제주도남부 "L1090900"
-    // 제주도북부 "L1090700"
-    // 제주도동부앞바다 "S1323200"
-    // 제주도서부앞바다 "S1323400"
-    // 제주도남부앞바다 "S1323300"
-    // 제주도북부앞바다 "S1323100"
+    private final WeatherWarningFetchClient fetchClient;
+    private final WeatherWarningRepository warningRepository;
 
-    private final WeatherWarningFetchClient weatherWarningFetchClient;
-    private final WeatherWarningRepository weatherWarningRepository;
+    private static final Set<String> JEJU_SEA_REGION_CODES =
+            Arrays.stream(RegionSeaArea.values())
+                    .map(RegionSeaArea::code)
+                    .collect(Collectors.toUnmodifiableSet());
 
-    private static final Set<String> TARGET_REGIONS = Set.of(
+    private static final DateTimeFormatter KST_DATETIME_FORMATTER = DateTimeFormatter.ofPattern("yyyyMMddHHmm");
 
-    );
+    public WeatherWarningUpsertResultResponse refresh(Optional<String> basicOpt, Optional<String> timestampOpt) {
+        String basic = basicOpt.filter(s -> !s.isBlank()).orElse("f");
+        String timestamp = timestampOpt.orElse("");
+        LocalDateTime baseline = timestamp.isBlank() ? LocalDateTime.now() : parseKstTimestampOrNull(timestamp);
+
+        String responseBody = fetchClient.fetchRaw(basic, timestamp);
+        List<WarningRow> parsedRows = parseResponse(responseBody);
+
+        int requested = 0, success = 0, fail = 0;
+
+        for (WarningRow row : parsedRows) {
+            if (!JEJU_SEA_REGION_CODES.contains(row.regionCode())) {
+                continue;
+            }
+
+            requested++;
+            try {
+            }
+        }
+
+
+        for (ParsedRow row : rows) {
+            if (!TARGET_REGIONS.contains(row.regId)) {
+                continue;
+            }
+
+
+        }
+    }
+
+    private LocalDateTime parseKstTimestampOrNull(String timestamp) {
+        if (timestamp == null || timestamp.isBlank()) {
+            return null;
+        }
+        try {
+            return parseKstTimestamp(timestamp);
+        } catch (Exception ignored) {
+            return null;
+        }
+    }
+
+    private LocalDateTime parseKstTimestamp(String timestamp) {
+        return LocalDateTime.parse(timestamp, KST_DATETIME_FORMATTER);
+    }
+
+    private List<WarningRow> parseResponse(String responseBody) {
+        List<WarningRow> rows = new ArrayList<>();
+        String[] lines = responseBody.split("\\R");
+
+    }
+
+    private record WarningRow(
+            String regionCode,
+            String announcedAt,
+            String effectiveAt,
+            String expectedEndAt,
+            String warningTypeLabel,
+            String warningLevelLabel,
+            String warningCommandLabel
+    ) {}
 }

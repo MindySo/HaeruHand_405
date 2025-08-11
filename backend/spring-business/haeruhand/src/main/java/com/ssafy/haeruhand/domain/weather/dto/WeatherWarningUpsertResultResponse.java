@@ -1,4 +1,6 @@
 package com.ssafy.haeruhand.domain.weather.dto;
 
-public record WeatherWarningUpsertResultResponse() {
+import java.time.LocalDate;
+
+public record WeatherWarningUpsertResultResponse(LocalDate date, int requested, int success, int fail) {
 }
