@@ -22,4 +22,6 @@ public interface WeatherWarningRepository extends JpaRepository<WeatherWarning, 
             WarningType warningType,
             WarningCommand warningCommand
     );
+
+    boolean existsByCreatedAtAfter(LocalDateTime dateTime);
 }
