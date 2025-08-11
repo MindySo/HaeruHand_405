@@ -59,4 +59,24 @@ public class LocationSafetyScheduler {
             log.error("해루질 종료 시간 체크 중 오류 발생", e);
         }
     }
+    
+    /**
+     * 그룹 거리 이탈 감지 (1분마다 실행)
+     * 500m 이상 떨어진 사용자 감지 - 안전 최우선
+     */
+    @Scheduled(fixedRate = 60000)
+    public void checkUserDistance() {
+        long activeRoomCount = roomRepository.countByIsActiveTrue();
+        if (activeRoomCount == 0) {
+            return;
+        }
+        
+        log.debug("그룹 거리 이탈 감지 스케줄러 실행 - 활성 룸: {}", activeRoomCount);
+        
+        try {
+            locationSafetyService.detectAndNotifyDistantUsers();
+        } catch (Exception e) {
+            log.error("그룹 거리 이탈 감지 중 오류 발생", e);
+        }
+    }
 }

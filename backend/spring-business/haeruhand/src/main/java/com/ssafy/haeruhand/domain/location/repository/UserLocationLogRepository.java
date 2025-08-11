@@ -50,4 +50,24 @@ public interface UserLocationLogRepository extends JpaRepository<UserLocationLog
         @Param("since") LocalDateTime since,
         @Param("radiusMeters") double radiusMeters
     );
+    
+    /**
+     * 룸의 모든 사용자 최신 위치 조회
+     * 5분 이내 위치만 유효한 것으로 판단
+     * @param roomId 룸 ID
+     * @return [userId, latitude, longitude, timestamp] 배열 리스트
+     */
+    @Query(value = """
+        SELECT ul.user_id, ul.latitude, ul.longitude, ul.timestamp
+        FROM user_location_log ul
+        WHERE ul.location_share_room_id = :roomId
+        AND ul.timestamp = (
+            SELECT MAX(ul2.timestamp)
+            FROM user_location_log ul2
+            WHERE ul2.user_id = ul.user_id
+            AND ul2.location_share_room_id = :roomId
+            AND ul2.timestamp > DATE_SUB(NOW(), INTERVAL 5 MINUTE)
+        )
+        """, nativeQuery = true)
+    List<Object[]> findLatestLocationsByRoom(@Param("roomId") Long roomId);
 }
