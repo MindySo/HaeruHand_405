@@ -16,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.reactive.function.client.WebClientException;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Scheduler;
 import reactor.core.scheduler.Schedulers;
@@ -34,69 +35,30 @@ public class FishDetectionService {
     private final FishRestrictionRepository fishRestrictionRepository;
 
     public Mono<FishDetectionResponse> detectFish(FishDetectionRequest request) {
-        log.info("=== Fish Detection 시작 ===");
-        log.info("요청 이미지 URL: {}", request.getImageUrl());
 
-        String objectKey = gcsUtil.extractObjectKey(request.getImageUrl());
-        String extension = gcsUtil.extractExtension(objectKey);
-        String signedUrl = signedUrlService.createSignedGetUrl(objectKey);
-
-        log.info("추출된 objectKey: {}, 확장자: {}", objectKey, extension);
-
-        return requestFishNameFromFastApi(signedUrl, extension)
-                .doOnNext(apiResponse -> {
-                    log.info("FastAPI 응답 받음 - 어종명: '{}'", apiResponse.getFishName());
+        return Mono.fromCallable(()->{
+                    String objectKey = gcsUtil.extractObjectKey(request.getImageUrl());
+                    String extension = gcsUtil.extractExtension(objectKey);
+                    String signedUrl = signedUrlService.createSignedGetUrl(objectKey);
+                    return FishDetectionFastApiRequest.builder()
+                            .imageUrl(signedUrl)
+                            .mimeType(extension)
+                            .build();
                 })
-                .flatMap(apiResponse ->
-                        Mono.fromCallable(() -> {
-                            log.info("DB 조회 및 응답 생성 시작 - 어종: '{}'", apiResponse.getFishName());
-                            try {
-                                Optional<FishRestriction> result = fishRestrictionRepository.findBySpeciesName(apiResponse.getFishName());
-                                log.info("DB 조회 완료 - 결과: {}", result.isPresent() ? "데이터 있음" : "데이터 없음");
-
-                                FishRestriction fish = result.orElse(null);
-
-                                FishDetailResponse regulationFish = null;
-                                boolean isCurrentlyRestricted = false;
-
-                                if (fish != null) {
-                                    log.info("어종 정보 찾음: {}", fish.getSpeciesName());
-                                    isCurrentlyRestricted = fish.isCurrentlyRestricted();
-                                    log.info("현재 금어기 여부: {}", isCurrentlyRestricted);
-                                    regulationFish = buildFishDetailResponse(fish);
-                                    log.info("규제 정보 객체 생성 완료");
-                                } else {
-                                    log.info("어종 정보 없음 - 기본값으로 응답 생성");
-                                }
-
-                                FishDetectionResponse response = FishDetectionResponse.builder()
-                                        .fishName(apiResponse.getFishName())
-                                        .regulationFish(regulationFish)
-                                        .isCurrentlyRestricted(isCurrentlyRestricted)
-                                        .build();
-
-                                log.info("최종 응답 생성 완료 - 어종: '{}', 금어기: {}, 규제정보: {}",
-                                        response.getFishName(),
-                                        response.isCurrentlyRestricted(),
-                                        response.getRegulationFish() != null ? "있음" : "없음");
-                                log.info("=== Fish Detection 완료 ===");
-
-                                return response;
-
-                            } catch (Exception e) {
-                                log.error("DB 조회 또는 응답 생성 중 예외 발생: ", e);
-                                FishDetectionResponse errorResponse = FishDetectionResponse.builder()
-                                        .fishName(apiResponse.getFishName())
-                                        .regulationFish(null)
-                                        .isCurrentlyRestricted(false)
-                                        .build();
-                                log.info("예외 처리 - 기본 응답 반환: {}", errorResponse.getFishName());
-                                return errorResponse;
-                            }
-                        }).subscribeOn(Schedulers.boundedElastic())
-                )
-                .doOnError(error -> {
-                    log.error("Fish Detection 전체 프로세스 중 오류 발생: ", error);
+                .subscribeOn(Schedulers.boundedElastic())
+                .onErrorMap(throwable -> {
+                    log.error("GCS URL 처리 중 오류 발생: ", throwable);
+                    return new GlobalException(ErrorStatus.GCS_URL_PROCESSING_ERROR);
+                })
+                .flatMap(this::requestFishNameFromFastApi)
+                .doOnNext(apiResponse -> log.info("FastAPI 응답 받음 - 어종명: '{}'", apiResponse.getFishName()))
+                .flatMap(this::processFishDetectionResult)
+                .doOnNext(response -> {
+                    log.info("최종 응답 생성 완료 - 어종: '{}', 금어기: {}, 규제정보: {}",
+                            response.getFishName(),
+                            response.isCurrentlyRestricted(),
+                            response.getRegulationFish() != null ? "있음" : "없음");
+                    log.info("=== Fish Detection 완료 ===");
                 });
     }
 
@@ -116,25 +78,56 @@ public class FishDetectionService {
                 .build();
     }
 
-    public Mono<FishDetectionFastApiResponse> requestFishNameFromFastApi(String signedUrl, String extension){
-        log.info("FastAPI 호출 시작 - endpoint: /detection/");
-        log.debug("요청 데이터 - mimeType: {}", extension);
 
-        FishDetectionFastApiRequest apiRequest = FishDetectionFastApiRequest.builder()
-                .imageUrl(signedUrl)
-                .mimeType(extension)
-                .build();
+    private Mono<FishDetectionResponse> processFishDetectionResult(FishDetectionFastApiResponse apiResponse) {
+        log.info("DB 조회 및 응답 생성 시작 - 어종: '{}'", apiResponse.getFishName());
+
+        return Mono.fromCallable(() -> fishRestrictionRepository.findBySpeciesName(apiResponse.getFishName()))
+                .subscribeOn(Schedulers.boundedElastic())
+                .map(result -> {
+                    log.info("DB 조회 완료 - 결과: {}", result.isPresent() ? "데이터 있음" : "데이터 없음");
+
+                    FishRestriction fish = result.orElse(null);
+                    FishDetailResponse regulationFish = null;
+                    boolean isCurrentlyRestricted = false;
+
+                    if (fish != null) {
+                        log.info("어종 정보 찾음: {}", fish.getSpeciesName());
+                        isCurrentlyRestricted = fish.isCurrentlyRestricted();
+                        log.info("현재 금어기 여부: {}", isCurrentlyRestricted);
+                        regulationFish = buildFishDetailResponse(fish);
+                        log.info("규제 정보 객체 생성 완료");
+                    } else {
+                        log.info("어종 정보 없음 - 기본값으로 응답 생성");
+                    }
+
+                    return FishDetectionResponse.builder()
+                            .fishName(apiResponse.getFishName())
+                            .regulationFish(regulationFish)
+                            .isCurrentlyRestricted(isCurrentlyRestricted)
+                            .build();
+                });
+    }
+
+
+    public Mono<FishDetectionFastApiResponse> requestFishNameFromFastApi(FishDetectionFastApiRequest apiRequest){
 
         return webClient.post()
-                .uri("http://i13a405.p.ssafy.io/ai/detection/")
+                .uri("http://localhost:8000/detection/")
                 .bodyValue(apiRequest)
                 .retrieve()
                 .bodyToMono(FishDetectionFastApiResponse.class)
+                .timeout(Duration.ofSeconds(30))
                 .doOnNext(response -> {
                     log.info("FastAPI 호출 성공 - 응답 받음");
                 })
-                .doOnError(error -> {
-                    log.error("FastAPI 호출 실패: ", error);
+                .onErrorMap(java.util.concurrent.TimeoutException.class, error -> {
+                    log.error("FastAPI 호출 타임아웃: ", error);
+                    return new GlobalException(ErrorStatus.FAST_API_TIMEOUT);
+                })
+                .onErrorMap(throwable -> {
+                    log.error("FastAPI 호출 실패: ", throwable);
+                    return new GlobalException(ErrorStatus.FAST_API_ERROR);
                 });
     }
 
