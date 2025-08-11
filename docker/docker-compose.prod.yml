@@ -26,9 +26,15 @@ services:
       MYSQL_DATABASE: ${MYSQL_DATABASE}
       MYSQL_USER: ${MYSQL_USER}
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
-    command: --default-authentication-plugin=mysql_native_password
+      TZ: Asia/Seoul
+    command:
+      - --default-authentication-plugin=mysql_native_password
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+      - --default-time-zone=+09:00
     volumes:
       - mysql-prod-data:/var/lib/mysql
+      - ./init-sql:/docker-entrypoint-initdb.d:ro
     networks:
       - backend
 
@@ -37,6 +43,8 @@ services:
     image: redis:7.2
     container_name: haeruhand-redis
     restart: always
+    environment:
+      - TZ=Asia/Seoul
     volumes:
       - redis-prod-data:/data
     networks:
@@ -50,6 +58,8 @@ services:
     env_file: .env.prod
     environment:
       - SPRING_PROFILES_ACTIVE=prod
+      - TZ=Asia/Seoul
+      - JAVA_TOOL_OPTIONS=-Duser.timezone=Asia/Seoul
     depends_on:
       - mysql
       - redis
@@ -62,6 +72,8 @@ services:
     container_name: haeruhand-ai
     restart: always
     env_file: .env.prod
+    environment:
+      - TZ=Asia/Seoul
     depends_on:
       - redis
     networks:
@@ -73,6 +85,8 @@ services:
     container_name: haeruhand-nginx
     restart: always
     env_file: .env.prod
+    environment:
+      - TZ=Asia/Seoul
     depends_on:
       - spring
       - fastapi

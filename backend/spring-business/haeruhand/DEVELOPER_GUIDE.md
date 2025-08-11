@@ -183,7 +183,7 @@ public ResponseEntity<ApiResponse<Void>> handleGlobalException(GlobalException e
 5. **Controller 생성** (`domain/[도메인명]/controller`)
    ```java
    @RestController
-   @RequestMapping("/api/v1/fish")
+   @RequestMapping("/v1/fish")
    @RequiredArgsConstructor
    public class FishController {
        private final FishService fishService;

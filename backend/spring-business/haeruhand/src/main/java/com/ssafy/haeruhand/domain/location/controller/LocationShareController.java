@@ -1,11 +1,13 @@
 package com.ssafy.haeruhand.domain.location.controller;
 
+import com.ssafy.haeruhand.domain.location.dto.request.CreateRoomRequest;
 import com.ssafy.haeruhand.domain.location.dto.response.CloseRoomResponse;
 import com.ssafy.haeruhand.domain.location.dto.response.CreateRoomResponse;
 import com.ssafy.haeruhand.domain.location.dto.response.RoomInfoResponse;
 import com.ssafy.haeruhand.domain.location.service.LocationShareRoomService;
 import com.ssafy.haeruhand.global.response.ApiResponse;
 import com.ssafy.haeruhand.global.status.SuccessStatus;
+import jakarta.validation.Valid;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -14,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
 
 @Tag(name = "위치 공유", description = "실시간 위치 공유 관련 API")
 @RestController
-@RequestMapping("/api/v1/location")
+@RequestMapping("/v1/location")
 @RequiredArgsConstructor
 public class LocationShareController {
 
@@ -23,9 +25,10 @@ public class LocationShareController {
     @Operation(summary = "방 생성", description = "위치 공유를 위한 방을 생성합니다")
     @PostMapping("/rooms")
     public ResponseEntity<ApiResponse<CreateRoomResponse>> createRoom(
-            @RequestHeader("Authorization") String bearerToken) {
+            @RequestHeader("Authorization") String bearerToken,
+            @Valid @RequestBody CreateRoomRequest request) {
         
-        CreateRoomResponse response = roomService.createRoom(bearerToken);
+        CreateRoomResponse response = roomService.createRoom(bearerToken, request);
         return ApiResponse.success(SuccessStatus.OK, response);
     }
 

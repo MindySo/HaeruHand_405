@@ -62,4 +62,21 @@ public class SignedUrlService {
 
 
     }
+
+    public String createSignedGetUrl(String objectKey){
+        BlobInfo blobInfo = BlobInfo.newBuilder(
+                gcsProperty.bucket(), objectKey
+        ).build();
+        URL signedUrl = storage.signUrl(
+                blobInfo,
+                gcsProperty.signedUrlExpiresMinutes(),
+                TimeUnit.MINUTES,
+                Storage.SignUrlOption.withV4Signature(),
+                Storage.SignUrlOption.httpMethod(HttpMethod.GET)
+        );
+
+        return signedUrl.toExternalForm();
+    }
+
+
 }

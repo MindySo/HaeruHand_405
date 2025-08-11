@@ -5,42 +5,33 @@ import lombok.Getter;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+
 import java.time.LocalDateTime;
 
 @EntityListeners(AuditingEntityListener.class)
 @Getter
 @MappedSuperclass
 public class BaseEntity {
+
     @CreatedDate
-    @Column(updatable = false)
+    @Column(name = "created_at", updatable = false,
+            columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
     private LocalDateTime createdAt;
 
     @LastModifiedDate
+    @Column(name = "updated_at",
+            columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP")
     private LocalDateTime updatedAt;
 
-    @Column(name = "is_deleted", nullable = false)
-    private Boolean isDeleted = false;
+    @Column(name = "is_deleted", nullable = false,
+            columnDefinition = "BOOLEAN DEFAULT false")
+    private boolean isDeleted = false;
 
-    @PrePersist
-    protected void onCreate() {
-        this.createdAt = LocalDateTime.now();
-        this.updatedAt = LocalDateTime.now();
-    }
-
-    @PreUpdate
-    protected void onUpdate() {
-        this.updatedAt = LocalDateTime.now();
-    }
-
-    public void softDelete(){
+    public void softDelete() {
         this.isDeleted = true;
     }
 
     public void restore() {
         this.isDeleted = false;
-    }
-
-    public boolean isDeleted(){
-        return this.isDeleted;
     }
 }

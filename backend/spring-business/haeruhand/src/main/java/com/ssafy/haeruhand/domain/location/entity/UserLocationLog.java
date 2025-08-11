@@ -8,11 +8,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "user_location_log", 
-       indexes = {
-           @Index(name = "idx_room_time", columnList = "location_share_room_id, timestamp"),
-           @Index(name = "idx_user_time", columnList = "user_id, timestamp")
-       })
+@Table(name = "user_location_log")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
@@ -24,9 +20,8 @@ public class UserLocationLog extends BaseEntity {
     @Column(name = "user_location_log_id")
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "location_share_room_id", nullable = false)
-    private LocationShareRoom room;
+    @Column(name = "location_share_room_id", nullable = false)
+    private Long roomId;
 
     @Column(name = "user_id", nullable = false)
     private Long userId;
