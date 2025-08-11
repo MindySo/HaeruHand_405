@@ -113,6 +113,13 @@ public class FcmTokenServiceImpl implements FcmTokenService {
         return activeTokens;
     }
 
+    @Override
+    public boolean isTokenActive(Long tokenId) {
+        return fcmTokenRepository.findById(tokenId)
+                .map(token -> !token.isDeleted())
+                .orElse(false);
+    }
+
     private String maskToken(String token) {
         if (token == null || token.length() < 10) {
             return "INVALID_TOKEN";
