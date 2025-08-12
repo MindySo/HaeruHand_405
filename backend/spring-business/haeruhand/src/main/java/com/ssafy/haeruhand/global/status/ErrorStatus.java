@@ -39,7 +39,8 @@ public enum ErrorStatus implements BaseErrorStatus {
     FAST_API_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, 500, "FAST API 서버 오류입니다."),
     GCS_URL_PROCESSING_ERROR(HttpStatus.BAD_REQUEST, 400, "GCS URL 처리 중 오류가 발생했습니다"),
     FAST_API_TIMEOUT(HttpStatus.GATEWAY_TIMEOUT, 504, "Fast Api 응답 시간이 초과되었습니다"),
-
+    FAST_API_CLIENT_ERROR(HttpStatus.BAD_REQUEST, 400, "Fast API 요청 오류입니다."),
+    FAST_API_SERVICE_UNAVAILABLE(HttpStatus.SERVICE_UNAVAILABLE, 503,"Fast Api 서버가 이용 불가능 합니다."),
 
     // FCM
     FCM_TOKEN_INVALID(HttpStatus.BAD_REQUEST, 400, "유효하지 않은 FCM 토큰입니다."),

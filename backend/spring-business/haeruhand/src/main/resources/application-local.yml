@@ -68,3 +68,17 @@ seatrip:
 kma:
   api:
     key: ${KMA_API_KEY}
+
+resilience4j:
+  circuitbreaker:
+    instances:
+      fastapi-ai:
+        slidingWindowType: COUNT_BASED
+        slidingWindowSize: 20
+        minimumNumberOfCalls: 10
+        failureRateThreshold: 50
+        slowCallDurationThreshold: 40s
+        slowCallRateThreshold: 100
+        waitDurationInOpenState: 20s
+        permittedNumberOfCallsInHalfOpenState: 3
+        automaticTransitionFromOpenToHalfOpenEnabled: true

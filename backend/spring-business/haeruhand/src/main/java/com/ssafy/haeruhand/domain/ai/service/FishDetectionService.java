@@ -12,8 +12,12 @@ import com.ssafy.haeruhand.global.exception.GlobalException;
 import com.ssafy.haeruhand.global.infra.gcs.service.SignedUrlService;
 import com.ssafy.haeruhand.global.infra.gcs.util.GcsUtil;
 import com.ssafy.haeruhand.global.status.ErrorStatus;
+import io.github.resilience4j.circuitbreaker.CircuitBreaker;
+import io.github.resilience4j.reactor.circuitbreaker.operator.CircuitBreakerOperator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientException;
@@ -34,6 +38,8 @@ public class FishDetectionService {
     private final WebClient webClient;
     private final FishRestrictionRepository fishRestrictionRepository;
 
+    @Qualifier("fastapiAiCircuitBreaker")
+    private final CircuitBreaker fastapiAiCircuitBreaker;
     public Mono<FishDetectionResponse> detectFish(FishDetectionRequest request) {
 
         return Mono.fromCallable(()->{
@@ -116,17 +122,26 @@ public class FishDetectionService {
                 .uri("http://i13a405.p.ssafy.io/ai/detection/")
                 .bodyValue(apiRequest)
                 .retrieve()
+                .onStatus(HttpStatusCode::is4xxClientError, resp ->{
+                    return Mono.error(new GlobalException(ErrorStatus.FAST_API_CLIENT_ERROR));
+                })
+                .onStatus(HttpStatusCode::is5xxServerError, resp ->{
+                    return Mono.error(new GlobalException(ErrorStatus.FAST_API_ERROR));
+                })
                 .bodyToMono(FishDetectionFastApiResponse.class)
                 .timeout(Duration.ofSeconds(30))
+                .transformDeferred(CircuitBreakerOperator.of(fastapiAiCircuitBreaker))
                 .doOnNext(response -> {
                     log.info("FastAPI 호출 성공 - 응답 받음");
                 })
+                .onErrorMap(io.github.resilience4j.circuitbreaker.CallNotPermittedException.class,
+                        e -> new GlobalException(ErrorStatus.FAST_API_SERVICE_UNAVAILABLE))
                 .onErrorMap(java.util.concurrent.TimeoutException.class, error -> {
                     log.error("FastAPI 호출 타임아웃: ", error);
                     return new GlobalException(ErrorStatus.FAST_API_TIMEOUT);
                 })
-                .onErrorMap(throwable -> {
-                    log.error("FastAPI 호출 실패: ", throwable);
+                .onErrorMap(ex -> !(ex instanceof GlobalException), ex -> {
+                    log.error("FastAPI 호출 실패(표준화되지 않은 예외)", ex);
                     return new GlobalException(ErrorStatus.FAST_API_ERROR);
                 });
     }
