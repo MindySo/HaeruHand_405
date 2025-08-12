@@ -26,7 +26,7 @@ public interface UserLocationLogRepository extends JpaRepository<UserLocationLog
         WHERE lsr.is_active = true
         AND ul.timestamp > :since
         GROUP BY ul.user_id, ul.location_share_room_id
-        HAVING COUNT(DISTINCT ul.user_location_log_id) >= 3
+        HAVING COUNT(DISTINCT ul.user_location_log_id) >= 150
         AND MAX(
             SQRT(
                 POW(ul.latitude - (
