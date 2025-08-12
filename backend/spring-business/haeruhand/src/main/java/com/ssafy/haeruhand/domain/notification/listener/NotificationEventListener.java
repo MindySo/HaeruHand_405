@@ -22,7 +22,6 @@ public class NotificationEventListener {
     private final FcmTokenService fcmTokenService;
     private final NotificationRetryService retryService;
 
-    // 재시도 관련 상수
     private static final int MAX_IMMEDIATE_RETRY = 2;
 
     @EventListener

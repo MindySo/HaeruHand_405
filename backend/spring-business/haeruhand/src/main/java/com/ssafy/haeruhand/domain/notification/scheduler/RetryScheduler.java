@@ -22,7 +22,6 @@ public class RetryScheduler {
     private final FcmTokenService fcmTokenService;
     private final ObjectMapper objectMapper;
     
-    // 배치 처리 상수
     private static final int BATCH_SIZE = 50;
     
     @Scheduled(fixedRate = 30000)
@@ -73,7 +72,6 @@ public class RetryScheduler {
     
     private boolean processRetryTask(RetryNotificationDto task) {
         try {
-            // 토큰 유효성 재확인 (getUserActiveTokens 사용)
             boolean isTokenActive = fcmTokenService.getUserActiveTokens(task.getUserId())
                     .stream()
                     .anyMatch(token -> token.getId().equals(task.getTokenId()));
@@ -108,7 +106,6 @@ public class RetryScheduler {
             log.error("재시도 알림 전송 실패 - UserId: {}, Attempt: {}, Error: {}", 
                     task.getUserId(), task.getAttemptCount(), e.getMessage());
             
-            // 토큰 관련 오류면 토큰 삭제
             if (isTokenRelatedError(e)) {
                 fcmTokenService.deleteToken(task.getTokenId());
             }
