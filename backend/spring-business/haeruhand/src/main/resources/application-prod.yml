@@ -77,3 +77,17 @@ scheduler:
 redis:
   pubsub:
     enabled: false # 프로덕션에서는 기본적으로 활성화
+
+location:
+  websocket:
+    channel-prefix: "location:room:"
+    destination-prefix: "/sub/location."
+  safety:
+    stationary-radius-meters: 50.0
+    stationary-minutes: 30
+    stationary-log-count: 150
+    stationary-min-duration: 25
+    distance-threshold-meters: 500.0
+  room:
+    max-members: 4
+    join-token-expiry-minutes: 1440
