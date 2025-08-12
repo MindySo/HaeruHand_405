@@ -5,6 +5,7 @@ import { theme } from '../../theme';
 import { useKakaoLogin } from '../../hooks/useKakaoLogin';
 import { useAuth } from '../../hooks/useAuth';
 import styles from './LoginPage.module.css';
+import { Browser } from '@capacitor/browser';
 
 export const LoginPage: React.FC = () => {
   const search = useSearch({ from: '/login' }) as { code?: string };
@@ -29,11 +30,20 @@ export const LoginPage: React.FC = () => {
     }
   }, [search.code, isAuthenticated, navigate, loginWithKakao]);
 
-  const handleKakaoLoginClick = () => {
-    console.log('카카오 로그인 시작...');
-    const kakaoLoginUrl = `https://kauth.kakao.com/oauth/authorize?client_id=${import.meta.env.VITE_KAKAO_CLIENT_ID}&redirect_uri=${import.meta.env.VITE_KAKAO_REDIRECT_URI}&response_type=code`;
-    console.log('카카오 로그인 URL:', kakaoLoginUrl);
-    window.location.href = kakaoLoginUrl;
+  // const handleKakaoLoginClick = () => {
+  //   console.log('카카오 로그인 시작...');
+  //   const kakaoLoginUrl = `https://kauth.kakao.com/oauth/authorize?client_id=${import.meta.env.VITE_KAKAO_CLIENT_ID}&redirect_uri=${import.meta.env.VITE_KAKAO_REDIRECT_URI}&response_type=code`;
+  //   console.log('카카오 로그인 URL:', kakaoLoginUrl);
+  //   window.location.href = kakaoLoginUrl;
+  // };
+
+  const handleKakaoLoginClick = async () => {
+    const kakaoLoginUrl =
+      `https://kauth.kakao.com/oauth/authorize?response_type=code` +
+      `&client_id=${import.meta.env.VITE_KAKAO_CLIENT_ID}` +
+      `&redirect_uri=${encodeURIComponent(import.meta.env.VITE_KAKAO_REDIRECT_URI)}`;
+
+    await Browser.open({ url: kakaoLoginUrl }); // ← 이게 포인트
   };
 
   // 이미 인증된 상태라면 로딩 표시

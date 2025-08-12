@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo } from 'react';
+import { useCallback, useEffect } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from '@tanstack/react-router';
 
@@ -28,20 +28,6 @@ const getRefreshToken = () =>
 export const useAuth = () => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
-
-  // 인증 상태를 useMemo로 캐싱하여 불필요한 재계산 방지
-  const authState = useMemo(() => {
-    const token = getAccessToken();
-    const userInfo = sessionStorage.getItem('userInfo') || localStorage.getItem('userInfo');
-    const isAuth = Boolean(token && userInfo);
-
-    // 개발 환경에서만 한 번씩 로그 출력
-    if (import.meta.env.DEV && isAuth) {
-      console.log('Auth check:', { hasToken: !!token, hasUserInfo: !!userInfo });
-    }
-
-    return { isAuth, token, userInfo };
-  }, []);
 
   // 토큰 재발급 mutation
   const reissueToken = useMutation({
@@ -109,9 +95,14 @@ export const useAuth = () => {
   }, [navigate, queryClient]);
 
   // 인증 상태 확인 함수 - 캐시된 값 반환
+  // const isAuthenticated = useCallback(() => {
+  //   return authState.isAuth;
+  // }, [authState.isAuth]);
   const isAuthenticated = useCallback(() => {
-    return authState.isAuth;
-  }, [authState.isAuth]);
+    const token = getAccessToken();
+    const userInfo = sessionStorage.getItem('userInfo') || localStorage.getItem('userInfo');
+    return Boolean(token && userInfo);
+  }, []);
 
   // 토큰 만료 체크는 5분마다만 실행
   useEffect(() => {

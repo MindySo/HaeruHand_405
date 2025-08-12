@@ -101,13 +101,13 @@ export const MainPage = () => {
 
   // 새로운 특보 감지
   useEffect(() => {
-    if (!warningsData?.data || warningsData.data.length === 0) {
+    if (!warningsData?.data?.content || warningsData.data.content.length === 0) {
       setHasNewWarning(false);
       return;
     }
 
     // 현재 최신 특보 정보
-    const currentLatestWarning = warningsData.data[0];
+    const currentLatestWarning = warningsData.data.content[0];
 
     // currentLatestWarning이 유효한지 확인
     if (
@@ -120,7 +120,7 @@ export const MainPage = () => {
       return;
     }
 
-    const currentWarningKey = `${currentLatestWarning.warningType}${currentLatestWarning.warningLevel}_${currentLatestWarning.announcedAt.join('_')}`;
+    const currentWarningKey = `${currentLatestWarning.warningType}${currentLatestWarning.warningLevel}_${Array.isArray(currentLatestWarning.announcedAt) ? currentLatestWarning.announcedAt.join('_') : currentLatestWarning.announcedAt}`;
 
     // localStorage에서 마지막으로 확인한 특보 정보 가져오기
     const lastCheckedWarning = localStorage.getItem('lastCheckedWarning');
@@ -136,8 +136,8 @@ export const MainPage = () => {
 
   // 특보 페이지로 이동 시 마지막 확인 시간 업데이트
   const handleWeatherAlertClick = () => {
-    if (warningsData?.data && warningsData.data.length > 0) {
-      const currentLatestWarning = warningsData.data[0];
+    if (warningsData?.data?.content && warningsData.data.content.length > 0) {
+      const currentLatestWarning = warningsData.data.content[0];
 
       // currentLatestWarning이 유효한지 확인
       if (
@@ -146,7 +146,7 @@ export const MainPage = () => {
         currentLatestWarning.warningLevel &&
         currentLatestWarning.announcedAt
       ) {
-        const currentWarningKey = `${currentLatestWarning.warningType}${currentLatestWarning.warningLevel}_${currentLatestWarning.announcedAt.join('_')}`;
+        const currentWarningKey = `${currentLatestWarning.warningType}${currentLatestWarning.warningLevel}_${Array.isArray(currentLatestWarning.announcedAt) ? currentLatestWarning.announcedAt.join('_') : currentLatestWarning.announcedAt}`;
         localStorage.setItem('lastCheckedWarning', currentWarningKey);
         setHasNewWarning(false);
       }
@@ -175,7 +175,7 @@ export const MainPage = () => {
           center: new window.kakao.maps.LatLng(selectedFishery.latitude, selectedFishery.longitude),
           level: 4,
         };
-        const map = new window.kakao.maps.Map(container, options);
+        new window.kakao.maps.Map(container, options);
       });
     };
 
@@ -198,9 +198,9 @@ export const MainPage = () => {
 
   // 최신 특보 데이터 (첫 번째 항목)
   const latestWarning = useMemo(() => {
-    if (!warningsData?.data || warningsData.data.length === 0) return null;
+    if (!warningsData?.data?.content || warningsData.data.content.length === 0) return null;
 
-    const alerts = transformWeatherWarnings(warningsData.data);
+    const alerts = transformWeatherWarnings(warningsData);
     return alerts.length > 0 ? alerts[0] : null;
   }, [warningsData]);
 
@@ -260,7 +260,7 @@ export const MainPage = () => {
         <div className={styles.warningBanner} onClick={handleWeatherAlertClick}>
           {warningsLoading ? (
             <WarningBanner
-              type={'정보' as any}
+              type="정보"
               date="특보 정보 로딩 중..."
               location=""
               variant="info"
@@ -268,7 +268,7 @@ export const MainPage = () => {
             />
           ) : warningsError ? (
             <WarningBanner
-              type={'정보' as any}
+              type="정보"
               date="특보 정보를 불러올 수 없습니다"
               location=""
               variant="info"
