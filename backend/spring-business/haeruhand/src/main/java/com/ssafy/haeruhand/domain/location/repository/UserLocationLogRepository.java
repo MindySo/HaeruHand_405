@@ -63,14 +63,15 @@ public interface UserLocationLogRepository extends JpaRepository<UserLocationLog
     @Query(value = """
         SELECT ul.user_id, ul.latitude, ul.longitude, ul.timestamp
         FROM user_location_log ul
-        WHERE ul.location_share_room_id = :roomId
-        AND ul.timestamp = (
-            SELECT MAX(ul2.timestamp)
-            FROM user_location_log ul2
-            WHERE ul2.user_id = ul.user_id
-            AND ul2.location_share_room_id = :roomId
-            AND ul2.timestamp > DATE_SUB(NOW(), INTERVAL 5 MINUTE)
-        )
+        INNER JOIN (
+            SELECT user_id, MAX(timestamp) as max_timestamp
+            FROM user_location_log
+            WHERE location_share_room_id = :roomId
+            AND timestamp > DATE_SUB(NOW(), INTERVAL 5 MINUTE)
+            GROUP BY user_id
+        ) latest ON ul.user_id = latest.user_id 
+            AND ul.timestamp = latest.max_timestamp
+            AND ul.location_share_room_id = :roomId
         """, nativeQuery = true)
     List<Object[]> findLatestLocationsByRoom(@Param("roomId") Long roomId);
 }
