@@ -51,6 +51,93 @@ public class TideRefreshService {
         return new TideUpsertResultResponse(targetDate, stations.size(), success, fail);
     }
 
+    /**
+     * 날짜 범위로 조석 데이터 갱신
+     */
+    public TideUpsertResultResponse refreshDateRange(LocalDate startDate, LocalDate endDate, Optional<String> stationCode) {
+        List<String> stations = resolveStations(stationCode);
+
+        int totalRequested = 0;
+        int totalSuccess = 0;
+        int totalFail = 0;
+
+        LocalDate currentDate = startDate;
+        while (!currentDate.isAfter(endDate)) {
+            log.info("조석 데이터 갱신 중: {} (진행: {}/{}일)",
+                    currentDate,
+                    currentDate.toEpochDay() - startDate.toEpochDay() + 1,
+                    endDate.toEpochDay() - startDate.toEpochDay() + 1);
+
+            try {
+                TideUpsertResultResponse dayResult = refresh(Optional.of(currentDate), stationCode);
+                totalRequested += dayResult.requested();
+                totalSuccess += dayResult.success();
+                totalFail += dayResult.fail();
+
+                log.debug("날짜 {} 조석 갱신 결과: 성공={}, 실패={}",
+                        currentDate, dayResult.success(), dayResult.fail());
+
+                // API 호출 제한 고려한 대기 시간
+                if (!currentDate.equals(endDate)) {
+                    Thread.sleep(200); // 200ms 대기
+                }
+            } catch (Exception e) {
+                log.warn("조석 데이터 갱신 실패: date={}", currentDate, e);
+                totalFail += stations.size(); // 해당 날짜 전체 실패로 간주
+            }
+
+            currentDate = currentDate.plusDays(1);
+        }
+
+        log.info("조석 데이터 범위 갱신 완료: {}~{}, 총 요청={}, 성공={}, 실패={}",
+                startDate, endDate, totalRequested, totalSuccess, totalFail);
+
+        return new TideUpsertResultResponse(startDate, totalRequested, totalSuccess, totalFail);
+    }
+
+    /**
+     * 다음 N개월치 조석 데이터 미리 갱신
+     */
+    public TideUpsertResultResponse refreshNextMonths(int months, Optional<String> stationCode) {
+        LocalDate startDate = LocalDate.now().plusDays(1); // 내일부터
+        LocalDate endDate = startDate.plusMonths(months).minusDays(1); // N개월 후까지
+
+        log.info("조석 데이터 {}개월 갱신 시작: {} ~ {} (총 {}일)",
+                months, startDate, endDate, startDate.until(endDate).getDays() + 1);
+
+        return refreshDateRange(startDate, endDate, stationCode);
+    }
+
+    /**
+     * 오늘 조석 데이터만 갱신
+     */
+    public TideUpsertResultResponse refreshToday(Optional<String> stationCode) {
+        LocalDate today = LocalDate.now();
+        log.info("오늘 조석 데이터 갱신 시작: {}", today);
+
+        TideUpsertResultResponse result = refresh(Optional.of(today), stationCode);
+
+        log.info("오늘 조석 데이터 갱신 완료: 요청={}, 성공={}, 실패={}",
+                result.requested(), result.success(), result.fail());
+
+        return result;
+    }
+
+    /**
+     * 내일 조석 데이터 미리 갱신
+     */
+    public TideUpsertResultResponse refreshTomorrow(Optional<String> stationCode) {
+        LocalDate tomorrow = LocalDate.now().plusDays(1);
+        log.info("내일 조석 데이터 갱신 시작: {}", tomorrow);
+
+        TideUpsertResultResponse result = refresh(Optional.of(tomorrow), stationCode);
+
+        log.info("내일 조석 데이터 갱신 완료: 요청={}, 성공={}, 실패={}",
+                result.requested(), result.success(), result.fail());
+
+        return result;
+    }
+
     private LocalDate resolveTargetDate(Optional<LocalDate> date) {
         return date.orElse(LocalDate.now());
     }

@@ -66,3 +66,10 @@ seatrip:
 kma:
   api:
     key: ${KMA_API_KEY}
+
+scheduler:
+  tide:
+    enabled: true
+    today-cron: "0 0 2 * * ?" # 매일 새벽 2시 (오늘 데이터)
+    monthly-cron: "0 0 1 1 * ?" # 매월 1일 새벽 1시 (월간 데이터)
+    tomorrow-cron: "0 0 23 * * ?" # 매일 밤 11시 (내일 데이터)
