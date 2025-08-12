@@ -20,8 +20,6 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
-import java.net.URI;
-
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -31,6 +29,7 @@ public class OAuthServiceImpl implements OAuthService {
     private final RefreshTokenRepository refreshTokenRepository;
     private final JwtProvider jwtProvider;
     private final ObjectMapper objectMapper;
+    private final IdTokenValidationService idTokenValidationService;
     private final RestTemplate restTemplate = new RestTemplate();
 
     @Value("${spring.security.oauth2.client.registration.kakao.client-id}")
@@ -41,43 +40,73 @@ public class OAuthServiceImpl implements OAuthService {
 
     @Override
     public IssueResponseDto authorizeKakaoAndIssueToken(String code, HttpServletResponse response) {
-        log.info("카카오 OAuth 인증 시작 - 인가코드 수신: {}, redirectUri : {}", code.substring(0, Math.min(10, code.length())) + "...", redirectUri);
+        log.info("카카오 OIDC 인증 시작 - 인가코드: {}...", code.substring(0, Math.min(10, code.length())));
 
         try {
-            // 카카오 AccessToken 요청
-            String kakaoAccessToken = requestKakaoToken(code);
-            log.info("카카오 액세스 토큰 발급 성공 - 토큰 길이: {}", kakaoAccessToken.length());
+            // 카카오에서 Access Token + ID Token 요청
+            TokenResponseDto tokens = requestKakaoTokensWithOIDC(code);
+            log.info("카카오 토큰 발급 성공 - Access Token: {}자, ID Token: {}자",
+                    tokens.getAccessToken().length(), tokens.getIdToken().length());
 
-            // 사용자 정보 조회
-            KakaoUserInfoDto kakaoUserInfoDto = requestKakaoUserInfo(kakaoAccessToken);
-            log.info("카카오 사용자 정보 조회 성공 - kakaoSub: {}, nickname: {}",
-                    kakaoUserInfoDto.getKakaoSub(), kakaoUserInfoDto.getNickname());
+            // ID Token 검증 및 사용자 정보 추출
+            KakaoUserInfoDto kakaoUserInfo = idTokenValidationService.validateAndDecodeIdToken(tokens.getIdToken());
+            log.info("사용자 정보 추출 성공 - kakaoSub: {}, nickname: {}",
+                    kakaoUserInfo.getKakaoSub(), kakaoUserInfo.getNickname());
 
             // 유저 조회/생성
-            User user = findOrCreateUserFromKakao(kakaoUserInfoDto);
+            User user = findOrCreateUserFromKakao(kakaoUserInfo);
             log.info("유저 처리 완료 - userId: {}, 신규 유저: {}", user.getId(),
                     user.getCreatedAt().equals(user.getUpdatedAt()));
 
-            // JWT 발급
+            // JWT 토큰 발급
             String accessToken = jwtProvider.createAccessToken(user.getId());
             String refreshToken = jwtProvider.createRefreshToken(user.getId());
             long accessTokenExpiresIn = jwtProvider.getAccessTokenExpirationMilliSec();
             log.info("JWT 토큰 생성 완료 - 액세스 토큰 만료시간: {}ms", accessTokenExpiresIn);
 
-            // 리프레시 토큰 저장
+            // refreshToken 토큰 저장
             refreshTokenRepository.save(String.valueOf(user.getId()), refreshToken);
             log.info("리프레시 토큰 저장 완료");
 
-            // 응답 구성
             IssueResponseDto responseDto = buildIssueResponse(accessToken, refreshToken, user, accessTokenExpiresIn / 1000);
-            log.info("카카오 OAuth 인증 완료 - userId: {}", user.getId());
+            log.info("카카오 OIDC 인증 완료 - userId: {}", user.getId());
 
             return responseDto;
 
+        } catch (GlobalException e) {
+            throw e;
         } catch (Exception e) {
-            log.error("카카오 OAuth 인증 실패 - code: {}, error: {}", code, e.getMessage(), e);
+            log.error("카카오 OIDC 인증 실패 - code: {}, error: {}", code, e.getMessage(), e);
             throw new GlobalException(ErrorStatus.OAUTH_ERROR);
         }
+    }
+
+    private TokenResponseDto requestKakaoTokensWithOIDC(String code) throws Exception {
+        String tokenUrl = "https://kauth.kakao.com/oauth/token";
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+
+        MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+        params.add("grant_type", "authorization_code");
+        params.add("client_id", clientId);
+        params.add("redirect_uri", redirectUri);
+        params.add("code", code);
+        params.add("scope", "openid profile_nickname profile_image");
+
+        log.info("카카오 OIDC 토큰 요청 파라미터 구성 완료");
+        HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(params, headers);
+        ResponseEntity<String> response = restTemplate.postForEntity(tokenUrl, request, String.class);
+
+        log.info("카카오 토큰 API 응답 수신 - 상태코드: {}", response.getStatusCode());
+        JsonNode tokenJson = objectMapper.readTree(response.getBody());
+
+        return TokenResponseDto.builder()
+                .accessToken(tokenJson.get("access_token").asText())
+                .idToken(tokenJson.get("id_token").asText())
+                .refreshToken(tokenJson.has("refresh_token") ? tokenJson.get("refresh_token").asText() : null)
+                .expiresIn(tokenJson.get("expires_in").asLong())
+                .build();
     }
 
     @Override
@@ -120,6 +149,8 @@ public class OAuthServiceImpl implements OAuthService {
 
             return responseDto;
 
+        } catch (GlobalException e) {
+            throw e;
         } catch (Exception e) {
             log.error("토큰 재발급 실패 - error: {}", e.getMessage(), e);
             throw new GlobalException(ErrorStatus.OAUTH_ERROR);
@@ -136,7 +167,6 @@ public class OAuthServiceImpl implements OAuthService {
             }
             log.info("액세스 토큰 유효성 검증 성공");
 
-            // 사용자 조회
             Long userId = jwtProvider.getUserIdFromToken(accessToken);
             log.info("userId 추출 완료: {}", userId);
 
@@ -144,7 +174,6 @@ public class OAuthServiceImpl implements OAuthService {
                     .orElseThrow(() -> new GlobalException(ErrorStatus.USER_NOT_FOUND));
             log.info("사용자 조회 완료 - nickname: {}", user.getNickname());
 
-            // UserInfoDto 반환
             UserInfoDto userInfo = UserInfoDto.builder()
                     .userId(user.getId())
                     .kakaoSub(user.getKakaoSub())
@@ -155,58 +184,12 @@ public class OAuthServiceImpl implements OAuthService {
             log.info("사용자 정보 조회 완료 - userId: {}", userId);
             return userInfo;
 
+        } catch (GlobalException e) {
+            throw e;
         } catch (Exception e) {
             log.error("사용자 정보 조회 실패 - error: {}", e.getMessage(), e);
             throw new GlobalException(ErrorStatus.PROFILE_ERROR);
         }
-    }
-
-    private String requestKakaoToken(String code) throws Exception {
-        String tokenUrl = "https://kauth.kakao.com/oauth/token";
-
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-
-        MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
-        params.add("grant_type", "authorization_code");
-        params.add("client_id", clientId);
-        params.add("redirect_uri", redirectUri);
-        params.add("code", code);
-
-        log.info("카카오 토큰 요청 파라미터 구성 완료");
-        HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(params, headers);
-        ResponseEntity<String> tokenResponse = restTemplate.postForEntity(tokenUrl, request, String.class);
-
-        log.info("카카오 토큰 API 응답 수신 - 상태코드: {}", tokenResponse.getStatusCode());
-        JsonNode tokenJson = objectMapper.readTree(tokenResponse.getBody());
-        String accessToken = tokenJson.get("access_token").asText();
-        log.info("카카오 액세스 토큰 파싱 완료");
-
-        return accessToken;
-    }
-
-    private KakaoUserInfoDto requestKakaoUserInfo(String accessToken) throws Exception {
-        String userInfoUrl = "https://kapi.kakao.com/v2/user/me";
-
-        HttpHeaders headers = new HttpHeaders();
-        headers.setBearerAuth(accessToken);
-
-        HttpEntity<?> request = new HttpEntity<>(headers);
-        ResponseEntity<String> response = restTemplate.exchange(
-                URI.create(userInfoUrl),
-                HttpMethod.GET,
-                request,
-                String.class
-        );
-
-        log.info("카카오 사용자 정보 API 응답 수신 - 상태코드: {}", response.getStatusCode());
-        JsonNode userJson = objectMapper.readTree(response.getBody());
-        long kakaoSub = userJson.get("id").asLong();
-        String nickname = userJson.get("properties").get("nickname").asText();
-        String profileImage = userJson.get("properties").get("profile_image").asText();
-
-        log.info("카카오 사용자 정보 파싱 완료 - kakaoSub: {}, nickname: {}", kakaoSub, nickname);
-        return new KakaoUserInfoDto(kakaoSub, nickname, profileImage);
     }
 
     private User findOrCreateUserFromKakao(KakaoUserInfoDto kakaoUserInfoDto) {
@@ -221,7 +204,7 @@ public class OAuthServiceImpl implements OAuthService {
                                 User.builder()
                                         .kakaoSub(kakaoUserInfoDto.getKakaoSub())
                                         .nickname(kakaoUserInfoDto.getNickname())
-                                        .profileImage(kakaoUserInfoDto.getProfile_image())
+                                        .profileImage(kakaoUserInfoDto.getProfileImage())
                                         .build()
                         );
                         log.info("신규 사용자 생성 완료 - userId: {}", newUser.getId());
