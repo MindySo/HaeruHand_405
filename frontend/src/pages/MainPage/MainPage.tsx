@@ -158,32 +158,6 @@ export const MainPage = () => {
   // 카카오 지도
   const { searchConvenienceStore, searchParkingLot, searchToilet, loading } =
     useKakaoMap(selectedFishery);
-  // useEffect(() => {
-  //   if (!selectedFishery) return;
-
-  //   const script = document.createElement('script');
-  //   script.src = `//dapi.kakao.com/v2/maps/sdk.js?appkey=${import.meta.env.VITE_KAKAO_MAP_API_KEY}&autoload=false`;
-  //   script.async = true;
-
-  //   script.onload = () => {
-  //     window.kakao.maps.load(() => {
-  //       const container = document.getElementById('main-map');
-
-  //       if (!container) {
-  //         console.error('Map container not found');
-  //         return;
-  //       }
-
-  //       const options = {
-  //         center: new window.kakao.maps.LatLng(selectedFishery.latitude, selectedFishery.longitude),
-  //         level: 4,
-  //       };
-  //       const map = new window.kakao.maps.Map(container, options);
-  //     });
-  //   };
-
-  //   document.head.appendChild(script);
-  // }, [selectedFishery]);
 
   // 현재 시간에 따른 수온 데이터 선택
   const currentWaterTemperature = useMemo(() => {
