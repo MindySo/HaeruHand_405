@@ -216,7 +216,7 @@ export default function BuddyTrackingPage() {
                 });
               },
               (err) => console.error('GPS watch error', err?.message),
-              { enableHighAccuracy: true, maximumAge: 10000, timeout: 5000 },
+              { enableHighAccuracy: true, maximumAge: 3000, timeout: 5000 },
             );
           },
           () => {},

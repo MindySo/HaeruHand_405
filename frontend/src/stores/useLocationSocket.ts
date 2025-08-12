@@ -116,7 +116,27 @@ export const useLocationSocket = create<State & { onMemberUpdate?: (m: Member) =
       client.subscribe(`/sub/location.${room.roomCode}`, (msg: any) => {
         try {
           const payload = JSON.parse(msg.body);
-          if (payload?.type === 'LOCATION_UPDATE' && payload.data) {
+          console.log('위치 메시지 수신:', payload); // 디버깅용
+
+          // LOCATION 타입 메시지 처리
+          if (payload?.type === 'LOCATION') {
+            const m: Member = {
+              userId: payload.userId,
+              nickname: `User ${payload.userId}`, // 서버에서 nickname이 오지 않으면 기본값
+              latitude: payload.latitude,
+              longitude: payload.longitude,
+              accuracy: payload.accuracy,
+              lastUpdateTime: new Date().toLocaleTimeString(),
+            };
+            // 화면 콜백
+            get().onMemberUpdate?.(m);
+            // 멤버 병합
+            set((s) => ({
+              members: { ...s.members, [m.userId]: { ...(s.members[m.userId] || {}), ...m } },
+            }));
+          }
+          // 기존 LOCATION_UPDATE 타입도 지원 (하위 호환성)
+          else if (payload?.type === 'LOCATION_UPDATE' && payload.data) {
             const m: Member = {
               userId: payload.data.userId,
               nickname: payload.data.nickname || `User ${payload.data.userId}`,
