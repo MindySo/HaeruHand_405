@@ -141,6 +141,12 @@
   background-color: transparent;
 }
 
+.badgeIcon {
+  width: 16px;
+  height: 16px;
+  margin-right: 4px;
+}
+
 /* .badgeMarker1 {
   width: 8px;
   height: 8px;

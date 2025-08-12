@@ -15,6 +15,7 @@ import {
 import styles from './MainPage.module.css';
 import { InfoModal } from '../../components/molecules/InfoModal/InfoModal';
 import { useNavigate } from '@tanstack/react-router';
+import { useKakaoMap } from '../../hooks/useKakaoMap';
 
 // 특보 배너 props
 export interface WarningBannerProps {
@@ -154,7 +155,9 @@ export const MainPage = () => {
     navigate({ to: '/weather' });
   };
 
-  // 카카오 지도 초기화
+  // 카카오 지도
+  const { searchConvenienceStore, searchParkingLot, searchToilet, loading } =
+    useKakaoMap(selectedFishery);
   // useEffect(() => {
   //   if (!selectedFishery) return;
 
@@ -292,7 +295,6 @@ export const MainPage = () => {
             />
           )}
         </div>
-
         {/* b-2. 위젯: 해루 가능 시간, 현재 수온 */}
         <div className={styles.weatherWidgets}>
           <WeatherWidgets
@@ -322,7 +324,6 @@ export const MainPage = () => {
             ]}
           />
         </div>
-
         {/* b-3. 지도 */}
         <div className={styles.mapContainer}>
           <div className={styles.map}>
@@ -335,40 +336,39 @@ export const MainPage = () => {
                 </Text>
               </div>
             )}
-
             {/* 카테고리 버튼 */}
             <div className={styles.categorySearch}>
-              <button className={styles.categoryButton}>
+              <button className={styles.categoryButton} onClick={searchConvenienceStore}>
                 <Badge variant="neutral" size="medium" style={{ borderRadius: '100px' }}>
+                  <img src="/convenienceStoreIcon.svg" alt="편의점" className={styles.badgeIcon} />
                   편의점
                 </Badge>
               </button>
-              <button className={styles.categoryButton}>
+              <button className={styles.categoryButton} onClick={searchParkingLot}>
                 <Badge variant="neutral" size="medium" style={{ borderRadius: '100px' }}>
+                  <img src="/parkingIcon.svg" alt="주차장" className={styles.badgeIcon} />
                   주차장
                 </Badge>
               </button>
-              <button className={styles.categoryButton}>
+              <button className={styles.categoryButton} onClick={searchToilet}>
                 <Badge variant="neutral" size="medium" style={{ borderRadius: '100px' }}>
+                  <img src="/toiletIcon.svg" alt="화장실" className={styles.badgeIcon} />
                   화장실
                 </Badge>
               </button>
             </div>
           </div>
         </div>
-
         {/* b-4. 수확물 확인하기 */}
         <div className={styles.harvestButton}>
           <HarvestButton onClick={handleAnalysisButtonClick} />
         </div>
-
         {/* b-5. 버튼: 채집 안내서, 위치 트래킹 */}
         <div className={styles.buttons}>
           <InfoButton onClick={openInfoModal} />
           <TrackingButton onClick={handleTrackingClick} />
         </div>
-
-        {/* 채집 안내서 모달(InfoModal) 로직 */}
+        {/* 채집 안내서 모달(InfoModal) 로직 */}-
         {isInfoModalOpen && <InfoModal onClose={closeInfoModal} />}
       </div>
     </div>

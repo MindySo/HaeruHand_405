@@ -1,120 +1,109 @@
-import { useEffect, useRef, useState, useCallback } from 'react';
+// hooks/useKakaoMap.ts
+import { useEffect, useRef, useState } from 'react';
 
-interface LatLng {
-  lat: number;
-  lng: number;
+interface FisheryLocation {
+  latitude: number;
+  longitude: number;
 }
 
-type CategoryType = '편의점' | '주차장' | '화장실';
-
-const CATEGORY_CODES: Record<Exclude<CategoryType, '화장실'>, string> = {
-  편의점: 'CS2',
-  주차장: 'PK6',
-};
-
-export const useKakaoMapWithCategory = (containerId: string, initialCenter: LatLng) => {
+export function useKakaoMap(selectedFishery?: FisheryLocation, containerId: string = 'main-map') {
   const mapRef = useRef<any>(null);
-  const placesServiceRef = useRef<any>(null);
   const markersRef = useRef<any[]>([]);
-  const [center, setCenter] = useState<LatLng>(initialCenter);
+  const [loading, setLoading] = useState(false);
 
-  // 지도 및 Places 서비스 초기화
+  // 카카오 지도 로딩
   useEffect(() => {
+    if (!selectedFishery) return;
+
     const script = document.createElement('script');
-    script.src = `//dapi.kakao.com/v2/maps/sdk.js?appkey=${
-      import.meta.env.VITE_KAKAO_MAP_API_KEY
-    }&autoload=false&libraries=services`;
+    script.src = `//dapi.kakao.com/v2/maps/sdk.js?appkey=${import.meta.env.VITE_KAKAO_MAP_API_KEY}&libraries=services&autoload=false`;
     script.async = true;
-    document.head.appendChild(script);
 
     script.onload = () => {
-      (window as any).kakao.maps.load(() => {
-        const kakao = (window as any).kakao;
+      window.kakao.maps.load(() => {
         const container = document.getElementById(containerId);
         if (!container) return;
 
-        mapRef.current = new kakao.maps.Map(container, {
-          center: new kakao.maps.LatLng(center.lat, center.lng),
+        const options = {
+          center: new window.kakao.maps.LatLng(selectedFishery.latitude, selectedFishery.longitude),
           level: 4,
-        });
+        };
 
-        placesServiceRef.current = new kakao.maps.services.Places(mapRef.current);
+        const map = new window.kakao.maps.Map(container, options);
+        mapRef.current = map;
+
+        // 검색 서비스 준비
+        const placesService = new window.kakao.maps.services.Places();
+
+        // 마커 생성
+        const createMarker = (place: any) => {
+          const marker = new window.kakao.maps.Marker({
+            map,
+            position: new window.kakao.maps.LatLng(place.y, place.x),
+          });
+          markersRef.current.push(marker);
+        };
+
+        // 마커 삭제
+        const clearMarkers = () => {
+          markersRef.current.forEach((marker) => marker.setMap(null));
+          markersRef.current = [];
+        };
+
+        // 카테고리 검색 함수
+        const searchCategory = (categoryCode: string) => {
+          if (!mapRef.current) return;
+          setLoading(true);
+
+          const center = map.getCenter();
+          const options = {
+            location: center,
+            radius: 2000, // 2km 반경
+          };
+
+          placesService.categorySearch(
+            categoryCode,
+            (result: any, status: any) => {
+              setLoading(false);
+              if (status === window.kakao.maps.services.Status.OK) {
+                clearMarkers();
+                result.forEach((place: any) => createMarker(place));
+                map.setBounds(getBoundsFromPlaces(result));
+              }
+            },
+            options,
+          );
+        };
+
+        // 검색 결과 범위 계산
+        const getBoundsFromPlaces = (places: any[]) => {
+          const bounds = new window.kakao.maps.LatLngBounds();
+          places.forEach((place) => bounds.extend(new window.kakao.maps.LatLng(place.y, place.x)));
+          return bounds;
+        };
+
+        // 외부에서 검색 기능 호출할 수 있도록 반환값에 추가
+        hookApiRef.current = {
+          searchConvenienceStore: () => searchCategory('CS2'), // 편의점
+          searchParkingLot: () => searchCategory('PK6'), // 주차장
+          searchToilet: () => searchCategory('PO3'), // 화장실(공공시설)
+        };
       });
     };
-  }, [center.lat, center.lng, containerId]);
 
-  const clearMarkers = () => {
-    markersRef.current.forEach((marker) => marker.setMap(null));
-    markersRef.current = [];
-  };
+    document.head.appendChild(script);
+  }, [selectedFishery]);
 
-  const addMarkers = (places: any[]) => {
-    const kakao = (window as any).kakao;
-    places.forEach((place) => {
-      const marker = new kakao.maps.Marker({
-        map: mapRef.current,
-        position: new kakao.maps.LatLng(place.y, place.x),
-      });
-      markersRef.current.push(marker);
-    });
-  };
-
-  const searchByCategory = useCallback(
-    (category: CategoryType) => {
-      if (!placesServiceRef.current) return;
-
-      clearMarkers();
-
-      if (category === '화장실') {
-        placesServiceRef.current.keywordSearch(
-          '화장실',
-          (data: any, status: string) => {
-            if (status === (window as any).kakao.maps.services.Status.OK) {
-              addMarkers(data);
-            }
-          },
-          {
-            location: new (window as any).kakao.maps.LatLng(center.lat, center.lng),
-            radius: 2000,
-          },
-        );
-      } else {
-        const categoryCode = CATEGORY_CODES[category];
-        placesServiceRef.current.categorySearch(
-          categoryCode,
-          (data: any, status: string) => {
-            if (status === (window as any).kakao.maps.services.Status.OK) {
-              addMarkers(data);
-            }
-          },
-          {
-            location: new (window as any).kakao.maps.LatLng(center.lat, center.lng),
-            radius: 2000,
-          },
-        );
-      }
-    },
-    [center],
-  );
-
-  const updateMyLocation = useCallback(() => {
-    navigator.geolocation.getCurrentPosition((pos) => {
-      const newCenter = {
-        lat: pos.coords.latitude,
-        lng: pos.coords.longitude,
-      };
-      setCenter(newCenter);
-      if (mapRef.current) {
-        mapRef.current.setCenter(
-          new (window as any).kakao.maps.LatLng(newCenter.lat, newCenter.lng),
-        );
-      }
-    });
-  }, []);
+  // 외부에서 접근 가능한 API
+  const hookApiRef = useRef<any>({
+    searchConvenienceStore: () => {},
+    searchParkingLot: () => {},
+    searchToilet: () => {},
+  });
 
   return {
-    searchByCategory,
-    updateMyLocation,
-    center,
+    map: mapRef,
+    loading,
+    ...hookApiRef.current,
   };
-};
+}
