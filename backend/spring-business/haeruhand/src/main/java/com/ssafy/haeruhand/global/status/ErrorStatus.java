@@ -37,6 +37,8 @@ public enum ErrorStatus implements BaseErrorStatus {
 
     // fast api
     FAST_API_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, 500, "FAST API 서버 오류입니다."),
+    GCS_URL_PROCESSING_ERROR(HttpStatus.BAD_REQUEST, 400, "GCS URL 처리 중 오류가 발생했습니다"),
+    FAST_API_TIMEOUT(HttpStatus.GATEWAY_TIMEOUT, 504, "Fast Api 응답 시간이 초과되었습니다"),
 
 
     // FCM
@@ -45,7 +47,6 @@ public enum ErrorStatus implements BaseErrorStatus {
     FCM_SEND_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, 500, "FCM 알림 전송에 실패했습니다."),
     FCM_TOKEN_DUPLICATE(HttpStatus.CONFLICT, 409, "이미 등록된 FCM 토큰입니다."),
     INVALID_DEVICE_TYPE(HttpStatus.BAD_REQUEST, 400, "지원하지 않는 디바이스 타입입니다."),
-
 
     // websocket
     WEBSOCKET_AUTH_FAILED(HttpStatus.UNAUTHORIZED, 401, "WebSocket 인증에 실패했습니다."),

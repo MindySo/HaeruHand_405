@@ -1,7 +1,9 @@
 package com.ssafy.haeruhand.domain.weather.controller;
 
+import com.ssafy.haeruhand.domain.weather.dto.WarningCheckNewResponse;
 import com.ssafy.haeruhand.domain.weather.dto.WeatherWarningResponse;
 import com.ssafy.haeruhand.domain.weather.service.WeatherWarningService;
+import com.ssafy.haeruhand.global.jwt.JwtProvider;
 import com.ssafy.haeruhand.global.response.ApiResponse;
 import com.ssafy.haeruhand.global.status.SuccessStatus;
 import io.swagger.v3.oas.annotations.Operation;
@@ -14,13 +16,14 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-@Tag(name = "기상특보 조회", description = "기상특보 조회 관련 API")
+@Tag(name = "기상특보 조회", description = "기상특보 조회 및 읽음 관리 API")
 @RestController
 @RequestMapping("/v1/weather/warnings")
 @RequiredArgsConstructor
 public class WeatherWarningController {
 
     private final WeatherWarningService weatherWarningService;
+    private final JwtProvider jwtProvider;
 
     @Operation(summary = "모든 기상특보 조회", description = "등록된 모든 기상특보 목록을 최신순으로 조회합니다 (페이지네이션)")
     @GetMapping
@@ -46,5 +49,31 @@ public class WeatherWarningController {
         Pageable pageable = PageRequest.of(page, size);
         Page<WeatherWarningResponse> warnings = weatherWarningService.getWeatherWarningsByRegion(regionCode, pageable);
         return ApiResponse.success(SuccessStatus.OK, warnings);
+    }
+
+    @Operation(
+            summary = "특보 전체 읽음 처리",
+            description = "사용자의 모든 특보를 읽음 처리합니다. 특보 목록 조회 시 호출됩니다."
+    )
+    @PostMapping("/read-all")
+    public ResponseEntity<ApiResponse<Void>> markAllAsRead(
+            @RequestHeader("Authorization") String bearerToken) {
+        String accessToken = bearerToken.replace("Bearer ", "");
+        Long userId = jwtProvider.validateAndGetUserId(accessToken);
+        weatherWarningService.markAllAsRead(userId);
+        return ApiResponse.success(SuccessStatus.OK);
+    }
+
+    @Operation(
+            summary = "특보 새로 있음 여부",
+            description = "마지막 읽은 시간 이후 새로운 특보가 있는지 확인합니다."
+    )
+    @GetMapping("/check-new")
+    public ResponseEntity<ApiResponse<WarningCheckNewResponse>> checkNewAlerts(
+            @RequestHeader("Authorization") String bearerToken) {
+        String accessToken = bearerToken.replace("Bearer ", "");
+        Long userId = jwtProvider.validateAndGetUserId(accessToken);
+        WarningCheckNewResponse response = weatherWarningService.checkNewWarnings(userId);
+        return ApiResponse.success(SuccessStatus.OK, response);
     }
 }
