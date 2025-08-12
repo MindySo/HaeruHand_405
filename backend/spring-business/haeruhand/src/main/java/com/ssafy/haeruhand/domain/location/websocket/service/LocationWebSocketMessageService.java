@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 public class LocationWebSocketMessageService {
 
     private final SimpMessagingTemplate messagingTemplate;
+    private final RedisLocationPublisher redisPublisher;
 
     /**
      * 특정 사용자에게 개인 메시지 전송
@@ -32,12 +33,20 @@ public class LocationWebSocketMessageService {
 
     /**
      * 방의 모든 멤버에게 브로드캐스트
+     * Redis Pub/Sub이 활성화된 경우 Redis를 통해 전파, 아니면 직접 전송
      */
     public void broadcastToRoom(String roomCode, LocationMessage message) {
-        String destination = "/sub/location." + roomCode;
         try {
-            messagingTemplate.convertAndSend(destination, message);
-            log.debug("Message broadcasted to room {}. Type: {}", roomCode, message.getType());
+            if (redisPublisher.isPubsubEnabled()) {
+                // Redis Pub/Sub을 통해 모든 서버에 전파
+                redisPublisher.publishToRoom(roomCode, message);
+                log.debug("Message published to Redis for room {}. Type: {}", roomCode, message.getType());
+            } else {
+                // 기존 방식: 현재 서버에만 전송
+                String destination = "/sub/location." + roomCode;
+                messagingTemplate.convertAndSend(destination, message);
+                log.debug("Message broadcasted directly to room {}. Type: {}", roomCode, message.getType());
+            }
         } catch (Exception e) {
             log.error("Failed to broadcast message to room {}: {}", roomCode, e.getMessage());
         }
