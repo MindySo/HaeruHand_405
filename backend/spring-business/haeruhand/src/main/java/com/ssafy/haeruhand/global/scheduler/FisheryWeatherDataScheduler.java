@@ -5,10 +5,10 @@ import com.ssafy.haeruhand.domain.weather.service.FisheryWeatherRefreshService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.scheduling.support.CronExpression;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Optional;
@@ -35,6 +35,8 @@ public class FisheryWeatherDataScheduler {
         log.info("║ 🔧 특징:        한 번 호출로 7일치    ║");
         log.info("║ 🏷️  빈 이름:     fisheryWeatherDataScheduler ║");
         log.info("╚══════════════════════════════════════╝");
+
+        showNextExecutionTimes();
     }
 
     /**
@@ -42,7 +44,7 @@ public class FisheryWeatherDataScheduler {
      * 매일 5시, 11시, 17시 - 기상청 예보 발표 시점
      * 한 번 호출로 오늘 포함 7일치 데이터 모두 갱신
      */
-    @Scheduled(cron = "0 0 5,11,17 * * ?")
+    @Scheduled(cron = "${scheduler.fishery-weather.current-forecast-cron:0 0 5,11,17 * * ?}")
     public void refreshFisheryWeather() {
         executeJob("FisheryWeatherRefresh", "매일 5시/11시/17시 주요 갱신 (7일치)", () -> {
             FisheryWeatherUpsertResultResponse result = fisheryWeatherRefreshService.refresh(
@@ -61,7 +63,7 @@ public class FisheryWeatherDataScheduler {
      * 매일 00시 30분 - 야간 시간대 추가 갱신
      * 낮 시간 갱신과 동일하지만 안정성을 위한 추가 갱신
      */
-    @Scheduled(cron = "0 30 0 * * ?")
+    @Scheduled(cron = "${scheduler.fishery-weather.extended-forecast-cron:0 30 0 * * ?}")
     public void refreshFisheryWeatherNightly() {
         executeJob("FisheryWeatherNightlyRefresh", "매일 00:30 야간 갱신 (7일치)", () -> {
             FisheryWeatherUpsertResultResponse result = fisheryWeatherRefreshService.refresh(
@@ -87,7 +89,7 @@ public class FisheryWeatherDataScheduler {
                 FisheryWeatherUpsertResultResponse result = fisheryWeatherRefreshService.refresh(
                         Optional.empty(),
                         Optional.empty(),
-                        1000
+                        300
                 );
 
                 return String.format("어업기상 수동 갱신 완료 (7일치): 요청=%d, 성공=%d, 실패=%d",
@@ -120,6 +122,22 @@ public class FisheryWeatherDataScheduler {
             long durationMs = System.currentTimeMillis() - startMs;
             log.error("❌ [{}] 실패: {} (실행시간: {}ms)", jobName, e.getMessage(), durationMs, e);
             throw new RuntimeException(jobName + " 실행 실패: " + e.getMessage(), e);
+        }
+    }
+
+    private void showNextExecutionTimes() {
+        try {
+            CronExpression mainCron = CronExpression.parse("0 0 5,11,17 * * ?");
+            CronExpression nightlyCron = CronExpression.parse("0 30 0 * * ?");
+
+            LocalDateTime now = LocalDateTime.now();
+
+            log.info("⏰ 다음 실행 예정 시간:");
+            log.info("   - 주요 갱신 (5/11/17시): {}", mainCron.next(now));
+            log.info("   - 야간 갱신 (00:30): {}", nightlyCron.next(now));
+
+        } catch (Exception e) {
+            log.warn("다음 실행 시간 계산 실패", e);
         }
     }
 

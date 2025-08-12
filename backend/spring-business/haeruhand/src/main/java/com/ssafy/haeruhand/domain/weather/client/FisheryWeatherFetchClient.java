@@ -40,10 +40,13 @@ public class FisheryWeatherFetchClient {
                 ? serviceKey
                 : URLEncoder.encode(serviceKey, StandardCharsets.UTF_8);
 
+        // numOfRows 최대값 300으로 제한
+        int limitedRows = Math.min(numOfRows, 300);
+
         String fullUrl = "https://apis.data.go.kr/1192136/fcstSeaTrip/GetFcstSeaTripApiService"
-                + "?type=json"
-                + "&numOfRows=" + numOfRows
-                + "&serviceKey=" + encodedKey;
+                + "?serviceKey=" + encodedKey  // serviceKey를 첫 번째로 이동
+                + "&type=json"
+                + "&numOfRows=" + limitedRows;
 
         try {
             log.info("Fetching weather data: {}", maskKeyInUrl(fullUrl));
