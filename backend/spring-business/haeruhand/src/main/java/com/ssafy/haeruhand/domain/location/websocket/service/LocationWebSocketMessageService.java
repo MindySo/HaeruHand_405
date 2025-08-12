@@ -3,6 +3,7 @@ package com.ssafy.haeruhand.domain.location.websocket.service;
 import com.ssafy.haeruhand.domain.location.dto.websocket.LocationMessage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
@@ -17,12 +18,15 @@ public class LocationWebSocketMessageService {
 
     private final SimpMessagingTemplate messagingTemplate;
     private final RedisLocationPublisher redisPublisher;
+    
+    @Value("${location.websocket.destination-prefix:/sub/location.}")
+    private String destinationPrefix;
 
     /**
      * 특정 사용자에게 개인 메시지 전송
      */
     public void sendToUser(String userId, String roomCode, LocationMessage message) {
-        String destination = "/sub/location." + roomCode;
+        String destination = destinationPrefix + roomCode;
         try {
             messagingTemplate.convertAndSendToUser(userId, destination, message);
             log.debug("Message sent to user {}. Type: {}, Room: {}", userId, message.getType(), roomCode);
@@ -43,7 +47,7 @@ public class LocationWebSocketMessageService {
                 log.debug("Message published to Redis for room {}. Type: {}", roomCode, message.getType());
             } else {
                 // 기존 방식: 현재 서버에만 전송
-                String destination = "/sub/location." + roomCode;
+                String destination = destinationPrefix + roomCode;
                 messagingTemplate.convertAndSend(destination, message);
                 log.debug("Message broadcasted directly to room {}. Type: {}", roomCode, message.getType());
             }

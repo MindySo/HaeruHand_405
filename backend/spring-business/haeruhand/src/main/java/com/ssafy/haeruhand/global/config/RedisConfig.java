@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.ssafy.haeruhand.domain.location.websocket.listener.RedisLocationSubscriber;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
@@ -20,6 +21,9 @@ import org.springframework.data.redis.listener.adapter.MessageListenerAdapter;
 @RequiredArgsConstructor
 public class RedisConfig {
 
+    @Value("${location.websocket.channel-prefix:location:room:}")
+    private String channelPrefix;
+
     /**
      * Redis 메시지 리스너 컨테이너
      * Pub/Sub 메시지를 수신하고 적절한 리스너로 라우팅
@@ -32,9 +36,9 @@ public class RedisConfig {
         RedisMessageListenerContainer container = new RedisMessageListenerContainer();
         container.setConnectionFactory(connectionFactory);
         
-        // 위치 공유 방별 채널 패턴 등록 (location:room:*)
+        // 위치 공유 방별 채널 패턴 등록
         container.addMessageListener(locationMessageListenerAdapter, 
-                new PatternTopic("location:room:*"));
+                new PatternTopic(channelPrefix + "*"));
         
         return container;
     }

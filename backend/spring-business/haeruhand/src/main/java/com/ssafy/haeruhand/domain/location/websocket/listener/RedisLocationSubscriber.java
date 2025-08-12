@@ -25,8 +25,11 @@ public class RedisLocationSubscriber implements MessageListener {
     @Value("${redis.pubsub.enabled:false}")
     private boolean pubsubEnabled;
     
-    private static final String CHANNEL_PREFIX = "location:room:";
-    private static final String WEBSOCKET_PREFIX = "/sub/location.";
+    @Value("${location.websocket.channel-prefix:location:room:}")
+    private String channelPrefix;
+    
+    @Value("${location.websocket.destination-prefix:/sub/location.}")
+    private String websocketPrefix;
     
     /**
      * Redis 메시지 수신 처리
@@ -75,15 +78,15 @@ public class RedisLocationSubscriber implements MessageListener {
      */
     private void processLocationMessage(String channel, LocationMessage locationMessage) {
         // 채널명에서 방 코드 추출
-        if (!channel.startsWith(CHANNEL_PREFIX)) {
+        if (!channel.startsWith(channelPrefix)) {
             log.warn("Received message from unexpected channel: {}", channel);
             return;
         }
         
-        String roomCode = channel.substring(CHANNEL_PREFIX.length());
+        String roomCode = channel.substring(channelPrefix.length());
         
         // WebSocket으로 브로드캐스트
-        String destination = WEBSOCKET_PREFIX + roomCode;
+        String destination = websocketPrefix + roomCode;
         messagingTemplate.convertAndSend(destination, locationMessage);
         
         log.debug("Broadcasted Redis message to WebSocket channel {}. Type: {}", 

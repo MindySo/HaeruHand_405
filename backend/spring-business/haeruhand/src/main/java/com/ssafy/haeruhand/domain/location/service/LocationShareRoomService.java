@@ -18,6 +18,7 @@ import com.ssafy.haeruhand.global.status.ErrorStatus;
 import com.ssafy.haeruhand.domain.location.enums.MemberColor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -38,8 +39,9 @@ public class LocationShareRoomService {
     private final UserRepository userRepository;
     private final FisheryRepository fisheryRepository;
     private final JwtProvider jwtProvider;
-
-
+    
+    @Value("${location.room.join-token-expiry-minutes:1440}")
+    private int joinTokenExpiryMinutes;
 
     @Transactional
     public CreateRoomResponse createRoom(String bearerToken, CreateRoomRequest request) {
@@ -81,8 +83,8 @@ public class LocationShareRoomService {
         
         memberRepository.save(hostMember);
         
-        // joinToken 생성 (장기간 유효하게 설정 - 24시간)
-        String joinToken = jwtProvider.createJoinToken(roomCode, userId, 1440);
+        // joinToken 생성 (장기간 유효하게 설정)
+        String joinToken = jwtProvider.createJoinToken(roomCode, userId, joinTokenExpiryMinutes);
         
         // 딥링크 생성
         String deepLink = String.format("seafeet://join?code=%s&token=%s", roomCode, joinToken);

@@ -23,7 +23,8 @@ public class RedisLocationPublisher {
     @Value("${redis.pubsub.enabled:false}")
     private boolean pubsubEnabled;
     
-    private static final String CHANNEL_PREFIX = "location:room:";
+    @Value("${location.websocket.channel-prefix:location:room:}")
+    private String channelPrefix;
     
     /**
      * 특정 방에 메시지 발행
@@ -36,7 +37,7 @@ public class RedisLocationPublisher {
         }
         
         try {
-            String channel = CHANNEL_PREFIX + roomCode;
+            String channel = channelPrefix + roomCode;
             String messageJson = redisObjectMapper.writeValueAsString(message);
             
             stringRedisTemplate.convertAndSend(channel, messageJson);
