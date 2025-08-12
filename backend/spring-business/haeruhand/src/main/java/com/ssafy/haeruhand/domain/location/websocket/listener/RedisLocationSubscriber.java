@@ -39,27 +39,12 @@ public class RedisLocationSubscriber implements MessageListener {
         }
         
         try {
-            // 채널명에서 방 코드 추출
             String channel = new String(message.getChannel());
-            if (!channel.startsWith(CHANNEL_PREFIX)) {
-                log.warn("Received message from unexpected channel: {}", channel);
-                return;
-            }
-            
-            String roomCode = channel.substring(CHANNEL_PREFIX.length());
-            
-            // 메시지 역직렬화
             String messageBody = new String(message.getBody());
             LocationMessage locationMessage = redisObjectMapper.readValue(
                     messageBody, LocationMessage.class);
             
-            // WebSocket으로 브로드캐스트
-            String destination = WEBSOCKET_PREFIX + roomCode;
-            messagingTemplate.convertAndSend(destination, locationMessage);
-            
-            log.debug("Broadcasted Redis message to WebSocket channel {}. Type: {}", 
-                    destination, locationMessage.getType());
-            
+            processLocationMessage(channel, locationMessage);
         } catch (Exception e) {
             log.error("Failed to process Redis message: {}", e.getMessage());
         }
@@ -75,27 +60,33 @@ public class RedisLocationSubscriber implements MessageListener {
         }
         
         try {
-            // 채널명에서 방 코드 추출
-            if (!channel.startsWith(CHANNEL_PREFIX)) {
-                log.warn("Received message from unexpected channel: {}", channel);
-                return;
-            }
-            
-            String roomCode = channel.substring(CHANNEL_PREFIX.length());
-            
-            // 메시지 역직렬화
             LocationMessage locationMessage = redisObjectMapper.readValue(
                     message, LocationMessage.class);
             
-            // WebSocket으로 브로드캐스트
-            String destination = WEBSOCKET_PREFIX + roomCode;
-            messagingTemplate.convertAndSend(destination, locationMessage);
-            
-            log.debug("Broadcasted Redis message to WebSocket channel {}. Type: {}", 
-                    destination, locationMessage.getType());
-            
+            processLocationMessage(channel, locationMessage);
         } catch (Exception e) {
             log.error("Failed to process Redis message: {}", e.getMessage());
         }
+    }
+    
+    /**
+     * 위치 메시지 처리 공통 로직
+     * 채널에서 방 코드를 추출하고 WebSocket으로 브로드캐스트
+     */
+    private void processLocationMessage(String channel, LocationMessage locationMessage) {
+        // 채널명에서 방 코드 추출
+        if (!channel.startsWith(CHANNEL_PREFIX)) {
+            log.warn("Received message from unexpected channel: {}", channel);
+            return;
+        }
+        
+        String roomCode = channel.substring(CHANNEL_PREFIX.length());
+        
+        // WebSocket으로 브로드캐스트
+        String destination = WEBSOCKET_PREFIX + roomCode;
+        messagingTemplate.convertAndSend(destination, locationMessage);
+        
+        log.debug("Broadcasted Redis message to WebSocket channel {}. Type: {}", 
+                destination, locationMessage.getType());
     }
 }
