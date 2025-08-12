@@ -336,6 +336,13 @@
     </div>
 
     <script>
+        // ===== 환경 설정 =====
+        // 환경별 서버 URL (사용할 환경의 주석을 해제하세요)
+        const API_BASE_URL = 'http://localhost:8080';                           // 🔧 로컬 개발서버
+        // const API_BASE_URL = 'http://i13a405.p.ssafy.io/api';               // 🌐 운영서버
+        
+        const WS_URL = API_BASE_URL.replace('http://', 'ws://').replace('/api', '') + '/v1/ws';
+        
         // 전역 변수
         let stompClient = null;
         let currentRoom = null;
@@ -415,7 +422,7 @@
             try {
                 logMessage('info', 'API 요청', '방 생성 중... (어장 ID: 1)');
                 
-                const response = await fetch('http://i13a405.p.ssafy.io/api/v1/location/rooms', {
+                const response = await fetch(`${API_BASE_URL}/v1/location/rooms`, {
                     method: 'POST',
                     headers: {
                         'Authorization': `Bearer ${accessToken}`,
@@ -493,7 +500,7 @@
         
         // 웹소켓 연결
         function connectWebSocket(roomCode, roomId, joinToken) {
-            const wsUrl = `ws://i13a405.p.ssafy.io/api/v1/ws`;
+            const wsUrl = WS_URL;
             logMessage('connect', 'WebSocket 연결', `URL: ${wsUrl}`);
             
             const socket = new WebSocket(wsUrl);
@@ -638,7 +645,7 @@
 
             logMessage('info', '테스트', '중복 연결 시도');
             
-            const wsUrl = `ws://i13a405.p.ssafy.io/api/v1/ws`;
+            const wsUrl = WS_URL;
             const testSocket = new WebSocket(wsUrl);
             const testClient = Stomp.over(testSocket);
             testClient.debug = null;
@@ -668,7 +675,7 @@
             
             logMessage('info', '테스트', '무효 JTI 연결 시도');
             
-            const wsUrl = `ws://i13a405.p.ssafy.io/api/v1/ws`;
+            const wsUrl = WS_URL;
             const testSocket = new WebSocket(wsUrl);
             const testClient = Stomp.over(testSocket);
             testClient.debug = null;
