@@ -6,7 +6,7 @@ import com.ssafy.haeruhand.domain.location.service.LocationShareRoomService;
 import com.ssafy.haeruhand.global.exception.GlobalException;
 import com.ssafy.haeruhand.global.jwt.JwtProvider;
 import com.ssafy.haeruhand.global.status.ErrorStatus;
-import com.ssafy.haeruhand.global.websocket.service.WebSocketSessionService;
+import com.ssafy.haeruhand.domain.location.websocket.service.LocationWebSocketSessionService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.Message;
@@ -24,7 +24,7 @@ public class StompAuthChannelInterceptor implements ChannelInterceptor {
 
     private final JwtProvider jwtProvider;
     private final LocationShareRoomService roomService;
-    private final WebSocketSessionService sessionService;
+    private final LocationWebSocketSessionService sessionService;
 
     @Override
     public Message<?> preSend(Message<?> message, MessageChannel channel) {
