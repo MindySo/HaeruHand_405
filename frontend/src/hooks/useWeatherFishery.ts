@@ -1,4 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
+import { apiClient } from '../apis/apiClient';
 
 interface WeatherFishery {
   id: number;
@@ -24,17 +25,7 @@ interface WeatherFisheryResponse {
 
 // 날씨 데이터 조회 (기본값: 오늘 날짜, 제주북서)
 const fetchWeatherFishery = async (): Promise<WeatherFisheryResponse> => {
-  const response = await fetch('http://i13a405.p.ssafy.io/api/v1/weather/fishery', {
-    method: 'GET',
-    headers: { Accept: 'application/json' },
-  });
-
-  if (!response.ok) {
-    const errorText = await response.text();
-    throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`);
-  }
-
-  return await response.json();
+  return await apiClient.get<WeatherFisheryResponse>('/v1/weather/fishery');
 };
 
 // 날씨 데이터 조회 hook

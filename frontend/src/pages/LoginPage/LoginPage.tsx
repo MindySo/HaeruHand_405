@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { useSearch, useNavigate } from '@tanstack/react-router';
 import { Button, Text } from '../../components/atoms';
 import { theme } from '../../theme';
@@ -11,24 +11,23 @@ export const LoginPage: React.FC = () => {
   const { loginWithKakao, isLoading } = useKakaoLogin();
   const { isAuthenticated } = useAuth();
   const navigate = useNavigate();
+  const isProcessedRef = useRef(false);
 
   // 이미 인증된 사용자는 LocationSelect 페이지로 리다이렉트
   useEffect(() => {
     if (isAuthenticated()) {
-      navigate({ to: '/map' });
       console.log('이미 로그인된 사용자');
+      navigate({ to: '/map' });
+      return;
     }
-  }, [isAuthenticated, navigate]);
 
-  // URL에서 카카오 인증 코드 확인 및 처리
-  useEffect(() => {
-    let isProcessed = false;
-
-    if (search.code && !isProcessed) {
-      isProcessed = true;
+    // URL에서 카카오 인증 코드 확인 및 처리
+    if (search.code && !isProcessedRef.current) {
+      isProcessedRef.current = true;
+      console.log('카카오 인증 코드 처리 시작:', search.code);
       loginWithKakao(search.code);
     }
-  }, [search.code]);
+  }, [search.code, isAuthenticated, navigate, loginWithKakao]);
 
   const handleKakaoLoginClick = () => {
     console.log('카카오 로그인 시작...');
