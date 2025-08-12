@@ -1,8 +1,8 @@
-package com.ssafy.haeruhand.global.websocket.service;
+package com.ssafy.haeruhand.domain.location.websocket.service;
 
 import com.ssafy.haeruhand.domain.location.dto.internal.MemberJoinResultDto;
-import com.ssafy.haeruhand.domain.location.dto.response.RoomInfoResponse;
 import com.ssafy.haeruhand.domain.location.service.LocationShareMemberService;
+import com.ssafy.haeruhand.domain.location.websocket.dto.SessionInfo;
 import com.ssafy.haeruhand.global.exception.GlobalException;
 import com.ssafy.haeruhand.global.status.ErrorStatus;
 import lombok.RequiredArgsConstructor;
@@ -14,21 +14,20 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 /**
- * WebSocket 세션 생명주기 관리 서비스
+ * Location 도메인 WebSocket 세션 생명주기 관리 서비스
  * 세션 검증, 속성 관리, 연결/해제 이벤트 처리
- * 기존 내부 DTO 제거하고 location 도메인 DTO 재활용
  */
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class WebSocketSessionService {
+public class LocationWebSocketSessionService {
 
     private final LocationShareMemberService memberService;
     private final StringRedisTemplate stringRedisTemplate;
 
     /**
      * WebSocket 연결 시 세션 초기화 처리 (JTI 중복 연결 체크 포함)
-     * @return MemberJoinResultDto 기존 SessionConnectionResult 대신 재활용
+     * @return MemberJoinResultDto
      */
     public MemberJoinResultDto handleConnect(Long userId, String roomCode, Long roomId, String jti) {
         try {
@@ -62,7 +61,6 @@ public class WebSocketSessionService {
             
             log.info("WebSocket connection established. User: {}, Room: {}, JTI: {}", userId, roomCode, jti);
             
-            // 기존 SessionConnectionResult.success() 대신 MemberJoinResultDto 사용
             return MemberJoinResultDto.success(null, null, userId.toString(), roomCode);
             
         } catch (GlobalException e) {
@@ -76,9 +74,9 @@ public class WebSocketSessionService {
 
     /**
      * 세션 속성에서 정보 추출 및 검증
-     * @return RoomInfoResponse.RoomInfo 기존 SessionInfo 대신 재활용
+     * @return SessionInfo WebSocket 세션 정보
      */
-    public RoomInfoResponse.RoomInfo extractSessionInfo(Map<String, Object> sessionAttributes) {
+    public SessionInfo extractSessionInfo(Map<String, Object> sessionAttributes) {
         Long userId = (Long) sessionAttributes.get("userId");
         String roomCode = (String) sessionAttributes.get("roomCode");
         Long roomId = (Long) sessionAttributes.get("roomId");
@@ -87,12 +85,10 @@ public class WebSocketSessionService {
             throw new GlobalException(ErrorStatus.WEBSOCKET_SESSION_INVALID);
         }
         
-        // 리팩토링 예정
-        return RoomInfoResponse.RoomInfo.builder()
-                .roomId(roomId)
+        return SessionInfo.builder()
+                .userId(userId)
                 .roomCode(roomCode)
-                .hostUserId(userId)
-                .isActive(true)
+                .roomId(roomId)
                 .build();
     }
 
