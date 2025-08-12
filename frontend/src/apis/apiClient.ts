@@ -41,10 +41,16 @@ class ApiClient {
     return await response.json();
   }
 
-  async post<T>(endpoint: string, body?: any): Promise<T> {
+  async post<T>(
+    endpoint: string,
+    body?: any,
+    options?: { headers?: Record<string, string> },
+  ): Promise<T> {
+    const headers = { ...this.getHeadersWithContentType(), ...options?.headers };
+
     const response = await fetch(`${this.baseURL}${endpoint}`, {
       method: 'POST',
-      headers: this.getHeadersWithContentType(),
+      headers,
       body: body ? JSON.stringify(body) : undefined,
     });
 
