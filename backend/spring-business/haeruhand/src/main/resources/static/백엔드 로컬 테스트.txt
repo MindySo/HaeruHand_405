@@ -1,0 +1,21 @@
+디렉터리 전제
+
+backend/
+ └─ spring-business/
+     └─ haeruhand/
+         └─ src/main/resources/static/
+             └─ login/
+                └─ index.html
+
+폴더에 index.html이 있으면 그 폴더 경로로 접속 가능 (예: /login/).
+
+# 설치(최초 1회)
+npm install -g http-server
+
+# 실행: 정적 루트에서 실행
+# 1) static 폴더 전체를 루트로 제공
+cd src/main/resources/static
+http-server -p 5173
+
+접속 URL 예시
+static에서 띄웠을 때: http://localhost:5173/login/ -> Spring 카카오톡 redirect 설정

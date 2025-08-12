@@ -415,7 +415,7 @@
             try {
                 logMessage('info', 'API 요청', '방 생성 중... (어장 ID: 1)');
                 
-                const response = await fetch('http://localhost:8080/v1/location/rooms', {
+                const response = await fetch('http://i13a405.p.ssafy.io/api/v1/location/rooms', {
                     method: 'POST',
                     headers: {
                         'Authorization': `Bearer ${accessToken}`,
@@ -493,7 +493,7 @@
         
         // 웹소켓 연결
         function connectWebSocket(roomCode, roomId, joinToken) {
-            const wsUrl = `ws://localhost:8080/ws/v1`;
+            const wsUrl = `ws://i13a405.p.ssafy.io/api/v1/ws`;
             logMessage('connect', 'WebSocket 연결', `URL: ${wsUrl}`);
             
             const socket = new WebSocket(wsUrl);
@@ -638,7 +638,7 @@
 
             logMessage('info', '테스트', '중복 연결 시도');
             
-            const wsUrl = `ws://localhost:8080/ws/v1`;
+            const wsUrl = `ws://i13a405.p.ssafy.io/api/v1/ws`;
             const testSocket = new WebSocket(wsUrl);
             const testClient = Stomp.over(testSocket);
             testClient.debug = null;
@@ -668,7 +668,7 @@
             
             logMessage('info', '테스트', '무효 JTI 연결 시도');
             
-            const wsUrl = `ws://localhost:8080/ws/v1`;
+            const wsUrl = `ws://i13a405.p.ssafy.io/api/v1/ws`;
             const testSocket = new WebSocket(wsUrl);
             const testClient = Stomp.over(testSocket);
             testClient.debug = null;
