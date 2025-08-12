@@ -2,7 +2,7 @@
 import { Button, Text } from '../../components/atoms';
 import styles from './TrackingSharePage.module.css';
 import { useNavigate } from '@tanstack/react-router';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import QRCode from 'react-qr-code';
 import { useLocationSocket } from '../../stores/useLocationSocket';
 
@@ -28,6 +28,7 @@ export default function TrackingSharePage() {
   const { connect } = useLocationSocket();
   const [deepLink, setDeepLink] = useState('');
   const [roomCode, setRoomCode] = useState('');
+  const isInitializedRef = useRef(false);
 
   const handleBackButtonClick = () => navigate({ to: '/buddy' });
 
@@ -52,43 +53,63 @@ export default function TrackingSharePage() {
   };
 
   useEffect(() => {
-    const saved = sessionStorage.getItem('locationRoom');
-    const isHost = sessionStorage.getItem('isLocationRoomHost') === 'true';
-    const token = getAccessToken();
+    // 이미 초기화되었으면 중복 실행 방지
+    if (isInitializedRef.current) return;
+    isInitializedRef.current = true;
 
-    // STOMP가 아직이면 Buddy에서 로드됨. 여기선 연결 실패 시 무시하고 QR만 보여줘도 됨.
-    const tryConnect = async (roomCode: string, joinToken: string) => {
-      if (!token) return;
-      try {
-        await connect({ wsUrl: WS_URL, accessToken: token, room: { roomCode, joinToken } });
-        console.log('Share 페이지에서 WebSocket 연결 성공');
-      } catch (e) {
-        // 연결 실패해도 QR 공유는 가능하게 그대로 둔다.
-        console.warn('WS connect from /share failed (continue showing QR):', e);
-      }
-    };
+    const initializeRoom = async () => {
+      const saved = sessionStorage.getItem('locationRoom');
+      const isHost = sessionStorage.getItem('isLocationRoomHost') === 'true';
+      const token = getAccessToken();
 
-    // 방 재사용
-    if (saved && isHost) {
-      try {
-        const { roomCode, deepLink, joinToken } = JSON.parse(saved);
-        if (roomCode && deepLink) {
-          setRoomCode(roomCode);
-          setDeepLink(deepLink);
-          // 테스트 HTML처럼 /share에서도 연결을 시도
-          if (joinToken) tryConnect(roomCode, joinToken);
+      console.log('방 초기화 시작:', { saved: !!saved, isHost, hasToken: !!token });
+
+      // tryConnect 함수를 여기서 정의하여 token에 접근할 수 있도록 함
+      const tryConnect = async (roomCode: string, joinToken: string) => {
+        if (!token) return;
+
+        // 연결 상태 확인 후 연결되지 않은 경우에만 연결 시도
+        const { connected } = useLocationSocket.getState?.() ?? {};
+        if (connected) {
+          console.log('이미 연결되어 있습니다.');
           return;
         }
-      } catch {}
-    }
 
-    // 새 방 생성
-    (async () => {
+        try {
+          await connect({ wsUrl: WS_URL, accessToken: token, room: { roomCode, joinToken } });
+          console.log('Share 페이지에서 WebSocket 연결 성공');
+        } catch (e) {
+          // 연결 실패해도 QR 공유는 가능하게 그대로 둔다.
+          console.warn('WS connect from /share failed (continue showing QR):', e);
+        }
+      };
+
+      // 방 재사용
+      if (saved && isHost) {
+        try {
+          const { roomCode, deepLink, joinToken } = JSON.parse(saved);
+          if (roomCode && deepLink) {
+            console.log('기존 방 재사용:', roomCode);
+            setRoomCode(roomCode);
+            setDeepLink(deepLink);
+            if (joinToken) {
+              tryConnect(roomCode, joinToken);
+            }
+            return; // 여기서 확실히 종료
+          }
+        } catch (error) {
+          console.error('저장된 방 정보 파싱 오류:', error);
+        }
+      }
+
+      // 새 방 생성 (방 재사용이 안 된 경우에만)
       if (!token) {
         alert('로그인이 필요합니다.');
         navigate({ to: '/login' });
         return;
       }
+
+      console.log('새 방 생성 시작');
       try {
         const fisheryId = getSelectedFisheryId();
         const resp = await fetch(`${API_BASE}/v1/location/rooms`, {
@@ -130,13 +151,15 @@ export default function TrackingSharePage() {
 
         // 테스트 HTML과 동일: 생성 즉시 WS 연결 시도
         if (joinToken) tryConnect(roomCode, joinToken);
-      } catch (e: any) {
-        console.error('방 생성 에러', e);
-        alert(e?.message || '방을 생성할 수 없습니다. 다시 시도해 주세요.');
+      } catch (error) {
+        console.error('방 생성 오류:', error);
+        alert(error?.message || '방을 생성할 수 없습니다. 다시 시도해 주세요.');
         navigate({ to: '/buddy' });
       }
-    })();
-  }, [navigate, connect]);
+    };
+
+    initializeRoom();
+  }, []); // 의존성 배열은 비워두되, 내부에서 중복 실행 방지
 
   return (
     <div className={styles.container}>

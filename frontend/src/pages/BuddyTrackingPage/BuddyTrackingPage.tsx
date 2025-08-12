@@ -70,6 +70,7 @@ export default function BuddyTrackingPage() {
   const myMarkerRef = useRef<any>(null);
   const memberMarkersRef = useRef<Map<number, any>>(new Map());
   const geoWatchIdRef = useRef<number | null>(null);
+  const isInitializedRef = useRef(false);
 
   const [userInfo, setUserInfo] = useState<UserInfo | null>(null);
   const [members, setMembers] = useState<Member[]>([]);
@@ -151,6 +152,10 @@ export default function BuddyTrackingPage() {
 
   // -------- 스크립트 로드 + 지도 + (있으면) 소켓 연결 --------
   useEffect(() => {
+    // 이미 초기화되었으면 중복 실행 방지
+    if (isInitializedRef.current) return;
+    isInitializedRef.current = true;
+
     const ensureScripts = async () => {
       await new Promise<void>((resolve) => {
         if (window.kakao?.maps) return resolve();

@@ -43,6 +43,19 @@ export const useLocationSocket = create<State & { onMemberUpdate?: (m: Member) =
         return;
       }
 
+      // 연결 중인 경우 대기
+      if (s.stomp && !s.connected) {
+        console.log('연결 중인 소켓이 있습니다. 대기합니다.');
+        return;
+      }
+
+      // 기존 연결이 있으면 정리
+      if (s.stomp) {
+        try {
+          s.stomp.disconnect();
+        } catch {}
+      }
+
       // STOMP 로드 체크
       const StompLib = (window as any).Stomp;
       if (!StompLib) {
@@ -56,6 +69,29 @@ export const useLocationSocket = create<State & { onMemberUpdate?: (m: Member) =
       const socket = new WebSocket(wsUrl);
       const client = StompLib.over(socket);
       client.debug = null;
+
+      // 하트비트 설정 (프록시 타임아웃과 맞춰 여유 있게)
+      client.heartbeat.outgoing = 10000; // 10s
+      client.heartbeat.incoming = 10000; // 서버가 보낸 핑 수신
+
+      // 자동 재연결 설정 (stompjs 2.x)
+      client.reconnect_delay = 3000;
+
+      // STOMP 에러 핸들러
+      client.onStompError = (frame: any) => {
+        console.error('STOMP ERROR frame:', frame?.headers?.message, frame?.body);
+        // 상태 정리
+        set({ connected: false });
+        try {
+          client.disconnect();
+        } catch {}
+      };
+
+      // WebSocket 종료 핸들러
+      socket.onclose = (ev) => {
+        console.warn('WS closed:', ev?.code, ev?.reason);
+        set({ connected: false });
+      };
 
       // STOMP CONNECT
       await new Promise<void>((resolve, reject) => {
@@ -125,7 +161,16 @@ export const useLocationSocket = create<State & { onMemberUpdate?: (m: Member) =
       });
 
       // JOIN
-      client.send('/pub/location.join', {}, '{}');
+      client.send(
+        '/pub/location.join',
+        {
+          Authorization: `Bearer ${accessToken}`,
+          'room-code': room.roomCode,
+          'join-token': room.joinToken,
+          'content-type': 'application/json',
+        },
+        '{}',
+      );
 
       set({ connected: true, stomp: client, room });
     },
@@ -143,11 +188,15 @@ export const useLocationSocket = create<State & { onMemberUpdate?: (m: Member) =
     },
 
     sendLocation(loc) {
-      const { stomp } = get();
-      if (stomp?.connected) {
+      const { stomp, room } = get();
+      if (stomp?.connected && room) {
         stomp.send(
           '/pub/location.update',
-          {},
+          {
+            'room-code': room.roomCode,
+            'join-token': room.joinToken,
+            'content-type': 'application/json',
+          },
           JSON.stringify({ ...loc, accuracy: loc.accuracy ?? 5.0 }),
         );
       }
