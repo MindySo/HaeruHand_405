@@ -31,8 +31,8 @@ public interface UserLocationLogRepository extends JpaRepository<UserLocationLog
             FROM user_location_log
             WHERE timestamp > :since
             GROUP BY user_id, location_share_room_id
-            HAVING COUNT(*) >= 150
-                AND TIMESTAMPDIFF(MINUTE, MIN(timestamp), MAX(timestamp)) >= 25
+            HAVING COUNT(*) >= :minLogCount
+                AND TIMESTAMPDIFF(MINUTE, MIN(timestamp), MAX(timestamp)) >= :minDuration
         )
         SELECT DISTINCT ul.user_id, ul.location_share_room_id
         FROM user_location_log ul
@@ -51,7 +51,9 @@ public interface UserLocationLogRepository extends JpaRepository<UserLocationLog
         """, nativeQuery = true)
     List<Object[]> findStationaryUsers(
         @Param("since") LocalDateTime since,
-        @Param("radiusMeters") double radiusMeters
+        @Param("radiusMeters") double radiusMeters,
+        @Param("minLogCount") int minLogCount,
+        @Param("minDuration") int minDuration
     );
     
     /**
