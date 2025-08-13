@@ -147,8 +147,8 @@ pipeline {
                     echo "Checking for package.json:"
                     test -f frontend/package.json && echo "✅ package.json exists" || echo "❌ package.json missing"
                     
-                    # 루트 디렉터리를 빌드 컨텍스트로 사용
-                    docker build -f docker/nginx/Dockerfile -t $DOCKER_ID/haeruhand-nginx:latest .
+                    # 강제로 캐시 무시하고 빌드
+                    docker build --no-cache -f docker/nginx/Dockerfile -t $DOCKER_ID/haeruhand-nginx:latest .
                     docker push    $DOCKER_ID/haeruhand-nginx:latest
                 '''
             }

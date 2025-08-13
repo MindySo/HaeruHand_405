@@ -5,9 +5,12 @@ WORKDIR /app
 # pnpm 설치
 RUN npm install -g pnpm
 
-# 빌드 컨텍스트 디렉토리 구조 확인
+# 빌드 컨텍스트 전체 구조 먼저 확인
 RUN echo "=== Build context contents ===" && ls -la .
-RUN echo "=== Frontend directory contents ===" && ls -la frontend/ || echo "Frontend directory not found or empty"
+RUN echo "=== All files in build context ===" && find . -type f | head -20 || echo "No files found"
+RUN echo "=== All directories in build context ===" && find . -type d | head -10 || echo "No directories found"
+RUN echo "=== Looking for frontend directory ===" && ls -la frontend/ || echo "Frontend directory not found"
+RUN echo "=== Looking for package.json anywhere ===" && find . -name "package.json" -type f || echo "No package.json found anywhere"
 
 # package.json이 존재하는지 확인하고 복사
 RUN test -f frontend/package.json || (echo "ERROR: frontend/package.json not found!" && exit 1)
