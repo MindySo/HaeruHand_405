@@ -9,7 +9,6 @@ import org.springframework.http.HttpStatus;
 @AllArgsConstructor
 public enum ErrorStatus implements BaseErrorStatus {
     BAD_REQUEST(HttpStatus.BAD_REQUEST, 400, "잘못된 요청입니다."),
-    UNAUTHORIZED(HttpStatus.UNAUTHORIZED, 401, "인증이 필요합니다."),
     FORBIDDEN(HttpStatus.FORBIDDEN, 403, "접근 권한이 없습니다."),
     NOT_FOUND(HttpStatus.NOT_FOUND, 404, "요청한 자원을 찾을 수 없습니다."),
     METHOD_NOT_ALLOWED(HttpStatus.METHOD_NOT_ALLOWED, 405, "허용되지 않은 메소드입니다."),
@@ -18,17 +17,15 @@ public enum ErrorStatus implements BaseErrorStatus {
     // user
     USER_NOT_FOUND(HttpStatus.NOT_FOUND, 404, "존재하지 않는 유저입니다."),
 
-    // email
-    EMAIL_FORMAT_INVALID(HttpStatus.BAD_REQUEST, 400, "올바르지 않은 이메일 형식입니다."),
-    USER_EMAIL_FORBIDDEN(HttpStatus.FORBIDDEN, 403, "유저가 이메일에 대해 접근 권한이 없습니다."),
-    EMAIL_NOT_FOUND(HttpStatus.NOT_FOUND, 404, "존재하지 않는 이메일입니다."),
-
     // oauth
     OAUTH_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, 500, "SNS로그인 오류입니다."),
+    INVALID_ID_TOKEN(HttpStatus.UNAUTHORIZED, 401, "유효하지 않은 ID 토큰입니다."),
+    EXPIRED_ID_TOKEN(HttpStatus.UNAUTHORIZED, 401, "만료된 ID 토큰입니다."),
+    ID_TOKEN_SIGNATURE_INVALID(HttpStatus.UNAUTHORIZED, 401, "ID 토큰 서명 검증에 실패했습니다."),
+    JWKS_API_ERROR(HttpStatus.BAD_GATEWAY, 502, "JWKS API 호출에 실패했습니다."),
+    PUBLIC_KEY_NOT_FOUND(HttpStatus.NOT_FOUND, 404, "공개키를 찾을 수 없습니다."),
     INVALID_TOKEN(HttpStatus.UNAUTHORIZED, 401, "유효하지 않은 토큰입니다."),
-    OAUTH_TOKEN_ERROR(HttpStatus.BAD_REQUEST, 400, "OAuth 토큰 발급에 실패했습니다."),
     PROFILE_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, 500, "유저정보 불러오기 오류입니다."),
-    USER_CREATE_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, 500, "사용자 생성에 실패했습니다."),
 
     // gcs
     UNSUPPORTED_IMAGE_TYPE(HttpStatus.BAD_REQUEST, 400, "지원하지 않는 이미지 업로드 타입입니다."),
@@ -40,13 +37,13 @@ public enum ErrorStatus implements BaseErrorStatus {
     GCS_URL_PROCESSING_ERROR(HttpStatus.BAD_REQUEST, 400, "GCS URL 처리 중 오류가 발생했습니다"),
     FAST_API_TIMEOUT(HttpStatus.GATEWAY_TIMEOUT, 504, "Fast Api 응답 시간이 초과되었습니다"),
 
-
     // FCM
     FCM_TOKEN_INVALID(HttpStatus.BAD_REQUEST, 400, "유효하지 않은 FCM 토큰입니다."),
     FCM_TOKEN_NOT_FOUND(HttpStatus.NOT_FOUND, 404, "등록되지 않은 FCM 토큰입니다."),
     FCM_SEND_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, 500, "FCM 알림 전송에 실패했습니다."),
     FCM_TOKEN_DUPLICATE(HttpStatus.CONFLICT, 409, "이미 등록된 FCM 토큰입니다."),
     INVALID_DEVICE_TYPE(HttpStatus.BAD_REQUEST, 400, "지원하지 않는 디바이스 타입입니다."),
+    NOTIFICATION_RETRY_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, 500, "알림 재시도 처리에 실패했습니다."),
 
     // websocket
     WEBSOCKET_AUTH_FAILED(HttpStatus.UNAUTHORIZED, 401, "WebSocket 인증에 실패했습니다."),
