@@ -108,9 +108,16 @@ public class FcmTokenServiceImpl implements FcmTokenService {
 
     @Override
     public List<UserFcmToken> getUserActiveTokens(Long userId) {
-        List<UserFcmToken> activeTokens = fcmTokenRepository.findActiveTokensByUserIdAndIsDeletedFalse(userId);
+        List<UserFcmToken> activeTokens = fcmTokenRepository.findByUserIdAndIsDeletedFalse(userId);
         log.debug("사용자 활성 FCM 토큰 조회 - userId: {}, tokenCount: {}", userId, activeTokens.size());
         return activeTokens;
+    }
+
+    @Override
+    public boolean isTokenActive(Long tokenId) {
+        return fcmTokenRepository.findById(tokenId)
+                .map(token -> !token.isDeleted())
+                .orElse(false);
     }
 
     private String maskToken(String token) {

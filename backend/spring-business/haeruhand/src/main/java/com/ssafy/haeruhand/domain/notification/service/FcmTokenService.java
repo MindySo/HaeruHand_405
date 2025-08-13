@@ -12,5 +12,6 @@ public interface FcmTokenService {
     FcmTokenResponseDto registerToken(Long userId, FcmTokenRegisterRequestDto request);
     FcmTokenResponseDto updateToken(Long tokenId, FcmTokenUpdateRequestDto request);
     void deleteToken(Long tokenId);
-    List<UserFcmToken> getUserActiveTokens(Long userId);  // API 노출 안 함
+    List<UserFcmToken> getUserActiveTokens(Long userId);
+    boolean isTokenActive(Long tokenId);
 }
