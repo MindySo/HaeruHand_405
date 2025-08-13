@@ -34,6 +34,16 @@ pipeline {
                         credentialsId: 'gitlab-jenkins-token'
                     ]]
                 ])
+                dir('frontend') {
+                    checkout([
+                        $class: 'GitSCM',
+                        branches: [[name: '*/fe-apk']],
+                        userRemoteConfigs: [[
+                        url: 'https://lab.ssafy.com/s13-webmobile2-sub1/S13P11A405.git',
+                        credentialsId: 'gitlab-jenkins-token'
+                        ]]
+                    ])
+                }
             }
         }
 
@@ -43,7 +53,8 @@ pipeline {
                 withCredentials([
                     file(credentialsId: 'env-prod',  variable: 'ENV_TMP'),
                     file(credentialsId: 'gcs-key',   variable: 'GCS_KEY_TMP'),
-                    file(credentialsId: 'service-account-key', variable: 'SA_KEY_TMP')
+                    file(credentialsId: 'service-account-key', variable: 'SA_KEY_TMP'),
+                    file(credentialsId: 'frontend-env', variable: 'FRONTEND_ENV_TMP')
                 ]) {
                     sh '''
                         # .env.prod → docker/.env.prod
@@ -55,6 +66,9 @@ pipeline {
 
                         # service-account-key.json → Spring resources
                         cp "$SA_KEY_TMP" "$SPRING_RES/service-account-key.json"
+
+                        # frontend .env → frontend/.env
+                        cp "$FRONTEND_ENV_TMP" "frontend/.env"
                     '''
                 }
             }
@@ -100,8 +114,8 @@ pipeline {
         stage('Build & Push - Nginx') {
             steps {
                 sh '''
-                    cd docker/nginx
-                    docker build -t $DOCKER_ID/haeruhand-nginx:latest .
+                    # cd docker/nginx
+                    docker build -f docker/nginx/Dockerfile -t $DOCKER_ID/haeruhand-nginx:latest .
                     docker push    $DOCKER_ID/haeruhand-nginx:latest
                 '''
             }
