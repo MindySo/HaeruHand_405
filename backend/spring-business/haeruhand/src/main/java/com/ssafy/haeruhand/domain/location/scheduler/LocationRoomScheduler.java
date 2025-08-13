@@ -5,6 +5,7 @@ import com.ssafy.haeruhand.domain.location.entity.LocationShareRoom;
 import com.ssafy.haeruhand.domain.location.repository.LocationShareRoomRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -20,6 +21,9 @@ public class LocationRoomScheduler {
 
     private final LocationShareRoomRepository roomRepository;
     private final SimpMessagingTemplate messagingTemplate;
+    
+    @Value("${location.websocket.destination-prefix:/sub/location.}")
+    private String destinationPrefix;
 
     // 1분마다 타이머 업데이트
     @Scheduled(fixedRate = 60000)
@@ -37,7 +41,7 @@ public class LocationRoomScheduler {
                     .build();
             
             messagingTemplate.convertAndSend(
-                    "/sub/location." + room.getRoomCode(),
+                    destinationPrefix + room.getRoomCode(),
                     timerMessage);
         }
         
