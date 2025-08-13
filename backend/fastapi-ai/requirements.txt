@@ -5,3 +5,4 @@ httpx
 google-generativeai
 pydantic
 pydantic-settings
+circuitbreaker
