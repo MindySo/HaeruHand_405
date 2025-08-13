@@ -34,6 +34,16 @@ pipeline {
                         credentialsId: 'gitlab-jenkins-token'
                     ]]
                 ])
+                dir('frontend') {
+                    checkout([
+                        $class: 'GitSCM',
+                        branches: [[name: '*/fe-develop']],
+                        userRemoteConfigs: [[
+                        url: 'https://lab.ssafy.com/s13-webmobile2-sub1/S13P11A405.git',
+                        credentialsId: 'gitlab-jenkins-token'
+                        ]]
+                    ])
+                }
             }
         }
 
