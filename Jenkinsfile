@@ -114,8 +114,8 @@ pipeline {
         stage('Build & Push - Nginx') {
             steps {
                 sh '''
-                    # frontend 디렉터리를 빌드 컨텍스트로 사용
-                    docker build -f docker/nginx/Dockerfile -t $DOCKER_ID/haeruhand-nginx:latest frontend/
+                    # 루트 디렉터리를 빌드 컨텍스트로 사용
+                    docker build -f docker/nginx/Dockerfile -t $DOCKER_ID/haeruhand-nginx:latest .
                     docker push    $DOCKER_ID/haeruhand-nginx:latest
                 '''
             }

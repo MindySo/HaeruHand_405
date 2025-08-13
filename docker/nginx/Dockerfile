@@ -5,13 +5,14 @@ WORKDIR /app
 # pnpm 설치
 RUN npm install -g pnpm
     
-# 빌드 컨텍스트가 frontend/이므로 직접 복사
-COPY package*.json ./
-COPY pnpm-lock.yaml ./
+# frontend 디렉터리에서 package.json 복사
+COPY frontend/package*.json ./
+# pnpm-lock.yaml이 있으면 복사 (조건부)
+COPY frontend/pnpm-lock.yaml* ./
 RUN pnpm install --frozen-lockfile
     
-# 모든 파일 복사
-COPY . ./
+# frontend 디렉터리의 모든 파일 복사
+COPY frontend/ ./
 RUN pnpm run build
     
 # --- Nginx ---
