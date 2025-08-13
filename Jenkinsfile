@@ -26,6 +26,7 @@ pipeline {
         /* -------------------------------------------------- */
         stage('Checkout') {
             steps {
+                // 1. 백엔드 코드 체크아웃 (be-develop)
                 checkout([
                     $class: 'GitSCM',
                     branches: [[name: '*/be-develop']],
@@ -34,16 +35,29 @@ pipeline {
                         credentialsId: 'gitlab-jenkins-token'
                     ]]
                 ])
+                
+                // 2. 기존 frontend 디렉토리 제거 후 프론트엔드 코드 체크아웃 (fe-apk)
+                sh 'rm -rf frontend'
                 dir('frontend') {
                     checkout([
                         $class: 'GitSCM',
                         branches: [[name: '*/fe-apk']],
                         userRemoteConfigs: [[
-                        url: 'https://lab.ssafy.com/s13-webmobile2-sub1/S13P11A405.git',
-                        credentialsId: 'gitlab-jenkins-token'
+                            url: 'https://lab.ssafy.com/s13-webmobile2-sub1/S13P11A405.git',
+                            credentialsId: 'gitlab-jenkins-token'
                         ]]
                     ])
                 }
+                
+                // 3. 체크아웃 결과 확인
+                sh '''
+                    echo "=== Workspace structure after checkout ==="
+                    ls -la
+                    echo "=== Frontend directory contents ==="
+                    ls -la frontend/
+                    echo "=== Checking for package.json ==="
+                    test -f frontend/package.json && echo "✅ package.json found" || echo "❌ package.json NOT found"
+                '''
             }
         }
 
@@ -114,6 +128,16 @@ pipeline {
         stage('Build & Push - Nginx') {
             steps {
                 sh '''
+                    echo "=== Pre-build verification ==="
+                    echo "Current directory:"
+                    pwd
+                    echo "Directory contents:"
+                    ls -la
+                    echo "Frontend directory contents:"
+                    ls -la frontend/ || echo "Frontend directory not found"
+                    echo "Checking for package.json:"
+                    test -f frontend/package.json && echo "✅ package.json exists" || echo "❌ package.json missing"
+                    
                     # 루트 디렉터리를 빌드 컨텍스트로 사용
                     docker build -f docker/nginx/Dockerfile -t $DOCKER_ID/haeruhand-nginx:latest .
                     docker push    $DOCKER_ID/haeruhand-nginx:latest
