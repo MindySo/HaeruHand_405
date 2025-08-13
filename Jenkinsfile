@@ -36,9 +36,12 @@ pipeline {
                     ]]
                 ])
                 
-                // 2. 기존 frontend 디렉토리 제거 후 프론트엔드 코드 체크아웃 (fe-apk)
+                // 2. 기존 frontend 디렉토리 제거
                 sh 'rm -rf frontend'
-                dir('frontend') {
+                
+                // 3. 임시 디렉토리에 fe-apk 브랜치 체크아웃
+                sh 'mkdir -p temp-frontend'
+                dir('temp-frontend') {
                     checkout([
                         $class: 'GitSCM',
                         branches: [[name: '*/fe-apk']],
@@ -49,7 +52,13 @@ pipeline {
                     ])
                 }
                 
-                // 3. 체크아웃 결과 확인
+                // 4. 프론트엔드 코드만 frontend 디렉토리로 이동
+                sh '''
+                    mv temp-frontend/frontend ./frontend
+                    rm -rf temp-frontend
+                '''
+                
+                // 5. 체크아웃 결과 확인
                 sh '''
                     echo "=== Workspace structure after checkout ==="
                     ls -la
