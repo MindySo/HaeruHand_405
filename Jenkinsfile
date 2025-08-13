@@ -165,7 +165,8 @@ pipeline {
                     test -f frontend/package.json && echo "✅ package.json exists" || echo "❌ package.json missing"
                     
                     # 빌드 컨텍스트를 명시적으로 지정하고 캐시 무시
-                    docker build --no-cache -f docker/nginx/Dockerfile -t $DOCKER_ID/haeruhand-nginx:latest .
+                    # 현재 디렉토리를 절대 경로로 지정하여 빌드 컨텍스트 문제 해결
+                    docker build --no-cache -f docker/nginx/Dockerfile -t $DOCKER_ID/haeruhand-nginx:latest $(pwd)
                     docker push    $DOCKER_ID/haeruhand-nginx:latest
                 '''
             }
