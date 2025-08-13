@@ -1,4 +1,4 @@
-package com.ssafy.haeruhand.global.websocket.service;
+package com.ssafy.haeruhand.domain.location.websocket.service;
 
 import com.ssafy.haeruhand.domain.location.dto.websocket.LocationMessage;
 import lombok.RequiredArgsConstructor;
