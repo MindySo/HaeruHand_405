@@ -1,6 +1,8 @@
 from fastapi import APIRouter
 from app.api.detection import router as detection_router
+from app.api.health import router as health_router
 
 api_router = APIRouter()
 
 api_router.include_router(detection_router, prefix="/detection")
+api_router.include_router(health_router,   prefix="/health")
