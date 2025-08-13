@@ -78,7 +78,7 @@ public class LocationShareMemberService {
                 .orElseThrow(() -> new GlobalException(ErrorStatus.WEBSOCKET_MEMBER_NOT_FOUND));
         
         member.softDelete();
-        log.info("Member removed. User: {}, Room: {}", userId, roomCode);
+        log.debug("Member removed. User: {}, Room: {}", userId, roomCode);
     }
 
     public List<LocationShareMember> getMembersByRoomId(Long roomId) {

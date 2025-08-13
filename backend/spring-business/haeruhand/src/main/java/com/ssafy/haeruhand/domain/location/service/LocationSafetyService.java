@@ -16,6 +16,7 @@ import com.ssafy.haeruhand.global.exception.GlobalException;
 import com.ssafy.haeruhand.global.status.ErrorStatus;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -44,23 +45,33 @@ public class LocationSafetyService {
     private final ApplicationEventPublisher eventPublisher;
     
     // 정체 감지 설정
-    private static final double STATIONARY_RADIUS_METERS = 50.0;
-    private static final int STATIONARY_MINUTES = 30;
+    @Value("${location.safety.stationary-radius-meters:50.0}")
+    private double stationaryRadiusMeters;
+    
+    @Value("${location.safety.stationary-minutes:30}")
+    private int stationaryMinutes;
+    
+    @Value("${location.safety.stationary-log-count:150}")
+    private int stationaryLogCount;
+    
+    @Value("${location.safety.stationary-min-duration:25}")
+    private int stationaryMinDuration;
     
     // 거리 이탈 설정
-    private static final double DISTANCE_THRESHOLD_METERS = 500.0;
+    @Value("${location.safety.distance-threshold-meters:500.0}")
+    private double distanceThresholdMeters;
     
     /**
      * GPS 정체 사용자 감지 및 알림
      */
     @Transactional
     public void detectAndNotifyStationaryUsers() {
-        LocalDateTime since = LocalDateTime.now().minusMinutes(STATIONARY_MINUTES);
+        LocalDateTime since = LocalDateTime.now().minusMinutes(stationaryMinutes);
         
         List<Object[]> stationaryUsers = locationLogRepository
-            .findStationaryUsers(since, STATIONARY_RADIUS_METERS);
+            .findStationaryUsers(since, stationaryRadiusMeters, stationaryLogCount, stationaryMinDuration);
         
-        log.info("정체 사용자 감지 결과: {}명", stationaryUsers.size());
+        log.debug("정체 사용자 감지 결과: {}명", stationaryUsers.size());
         
         for (Object[] result : stationaryUsers) {
             Long userId = ((Number) result[0]).longValue();
@@ -209,7 +220,7 @@ public class LocationSafetyService {
                 );
                 
                 // 500m 이상 떨어진 경우 알림
-                if (distance >= DISTANCE_THRESHOLD_METERS) {
+                if (distance >= distanceThresholdMeters) {
                     User user = userRepository.findById(userId)
                         .orElseThrow(() -> new GlobalException(ErrorStatus.USER_NOT_FOUND));
                     
@@ -225,7 +236,7 @@ public class LocationSafetyService {
                         )
                     );
                     
-                    log.warn("⚠️ 거리 이탈 감지 - Room: {}, User: {}, Distance: {}m", 
+                    log.info("⚠️ 거리 이탈 감지 - Room: {}, User: {}, Distance: {}m", 
                         room.getRoomCode(), user.getNickname(), distanceStr);
                 }
             }

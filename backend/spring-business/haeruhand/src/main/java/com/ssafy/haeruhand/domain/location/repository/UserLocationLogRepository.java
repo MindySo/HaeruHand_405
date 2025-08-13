@@ -19,36 +19,41 @@ public interface UserLocationLogRepository extends JpaRepository<UserLocationLog
      * @return [userId, roomId] 배열 리스트
      */
     @Query(value = """
+        WITH user_averages AS (
+            SELECT 
+                user_id,
+                location_share_room_id,
+                AVG(latitude) as avg_lat,
+                AVG(longitude) as avg_lon,
+                COUNT(*) as log_count,
+                MIN(timestamp) as first_log,
+                MAX(timestamp) as last_log
+            FROM user_location_log
+            WHERE timestamp > :since
+            GROUP BY user_id, location_share_room_id
+            HAVING COUNT(*) >= :minLogCount
+                AND TIMESTAMPDIFF(MINUTE, MIN(timestamp), MAX(timestamp)) >= :minDuration
+        )
         SELECT DISTINCT ul.user_id, ul.location_share_room_id
         FROM user_location_log ul
         INNER JOIN location_share_room lsr 
             ON ul.location_share_room_id = lsr.location_share_room_id
+        INNER JOIN user_averages ua
+            ON ul.user_id = ua.user_id 
+            AND ul.location_share_room_id = ua.location_share_room_id
         WHERE lsr.is_active = true
-        AND ul.timestamp > :since
-        GROUP BY ul.user_id, ul.location_share_room_id
-        HAVING COUNT(DISTINCT ul.user_location_log_id) >= 3
-        AND MAX(
-            SQRT(
-                POW(ul.latitude - (
-                    SELECT AVG(ul2.latitude) 
-                    FROM user_location_log ul2 
-                    WHERE ul2.user_id = ul.user_id 
-                    AND ul2.location_share_room_id = ul.location_share_room_id
-                    AND ul2.timestamp > :since
-                ), 2) +
-                POW(ul.longitude - (
-                    SELECT AVG(ul2.longitude) 
-                    FROM user_location_log ul2 
-                    WHERE ul2.user_id = ul.user_id 
-                    AND ul2.location_share_room_id = ul.location_share_room_id
-                    AND ul2.timestamp > :since
-                ), 2)
-            )
+            AND ul.timestamp > :since
+        GROUP BY ul.user_id, ul.location_share_room_id, ua.avg_lat, ua.avg_lon
+        HAVING MAX(
+            SQRT(POW(ul.latitude - ua.avg_lat, 2) + 
+                 POW(ul.longitude - ua.avg_lon, 2))
         ) * 111000 < :radiusMeters
         """, nativeQuery = true)
     List<Object[]> findStationaryUsers(
         @Param("since") LocalDateTime since,
-        @Param("radiusMeters") double radiusMeters
+        @Param("radiusMeters") double radiusMeters,
+        @Param("minLogCount") int minLogCount,
+        @Param("minDuration") int minDuration
     );
     
     /**
@@ -60,14 +65,15 @@ public interface UserLocationLogRepository extends JpaRepository<UserLocationLog
     @Query(value = """
         SELECT ul.user_id, ul.latitude, ul.longitude, ul.timestamp
         FROM user_location_log ul
-        WHERE ul.location_share_room_id = :roomId
-        AND ul.timestamp = (
-            SELECT MAX(ul2.timestamp)
-            FROM user_location_log ul2
-            WHERE ul2.user_id = ul.user_id
-            AND ul2.location_share_room_id = :roomId
-            AND ul2.timestamp > DATE_SUB(NOW(), INTERVAL 5 MINUTE)
-        )
+        INNER JOIN (
+            SELECT user_id, MAX(timestamp) as max_timestamp
+            FROM user_location_log
+            WHERE location_share_room_id = :roomId
+            AND timestamp > DATE_SUB(NOW(), INTERVAL 5 MINUTE)
+            GROUP BY user_id
+        ) latest ON ul.user_id = latest.user_id 
+            AND ul.timestamp = latest.max_timestamp
+            AND ul.location_share_room_id = :roomId
         """, nativeQuery = true)
     List<Object[]> findLatestLocationsByRoom(@Param("roomId") Long roomId);
 }

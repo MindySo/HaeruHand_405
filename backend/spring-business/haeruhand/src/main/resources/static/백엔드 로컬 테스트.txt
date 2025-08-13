@@ -19,3 +19,5 @@ http-server -p 5173
 
 접속 URL 예시
 static에서 띄웠을 때: http://localhost:5173/login/ -> Spring 카카오톡 redirect 설정
+
+BASE_URL만 수정해서 로컬 <-> 운영 테스트 토큰 발급받고 테스트 진행하세요
