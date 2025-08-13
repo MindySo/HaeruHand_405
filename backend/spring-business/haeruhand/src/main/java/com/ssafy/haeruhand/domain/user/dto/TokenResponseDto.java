@@ -9,8 +9,9 @@ import lombok.Setter;
 @Setter
 @Builder
 @AllArgsConstructor
-public class KakaoUserInfoDto {
-    private Long kakaoSub;
-    private String nickname;
-    private String profileImage;
+public class TokenResponseDto {
+    private String accessToken;
+    private String idToken;
+    private String refreshToken;
+    private Long expiresIn;
 }
