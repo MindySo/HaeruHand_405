@@ -52,13 +52,30 @@ pipeline {
                     ])
                 }
                 
-                // 4. 프론트엔드 코드만 frontend 디렉토리로 이동
+                // 4. 체크아웃 결과 확인 (이동 전)
                 sh '''
-                    mv temp-frontend/frontend ./frontend
+                    echo "=== Temp frontend directory contents (before move) ==="
+                    ls -la temp-frontend/ || echo "temp-frontend directory not found"
+                    echo "=== Looking for frontend in temp-frontend ==="
+                    ls -la temp-frontend/frontend/ || echo "frontend subdirectory not found in temp-frontend"
+                '''
+                
+                // 5. 프론트엔드 코드만 frontend 디렉토리로 이동
+                sh '''
+                    # frontend 디렉토리가 temp-frontend 안에 있는지 확인
+                    if [ -d "temp-frontend/frontend" ]; then
+                        mv temp-frontend/frontend ./frontend
+                        echo "✅ frontend directory moved successfully"
+                    else
+                        echo "❌ frontend directory not found in temp-frontend"
+                        echo "=== temp-frontend contents ==="
+                        ls -la temp-frontend/
+                        exit 1
+                    fi
                     rm -rf temp-frontend
                 '''
                 
-                // 5. 체크아웃 결과 확인
+                // 6. 최종 체크아웃 결과 확인
                 sh '''
                     echo "=== Workspace structure after checkout ==="
                     ls -la
@@ -147,7 +164,7 @@ pipeline {
                     echo "Checking for package.json:"
                     test -f frontend/package.json && echo "✅ package.json exists" || echo "❌ package.json missing"
                     
-                    # 강제로 캐시 무시하고 빌드
+                    # 빌드 컨텍스트를 명시적으로 지정하고 캐시 무시
                     docker build --no-cache -f docker/nginx/Dockerfile -t $DOCKER_ID/haeruhand-nginx:latest .
                     docker push    $DOCKER_ID/haeruhand-nginx:latest
                 '''
