@@ -9,10 +9,25 @@ export function useKakaoMap(selectedFishery?: FisheryLocation, containerId: stri
   const mapRef = useRef<any>(null);
   const markersRef = useRef<any[]>([]);
   const overlayRef = useRef<any>(null);
+  const messageOverlayRef = useRef<any>(null); // "검색 결과 없음" 메시지 오버레이
+  const messageTimeoutRef = useRef<any>(null); // 메시지 제거 타이머
+
   const [loading, setLoading] = useState(false);
   const [isSdkLoaded, setIsSdkLoaded] = useState(false); // SDK 로드 완료 여부 (완료 후 검색 함수 실행되도록)
 
-  // 마커 클릭 시 이전 오버레이(상세정보) 제거
+  // "검색 결과 없음" 메시지 즉시 제거
+  const clearMessageOverlay = useCallback(() => {
+    if (messageTimeoutRef.current) {
+      clearTimeout(messageTimeoutRef.current);
+      messageTimeoutRef.current = null;
+    }
+    if (messageOverlayRef.current) {
+      messageOverlayRef.current.setMap(null);
+      messageOverlayRef.current = null;
+    }
+  }, []);
+
+  // 상세정보 오버레이 제거
   const clearOverlay = useCallback(() => {
     if (overlayRef.current) {
       overlayRef.current.setMap(null);
@@ -20,7 +35,7 @@ export function useKakaoMap(selectedFishery?: FisheryLocation, containerId: stri
     }
   }, []);
 
-  // 지도 자체를 클릭 시 오버레이 제거
+  // 지도 클릭 시 상세정보 오버레이 제거
   useEffect(() => {
     if (!isSdkLoaded || !mapRef.current) return;
 
@@ -32,18 +47,48 @@ export function useKakaoMap(selectedFishery?: FisheryLocation, containerId: stri
     };
   }, [isSdkLoaded, clearOverlay]);
 
+  // 검색 결과가 없는 경우 오버레이 메시지 표시
+  const showTemporaryOverlay = useCallback(
+    (message: string) => {
+      if (!mapRef.current) return;
+
+      // HTML 내용 (CSS 애니메이션 포함)
+      const content = `
+        <div class="search-overlay-message">
+          ${message}
+        </div>
+      `;
+
+      const overlay = new window.kakao.maps.CustomOverlay({
+        content,
+        map: mapRef.current,
+        position: mapRef.current.getCenter(),
+        yAnchor: 0.5,
+        xAnchor: 0.5,
+        zIndex: 99,
+      });
+
+      messageOverlayRef.current = overlay;
+
+      // 2초 후 제거
+      messageTimeoutRef.current = setTimeout(() => {
+        clearMessageOverlay();
+      }, 2000);
+    },
+    [clearMessageOverlay],
+  );
+
   // 마커 생성
   const createMarker = useCallback(
     (place: any) => {
       const marker = new window.kakao.maps.Marker({
         map: mapRef.current,
         position: new window.kakao.maps.LatLng(place.y, place.x),
-        clickable: true,
       });
 
       // 오버레이 콘텐츠 생성
       const content = `
-        <div style="padding:12px; background:#fff; border-radius:8px; box-shadow:0 2px 8px rgba(0,0,0,0.15); min-width:200px;">
+        <div class="marker-info-overlay">
         <strong style="font-size:16px;">${place.place_name || ''}</strong><br/>
         ${place.road_address_name ? `<span>${place.road_address_name}</span><br/>` : ''}
         <span>${place.address_name || ''}</span><br/>
@@ -79,11 +124,12 @@ export function useKakaoMap(selectedFishery?: FisheryLocation, containerId: stri
   // 카테고리 검색 (편의점, 주차장)
   const searchCategory = useCallback(
     (categoryCode: string) => {
-      if (!isSdkLoaded) {
-        console.warn('SDK 아직 로드 안됨');
-        return;
-      }
+      if (!isSdkLoaded) return;
+
       if (!mapRef.current) return;
+
+      clearOverlay();
+      clearMessageOverlay();
 
       const placesService = new window.kakao.maps.services.Places();
       const center = mapRef.current.getCenter();
@@ -105,8 +151,8 @@ export function useKakaoMap(selectedFishery?: FisheryLocation, containerId: stri
             );
             mapRef.current.setBounds(bounds);
           } else if (status === window.kakao.maps.services.Status.ZERO_RESULT) {
-            console.warn('검색 결과 없음');
             clearMarkers();
+            showTemporaryOverlay('검색 결과가 없습니다');
           } else {
             console.error('검색 실패', status);
           }
@@ -120,11 +166,12 @@ export function useKakaoMap(selectedFishery?: FisheryLocation, containerId: stri
   // 키워드 검색 (화장실)
   const searchByKeyword = useCallback(
     (keyword: string) => {
-      if (!isSdkLoaded) {
-        console.warn('⚠️ SDK가 아직 로드되지 않았습니다.');
-        return;
-      }
+      if (!isSdkLoaded) return;
+
       if (!mapRef.current) return;
+
+      clearOverlay();
+      clearMessageOverlay();
 
       const placesService = new window.kakao.maps.services.Places();
       const center = mapRef.current.getCenter();
@@ -140,8 +187,8 @@ export function useKakaoMap(selectedFishery?: FisheryLocation, containerId: stri
             result.forEach((place: any) => createMarker(place));
             mapRef.current.setBounds(getBoundsFromPlaces(result));
           } else if (status === window.kakao.maps.services.Status.ZERO_RESULT) {
-            console.warn('키워드 검색 결과 없음');
             clearMarkers();
+            showTemporaryOverlay('검색 결과가 없습니다');
           } else {
             console.error('키워드 검색 실패', status);
           }
@@ -157,7 +204,6 @@ export function useKakaoMap(selectedFishery?: FisheryLocation, containerId: stri
     if (!selectedFishery) return;
 
     if (window.kakao && window.kakao.maps) {
-      console.log('SDK 이미 로드됨..!');
       initMap();
       return;
     }
@@ -169,7 +215,6 @@ export function useKakaoMap(selectedFishery?: FisheryLocation, containerId: stri
     script.async = true;
     script.onload = () => {
       window.kakao.maps.load(() => {
-        console.log('SDK 로드 완료!!');
         initMap();
       });
     };

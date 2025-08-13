@@ -38,6 +38,7 @@ export const MainPage = () => {
   const [weatherData, setWeatherData] = useState<any[]>([]);
   const [selectedFishery, setSelectedFishery] = useState<any>(null);
   const [hasNewWarning, setHasNewWarning] = useState<boolean>(false);
+  const [categorySelect, setCategorySelect] = useState<string | null>(null);
 
   // 조석 데이터 가져오기 (기본 stationCode: DT_0004)
   const { data: tidesData, isLoading: tidesLoading, error: tidesError } = useTides('DT_0004');
@@ -158,6 +159,12 @@ export const MainPage = () => {
   // 카카오 지도
   const { searchConvenienceStore, searchParkingLot, searchToilet, loading } =
     useKakaoMap(selectedFishery);
+
+  //
+  const handleCategoryClick = (category: string, searchFunc: () => void) => {
+    setCategorySelect(category); // 어떤 버튼을 눌렀는지 상태에 저장
+    searchFunc(); // 기존 카카오맵 검색 실행
+  };
 
   // 현재 시간에 따른 수온 데이터 선택
   const currentWaterTemperature = useMemo(() => {
@@ -312,20 +319,41 @@ export const MainPage = () => {
             )}
             {/* 카테고리 버튼 */}
             <div className={styles.categorySearch}>
-              <button className={styles.categoryButton} onClick={searchConvenienceStore}>
-                <Badge variant="neutral" size="medium" style={{ borderRadius: '100px' }}>
+              <button
+                className={styles.categoryButton}
+                onClick={() => handleCategoryClick('convenienceStore', searchConvenienceStore)}
+              >
+                <Badge
+                  variant={categorySelect === 'convenienceStore' ? 'primary' : 'neutral'}
+                  size="medium"
+                  style={{ borderRadius: '100px' }}
+                >
                   <img src="/convenienceStoreIcon.svg" alt="편의점" className={styles.badgeIcon} />
                   편의점
                 </Badge>
               </button>
-              <button className={styles.categoryButton} onClick={searchParkingLot}>
-                <Badge variant="neutral" size="medium" style={{ borderRadius: '100px' }}>
+              <button
+                className={styles.categoryButton}
+                onClick={() => handleCategoryClick('parkingLot', searchParkingLot)}
+              >
+                <Badge
+                  variant={categorySelect === 'parkingLot' ? 'primary' : 'neutral'}
+                  size="medium"
+                  style={{ borderRadius: '100px' }}
+                >
                   <img src="/parkingIcon.svg" alt="주차장" className={styles.badgeIcon} />
                   주차장
                 </Badge>
               </button>
-              <button className={styles.categoryButton} onClick={searchToilet}>
-                <Badge variant="neutral" size="medium" style={{ borderRadius: '100px' }}>
+              <button
+                className={styles.categoryButton}
+                onClick={() => handleCategoryClick('toilet', searchToilet)}
+              >
+                <Badge
+                  variant={categorySelect === 'toilet' ? 'primary' : 'neutral'}
+                  size="medium"
+                  style={{ borderRadius: '100px' }}
+                >
                   <img src="/toiletIcon.svg" alt="화장실" className={styles.badgeIcon} />
                   화장실
                 </Badge>
