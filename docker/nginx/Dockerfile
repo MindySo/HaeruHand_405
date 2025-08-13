@@ -6,7 +6,6 @@ WORKDIR /app
 RUN npm install -g pnpm
     
 COPY frontend/package*.json ./
-COPY frontend/pnpm-lock.yaml ./
 RUN pnpm install
     
 COPY frontend/ ./
