@@ -91,3 +91,15 @@ location:
   room:
     max-members: 4
     join-token-expiry-minutes: 1440
+
+  fishery-weather:
+    enabled: true
+    current-forecast-cron: "0 0 5,11,17 * * ?" # 매일 5시, 11시, 17시
+    extended-forecast-cron: "0 30 0 * * ?" # 매일 00시 30분 (7일치)
+    forecast-days: 7 # 예보 조회 일수
+    batch-size: 1000 # API 호출 시 데이터 크기
+    api-delay-ms: 200 # API 호출 간 대기시간
+  weather-warning:
+    enabled: true
+    peak-hours-cron: "0 */5 6-22 * * ?" # 주간 6-22시 5분마다
+    night-hours-cron: "0 */15 0-5,23 * * ?" # 야간 0-5시, 23시 15분마다

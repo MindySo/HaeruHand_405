@@ -355,7 +355,7 @@
                 });
 
                 const data = await response.json();
-                if (data.success) {
+                if (data.is_success) {
                     // 새 토큰 저장
                     if (response.headers.get('Authorization')) {
                         localStorage.setItem(STORAGE_KEYS.ACCESS_TOKEN, response.headers.get('Authorization').replace('Bearer ', ''));

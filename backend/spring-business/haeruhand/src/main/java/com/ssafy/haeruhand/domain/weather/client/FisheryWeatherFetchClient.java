@@ -40,10 +40,12 @@ public class FisheryWeatherFetchClient {
                 ? serviceKey
                 : URLEncoder.encode(serviceKey, StandardCharsets.UTF_8);
 
+        int limitedRows = Math.min(numOfRows, 300);
+
         String fullUrl = "https://apis.data.go.kr/1192136/fcstSeaTrip/GetFcstSeaTripApiService"
-                + "?type=json"
-                + "&numOfRows=" + numOfRows
-                + "&serviceKey=" + encodedKey;
+                + "?serviceKey=" + encodedKey
+                + "&type=json"
+                + "&numOfRows=" + limitedRows;
 
         try {
             log.info("Fetching weather data: {}", maskKeyInUrl(fullUrl));
