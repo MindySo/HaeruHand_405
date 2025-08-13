@@ -1,4 +1,3 @@
-// hooks/useKakaoMap.ts
 import { useEffect, useRef, useState, useCallback } from 'react';
 
 interface FisheryLocation {
@@ -9,8 +8,67 @@ interface FisheryLocation {
 export function useKakaoMap(selectedFishery?: FisheryLocation, containerId: string = 'main-map') {
   const mapRef = useRef<any>(null);
   const markersRef = useRef<any[]>([]);
+  const overlayRef = useRef<any>(null);
   const [loading, setLoading] = useState(false);
   const [isSdkLoaded, setIsSdkLoaded] = useState(false); // SDK 로드 완료 여부 (완료 후 검색 함수 실행되도록)
+
+  // 마커 클릭 시 이전 오버레이(상세정보) 제거
+  const clearOverlay = useCallback(() => {
+    if (overlayRef.current) {
+      overlayRef.current.setMap(null);
+      overlayRef.current = null;
+    }
+  }, []);
+
+  // 지도 자체를 클릭 시 오버레이 제거
+  useEffect(() => {
+    if (!isSdkLoaded || !mapRef.current) return;
+
+    const mapClickHandler = () => clearOverlay();
+    window.kakao.maps.event.addListener(mapRef.current, 'click', mapClickHandler);
+
+    return () => {
+      window.kakao.maps.event.removeListener(mapRef.current, 'click', mapClickHandler);
+    };
+  }, [isSdkLoaded, clearOverlay]);
+
+  // 마커 생성
+  const createMarker = useCallback(
+    (place: any) => {
+      const marker = new window.kakao.maps.Marker({
+        map: mapRef.current,
+        position: new window.kakao.maps.LatLng(place.y, place.x),
+        clickable: true,
+      });
+
+      // 오버레이 콘텐츠 생성
+      const content = `
+        <div style="padding:12px; background:#fff; border-radius:8px; box-shadow:0 2px 8px rgba(0,0,0,0.15); min-width:200px;">
+        <strong style="font-size:16px;">${place.place_name || ''}</strong><br/>
+        ${place.road_address_name ? `<span>${place.road_address_name}</span><br/>` : ''}
+        <span>${place.address_name || ''}</span><br/>
+        ${place.phone ? `<span>${place.phone}</span>` : ''}
+        </div>
+      `;
+
+      // 클릭 이벤트 등록
+      window.kakao.maps.event.addListener(marker, 'click', function () {
+        clearOverlay();
+
+        const overlay = new window.kakao.maps.CustomOverlay({
+          content,
+          map: mapRef.current,
+          position: new window.kakao.maps.LatLng(place.y, place.x),
+          yAnchor: 1,
+          zIndex: 2,
+        });
+        overlayRef.current = overlay;
+      });
+
+      markersRef.current.push(marker);
+    },
+    [clearOverlay],
+  );
 
   // 기존 마커 삭제
   const clearMarkers = useCallback(() => {
@@ -18,20 +76,11 @@ export function useKakaoMap(selectedFishery?: FisheryLocation, containerId: stri
     markersRef.current = [];
   }, []);
 
-  // 마커 생성
-  const createMarker = useCallback((place: any) => {
-    const marker = new window.kakao.maps.Marker({
-      map: mapRef.current,
-      position: new window.kakao.maps.LatLng(place.y, place.x),
-    });
-    markersRef.current.push(marker);
-  }, []);
-
   // 카테고리 검색 (편의점, 주차장)
   const searchCategory = useCallback(
     (categoryCode: string) => {
       if (!isSdkLoaded) {
-        console.warn('SDK 아직 로드 안됨~~');
+        console.warn('SDK 아직 로드 안됨');
         return;
       }
       if (!mapRef.current) return;
@@ -68,7 +117,7 @@ export function useKakaoMap(selectedFishery?: FisheryLocation, containerId: stri
     [isSdkLoaded, clearMarkers, createMarker],
   );
 
-  /** 키워드 검색 (화장실 전용) */
+  // 키워드 검색 (화장실)
   const searchByKeyword = useCallback(
     (keyword: string) => {
       if (!isSdkLoaded) {
@@ -135,6 +184,7 @@ export function useKakaoMap(selectedFishery?: FisheryLocation, containerId: stri
       const options = {
         center: new window.kakao.maps.LatLng(selectedFishery.latitude, selectedFishery.longitude),
         level: 4,
+        draggable: true,
       };
       const map = new window.kakao.maps.Map(container, options);
       mapRef.current = map;
