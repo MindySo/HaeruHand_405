@@ -5,10 +5,11 @@ WORKDIR /app
 # pnpm 설치
 RUN npm install -g pnpm
     
-COPY frontend/package*.json ./
+# 경로 수정: frontend/ 제거
+COPY package*.json ./
 RUN pnpm install
     
-COPY frontend/ ./
+COPY . ./
 RUN pnpm run build
     
 # --- Nginx ---
