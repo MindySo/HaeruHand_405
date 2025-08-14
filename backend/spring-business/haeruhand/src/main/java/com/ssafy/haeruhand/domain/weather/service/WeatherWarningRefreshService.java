@@ -132,6 +132,10 @@ public class WeatherWarningRefreshService {
     private void notifyActiveRoomMembers(WeatherWarning warning) {
         List<LocationShareRoom> activeRooms = roomRepository.findByIsActiveTrue();
         
+        if (activeRooms.isEmpty()) {
+            return;
+        }
+        
         // 지역명과 경보 수준 추출
         String regionName = RegionSeaArea.fromCode(warning.getRegionCode())
             .map(RegionSeaArea::label)
@@ -144,23 +148,28 @@ public class WeatherWarningRefreshService {
         // 알림 레벨 문자열 생성
         String alertLevel = warningTypeStr + " " + warningLevelStr;
         
-        for (LocationShareRoom room : activeRooms) {
-            List<LocationShareMember> members = memberRepository
-                .findByRoomIdAndActiveRoom(room.getId());
-            
-            for (LocationShareMember member : members) {
-                eventPublisher.publishEvent(
-                    new WeatherAlertEvent(
-                        member.getUser().getId(),
-                        regionName,
-                        alertLevel
-                    )
-                );
-            }
+        // 모든 활성 룸의 ID 수집
+        List<Long> roomIds = activeRooms.stream()
+            .map(LocationShareRoom::getId)
+            .collect(Collectors.toList());
+        
+        // 한 번의 쿼리로 모든 멤버 조회 (N+1 문제 해결)
+        List<LocationShareMember> allMembers = memberRepository
+            .findByRoomIdsAndActiveRoom(roomIds);
+        
+        // 각 멤버에게 알림 발송
+        for (LocationShareMember member : allMembers) {
+            eventPublisher.publishEvent(
+                new WeatherAlertEvent(
+                    member.getUser().getId(),
+                    regionName,
+                    alertLevel
+                )
+            );
         }
         
-        log.info("⚠️ 날씨 특보 알림 발송 - {} {}, 활성 룸: {}개", 
-            regionName, alertLevel, activeRooms.size());
+        log.info("⚠️ 날씨 특보 알림 발송 - {} {}, 활성 룸: {}개, 알림 대상: {}명", 
+            regionName, alertLevel, activeRooms.size(), allMembers.size());
     }
 
     private LocalDateTime parseKstTimestampOrNull(String timestamp) {
