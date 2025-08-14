@@ -151,7 +151,8 @@ pipeline {
                         docker compose \
                           --env-file docker/$ENV_FILE \
                           -f docker/$COMPOSE_FILE \
-                          run --rm certbot certbot certonly \
+                          run --rm --entrypoint="" certbot \
+                          certbot certonly \
                           --webroot \
                           --webroot-path=/var/www/certbot \
                           --email yeriming@naver.com \
