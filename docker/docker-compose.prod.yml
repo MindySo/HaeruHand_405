@@ -96,13 +96,3 @@ services:
       - /opt/ssl/haeruhand:/etc/letsencrypt/live/i13a405.p.ssafy.io:ro
     networks:
       - backend
-
-  # ---------- Certbot ----------
-  certbot:
-    image: certbot/certbot:latest
-    container_name: haeruhand-certbot
-    volumes:
-      - ./certbot/www:/var/www/certbot
-      - ./certbot/conf:/etc/letsencrypt
-    networks:
-      - backend

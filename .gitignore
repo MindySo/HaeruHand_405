@@ -1,10 +1,2 @@
 # docker 환경변수 파일 무시
 docker/.env*
-
-# certbot 인증서 파일 무시 (보안상 민감한 정보)
-docker/certbot/conf/*
-!docker/certbot/conf/.gitkeep
-
-# certbot webroot 파일 무시
-docker/certbot/www/*
-!docker/certbot/www/.gitkeep
