@@ -23,15 +23,16 @@ public class NotificationTestController {
     private final ApplicationEventPublisher eventPublisher;
     private final FCMService fcmService;
     
-    @PostMapping("/test-alert")
-    public ResponseEntity<String> testAlert(
+    @PostMapping("/testevent")
+    @Operation(summary = "테스트 이벤트 발행", description = "테스트 이벤트를 발행하여 알림까지 전송합니다.")
+    public ResponseEntity<ApiResponse<String>> testAlert(
             @RequestParam Long userId) {
         
         eventPublisher.publishEvent(
             new TestEvent(userId, "testTitle", "testBody", "mapValue")
         );
         
-        return ResponseEntity.ok("이벤트 발행 완료");
+        return ApiResponse.success(SuccessStatus.SEND_FCM_SUCCESS, "이벤트를 발행하였습니다.");
     }
 
     @PostMapping("/send")

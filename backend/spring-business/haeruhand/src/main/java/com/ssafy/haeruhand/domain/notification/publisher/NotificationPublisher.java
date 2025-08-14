@@ -33,14 +33,13 @@ public class NotificationPublisher {
      */
     public void publishNotificationEvent(BaseNotificationEvent event) {
         try {
-            // 메시지 ID 생성 (중복 방지)
+            // 메시지 고유 ID 생성
             String messageId = String.format("%s_%s_%d_%d",
                     event.getNotificationType(),
                     event.getUserId(),
                     event.getOccurredAt().getNano(),
                     System.currentTimeMillis());
 
-            // 팀 컨벤션에 따라 Builder 패턴으로 DTO 생성
             NotificationTaskDto task = NotificationTaskDto.builder()
                     .messageId(messageId)
                     .event(event)

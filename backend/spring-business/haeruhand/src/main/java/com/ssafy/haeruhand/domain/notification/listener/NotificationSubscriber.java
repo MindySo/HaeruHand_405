@@ -1,4 +1,4 @@
-package com.ssafy.haeruhand.domain.notification.subscriber;
+package com.ssafy.haeruhand.domain.notification.listener;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ssafy.haeruhand.domain.notification.dto.NotificationTaskDto;
@@ -10,7 +10,6 @@ import com.ssafy.haeruhand.domain.notification.service.FcmTokenService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.connection.Message;
 import org.springframework.data.redis.connection.MessageListener;
 import org.springframework.stereotype.Component;
@@ -37,14 +36,8 @@ public class NotificationSubscriber implements MessageListener {
     private static final int MAX_RETRY_COUNT = 3;
     private static final long INITIAL_DELAY_SECONDS = 60L;
 
-
-//    @Value("${notification.pubsub.enabled:true}")  // notification 전용 설정
-//    private boolean pubsubEnabled;
-
     @Override
     public void onMessage(Message message, byte[] pattern) {
-        // if (!pubsubEnabled) 체크 제거
-
         String channel = new String(message.getChannel());
         String body = new String(message.getBody());
 
@@ -184,7 +177,6 @@ public class NotificationSubscriber implements MessageListener {
                         token.getId(), deleteException.getMessage());
             }
         }
-        // 기타 오류는 재시도 처리에서 전체적으로 핸들링
     }
 
     /**
@@ -215,10 +207,4 @@ public class NotificationSubscriber implements MessageListener {
         log.info("재시도 작업 스케줄링 완료 - UserId: {}, Attempt: {}, RetryIn: {}초",
                 task.getEvent().getUserId(), retryTask.getAttemptCount(), delaySeconds);
     }
-
-//    @Override
-//    public void onMessage(Message message, byte[] pattern) {
-//        // MessageListenerAdapter를 사용하므로 이 메서드는 직접 사용되지 않음
-//        log.debug("Direct message received: {}", new String(message.getBody()));
-//    }
 }

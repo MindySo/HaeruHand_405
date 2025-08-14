@@ -158,7 +158,7 @@
             // 3. 백엔드에 토큰 등록 (User ID는 1로 고정)
             updateStatus('백엔드에 토큰을 등록하고 있습니다...');
 
-            const registerResponse = await fetch('http://localhost:8080/api/v1/notifications/tokens', {
+            const registerResponse = await fetch('http://localhost:8080/v1/notifications/tokens', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -200,7 +200,7 @@
             addLog('테스트 이벤트 발생 요청...');
             updateStatus('테스트 이벤트를 발생시키고 있습니다...');
 
-            const eventResponse = await fetch(`http://localhost:8080/api/v1/test/test-alert?userId=${FIXED_USER_ID}`, {
+            const eventResponse = await fetch(`http://localhost:8080/v1/test/testevent?userId=${FIXED_USER_ID}`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'

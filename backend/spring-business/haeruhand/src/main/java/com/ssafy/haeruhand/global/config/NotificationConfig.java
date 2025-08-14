@@ -3,7 +3,7 @@ package com.ssafy.haeruhand.global.config;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import com.ssafy.haeruhand.domain.notification.subscriber.NotificationSubscriber;
+import com.ssafy.haeruhand.domain.notification.listener.NotificationSubscriber;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
@@ -39,7 +39,7 @@ public class NotificationConfig {
             MessageListenerAdapter notificationMessageListenerAdapter,
             MessageListenerAdapter notificationRetryMessageListenerAdapter) {
 
-        log.info("=== NotificationConfig: 컨테이너 생성 시작 ===");
+        log.info("NotificationContainer 생성 시작");
 
         RedisMessageListenerContainer container = new RedisMessageListenerContainer();
         container.setConnectionFactory(connectionFactory);
@@ -49,7 +49,7 @@ public class NotificationConfig {
         container.addMessageListener(notificationRetryMessageListenerAdapter,
                 new PatternTopic(NOTIFICATION_RETRY_CHANNEL));
 
-        log.info("=== NotificationConfig: 컨테이너 설정 완료 ===");
+        log.info("NotificationContainer 생성 완료");
 
         return container;
     }
@@ -61,21 +61,18 @@ public class NotificationConfig {
             RedisMessageListenerContainer container =
                     event.getApplicationContext().getBean("notificationMessageListenerContainer", RedisMessageListenerContainer.class);
 
-            log.info("=== ApplicationReady: 컨테이너 상태 확인 ===");
-            log.info("컨테이너 실행 상태: {}", container.isRunning());
+            log.info("NotificationContainer 실행 상태: {}", container.isRunning());
 
             if (!container.isRunning()) {
-                log.info("=== ApplicationReady: 컨테이너 수동 시작 ===");
+                log.info("NotificationContainer 수동 시작");
                 container.start();
 
                 // 잠시 대기 후 재확인
                 Thread.sleep(500);
-                log.info("컨테이너 시작 후 상태: {}", container.isRunning());
-            } else {
-                log.info("=== ApplicationReady: 컨테이너 이미 실행 중 ===");
+                log.info("NotificationContainer 시작 후 상태: {}", container.isRunning());
             }
         } catch (Exception e) {
-            log.error("ApplicationReady 컨테이너 시작 실패: {}", e.getMessage(), e);
+            log.error("NotificationContainer 시작 실패: {}", e.getMessage(), e);
         }
     }
 
