@@ -15,7 +15,7 @@ import org.springframework.context.annotation.Configuration;
                 description = "A405_SSAFY",
                 version = "v1"),
         servers = {
-                @Server(url = "http://i13a405.p.ssafy.io/api",
+                @Server(url = "https://i13a405.p.ssafy.io/api",
                         description = "운영 서버 URL"),
         }
 )
