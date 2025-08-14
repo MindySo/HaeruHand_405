@@ -123,12 +123,68 @@ pipeline {
                 '''
             }
         }
+
+        /* -------------------------------------------------- */
+        stage('SSL Certificate Setup') {
+            steps {
+                sh '''
+                    # 1) certbot 디렉토리 보장 (docker/ 기준 상대경로)
+                    mkdir -p docker/certbot/conf docker/certbot/www
+
+                    # 2) nginx가 80 응답할 수 있게 헬스체크 (최대 30초 대기)
+                    echo "Waiting for nginx to be ready..."
+                    for i in $(seq 1 30); do
+                        if curl -fsS http://i13a405.p.ssafy.io/.well-known/acme-challenge/ping >/dev/null 2>&1; then
+                            echo "Nginx is ready!"
+                            break
+                        fi
+                        sleep 1
+                    done
+
+                    # 3) 이미 인증서가 있으면 건너뜀 (docker/ 기준 상대경로)
+                    DOMAIN="i13a405.p.ssafy.io"
+                    LIVE_DIR="docker/certbot/conf/live/${DOMAIN}"
+                    if [ -f "${LIVE_DIR}/privkey.pem" ] && [ -f "${LIVE_DIR}/fullchain.pem" ]; then
+                        echo "Certificate already exists for ${DOMAIN}. Skip issuance."
+                    else
+                        echo "No certificate found. Issuing a new one for ${DOMAIN}..."
+                        docker compose \
+                          --env-file docker/$ENV_FILE \
+                          -f docker/$COMPOSE_FILE \
+                          run --rm certbot certbot certonly \
+                          --webroot \
+                          --webroot-path=/var/www/certbot \
+                          --email yeriming@naver.com \
+                          --agree-tos \
+                          --no-eff-email \
+                          -d ${DOMAIN}
+                    fi
+
+                    # 4) nginx 설정 테스트 후 reload
+                    docker compose \
+                      --env-file docker/$ENV_FILE \
+                      -f docker/$COMPOSE_FILE \
+                      exec -T nginx nginx -t
+
+                    docker compose \
+                      --env-file docker/$ENV_FILE \
+                      -f docker/$COMPOSE_FILE \
+                      exec -T nginx nginx -s reload
+                '''
+            }
+        }
     }
 
     /* ------------------------------------------------------ */
     post {
         success { echo '✅  배포 성공' }
         failure { echo '❌  배포 실패 — 콘솔 로그를 확인하세요' }
-        always  { cleanWs(deleteDirs: true, disableDeferredWipeout: true) }
+        always  { 
+            cleanWs(
+                deleteDirs: true, 
+                disableDeferredWipeout: true,
+                patterns: [[pattern: 'docker/certbot/**', type: 'EXCLUDE']]
+            ) 
+        }
     }
 }

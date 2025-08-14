@@ -1,5 +1,3 @@
-# docker compose --env-file .env.prod -f docker-compose.prod.yml up -d --remove-orphans
-# docker compose --env-file .env.prod -f docker-compose.prod.yml down -v --remove-orphans
 #############################
 #  NETWORKS & VOLUMES
 #############################
@@ -92,5 +90,20 @@ services:
       - fastapi
     ports:
       - "80:80"
+      - "443:443"
+    volumes:
+      - ./certbot/www:/var/www/certbot:ro
+      - ./certbot/conf:/etc/letsencrypt:ro
+    networks:
+      - backend
+
+  # ---------- Certbot ----------
+  certbot:
+    image: certbot/certbot:latest
+    container_name: haeruhand-certbot
+    entrypoint: /bin/sh
+    volumes:
+      - ./certbot/www:/var/www/certbot
+      - ./certbot/conf:/etc/letsencrypt
     networks:
       - backend
