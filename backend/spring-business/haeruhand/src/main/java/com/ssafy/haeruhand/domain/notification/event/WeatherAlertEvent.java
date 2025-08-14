@@ -1,7 +1,10 @@
 package com.ssafy.haeruhand.domain.notification.event;
 
+import lombok.NoArgsConstructor;
+
 import java.util.Map;
 
+@NoArgsConstructor
 public class WeatherAlertEvent extends BaseNotificationEvent {
 
     private static final String NOTIFICATION_TYPE = "WEATHER_ALERT";
