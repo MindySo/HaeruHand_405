@@ -74,6 +74,49 @@ pipeline {
         }
 
         /* -------------------------------------------------- */
+        stage('SSL Certificate') {
+            steps {
+                script {
+                    // EC2에 저장된 인증서를 복사
+                    def certExists = sh(
+                        script: '''
+                            test -f /home/ubuntu/ssl-certificates/i13a405.p.ssafy.io/fullchain.pem && echo "EXISTS" || echo "NOT_EXISTS"
+                        ''',
+                        returnStdout: true
+                    ).trim()
+                    
+                    if (certExists == "EXISTS") {
+                        echo "EC2에 저장된 인증서를 복사합니다."
+                        sh '''
+                            cd docker
+                            # certbot 디렉토리 생성
+                            mkdir -p certbot/conf/live/i13a405.p.ssafy.io
+                            mkdir -p certbot/www
+                            
+                            # EC2에 저장된 인증서 복사
+                            cp /home/ubuntu/ssl-certificates/i13a405.p.ssafy.io/fullchain.pem certbot/conf/live/i13a405.p.ssafy.io/
+                            cp /home/ubuntu/ssl-certificates/i13a405.p.ssafy.io/privkey.pem certbot/conf/live/i13a405.p.ssafy.io/
+                            
+                            echo "인증서 복사 완료"
+                        '''
+                    } else {
+                        echo "EC2에 저장된 인증서가 없습니다. HTTP 설정으로 진행합니다."
+                        sh '''
+                            cd docker
+                            # 임시 HTTP 설정으로 시작 (nginx.conf를 HTTP 전용으로 수정)
+                            sed -i 's/listen 443 ssl http2;/# listen 443 ssl http2;/' nginx.conf
+                            sed -i 's/ssl_certificate/# ssl_certificate/' nginx.conf
+                            sed -i 's/ssl_certificate_key/# ssl_certificate_key/' nginx.conf
+                            sed -i 's/ssl_protocols/# ssl_protocols/' nginx.conf
+                            sed -i 's/add_header Strict-Transport-Security/# add_header Strict-Transport-Security/' nginx.conf
+                            sed -i 's/return 301 https/# return 301 https/' nginx.conf
+                        '''
+                    }
+                }
+            }
+        }
+
+        /* -------------------------------------------------- */
         stage('Build & Push - Spring') {
             steps {
                 sh '''
