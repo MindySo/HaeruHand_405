@@ -108,7 +108,7 @@ pipeline {
         }
 
         /* -------------------------------------------------- */
-        stage('Deploy') {
+        stage('Deploy (docker-compose prod)') {
             steps {
                 sh '''
                     docker compose \
@@ -120,10 +120,6 @@ pipeline {
                       --env-file docker/$ENV_FILE \
                       -f docker/$COMPOSE_FILE      \
                       up -d
-                      
-                    echo "✅ 배포 완료!"
-                    echo "HTTP: http://i13a405.p.ssafy.io"
-                    echo "HTTPS 인증서는 별도로 설정하세요."
                 '''
             }
         }
@@ -133,11 +129,6 @@ pipeline {
     post {
         success { echo '✅  배포 성공' }
         failure { echo '❌  배포 실패 — 콘솔 로그를 확인하세요' }
-        always  { 
-            cleanWs(
-                deleteDirs: true, 
-                disableDeferredWipeout: true
-            ) 
-        }
+        always  { cleanWs(deleteDirs: true, disableDeferredWipeout: true) }
     }
 }
