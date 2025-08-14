@@ -93,7 +93,7 @@ services:
       - "443:443"
     volumes:
       - ./certbot/www:/var/www/certbot:ro
-      - ./certbot/conf:/etc/letsencrypt:ro
+      - /opt/ssl/haeruhand:/etc/letsencrypt/live/i13a405.p.ssafy.io:ro
     networks:
       - backend
 
