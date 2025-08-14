@@ -2,6 +2,7 @@ package com.ssafy.haeruhand.domain.notification.controller;
 
 import com.ssafy.haeruhand.domain.notification.dto.FCMSendRequestDto;
 import com.ssafy.haeruhand.domain.notification.dto.FCMSendResponseDto;
+import com.ssafy.haeruhand.domain.notification.event.TestEvent;
 import com.ssafy.haeruhand.domain.notification.service.FCMService;
 import com.ssafy.haeruhand.global.response.ApiResponse;
 import com.ssafy.haeruhand.global.status.SuccessStatus;
@@ -9,16 +10,29 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/v1/notifications/")
+@RequestMapping("/v1/test")
 @RequiredArgsConstructor
-@Tag(name = "FCM notification", description = "FCM 알림 API")
-public class FCMController {
-
+@Tag(name = "FCM notification test", description = "FCM 알림 테스트 API")
+public class NotificationTestController {
+    
+    private final ApplicationEventPublisher eventPublisher;
     private final FCMService fcmService;
+    
+    @PostMapping("/test-alert")
+    public ResponseEntity<String> testAlert(
+            @RequestParam Long userId) {
+        
+        eventPublisher.publishEvent(
+            new TestEvent(userId, "testTitle", "testBody", "mapValue")
+        );
+        
+        return ResponseEntity.ok("이벤트 발행 완료");
+    }
 
     @PostMapping("/send")
     @Operation(summary = "FCM 알림 전송", description = "FCM 푸시 알림을 전송합니다.")
