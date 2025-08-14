@@ -77,30 +77,27 @@ pipeline {
         stage('SSL Certificate') {
             steps {
                 script {
-                    // EC2에 저장된 인증서를 복사
-                    def certExists = sh(
-                        script: '''
-                            test -f /var/jenkins_home/ssl-certificates/i13a405.p.ssafy.io/fullchain.pem && echo "EXISTS" || echo "NOT_EXISTS"
-                        ''',
-                        returnStdout: true
-                    ).trim()
-                    
-                    if (certExists == "EXISTS") {
-                        echo "EC2에 저장된 인증서를 복사합니다."
-                        sh '''
-                            cd docker
-                            # certbot 디렉토리 생성
-                            mkdir -p certbot/conf/live/i13a405.p.ssafy.io
-                            mkdir -p certbot/www
-                            
-                            # Jenkins에 저장된 인증서 복사
-                            cp /var/jenkins_home/ssl-certificates/i13a405.p.ssafy.io/fullchain.pem certbot/conf/live/i13a405.p.ssafy.io/
-                            cp /var/jenkins_home/ssl-certificates/i13a405.p.ssafy.io/privkey.pem certbot/conf/live/i13a405.p.ssafy.io/
-                            
-                            echo "인증서 복사 완료"
-                        '''
-                    } else {
-                        echo "EC2에 저장된 인증서가 없습니다. HTTP 설정으로 진행합니다."
+                    try {
+                        withCredentials([
+                            file(credentialsId: 'ssl-fullchain-pem', variable: 'FULLCHAIN_TMP'),
+                            file(credentialsId: 'ssl-privkey-pem', variable: 'PRIVKEY_TMP')
+                        ]) {
+                            echo "Jenkins Credentials에서 인증서를 복사합니다."
+                            sh '''
+                                cd docker
+                                # certbot 디렉토리 생성
+                                mkdir -p certbot/conf/live/i13a405.p.ssafy.io
+                                mkdir -p certbot/www
+                                
+                                # Jenkins Credentials에서 인증서 복사
+                                cp "$FULLCHAIN_TMP" certbot/conf/live/i13a405.p.ssafy.io/fullchain.pem
+                                cp "$PRIVKEY_TMP" certbot/conf/live/i13a405.p.ssafy.io/privkey.pem
+                                
+                                echo "인증서 복사 완료"
+                            '''
+                        }
+                    } catch (Exception e) {
+                        echo "Jenkins Credentials에 인증서가 없습니다. HTTP 설정으로 진행합니다."
                         sh '''
                             cd docker/nginx
                             # 임시 HTTP 설정으로 시작
