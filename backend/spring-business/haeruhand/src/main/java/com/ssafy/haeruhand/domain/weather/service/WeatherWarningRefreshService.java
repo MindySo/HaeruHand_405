@@ -4,7 +4,7 @@ import com.ssafy.haeruhand.domain.location.entity.LocationShareMember;
 import com.ssafy.haeruhand.domain.location.entity.LocationShareRoom;
 import com.ssafy.haeruhand.domain.location.repository.LocationShareMemberRepository;
 import com.ssafy.haeruhand.domain.location.repository.LocationShareRoomRepository;
-import com.ssafy.haeruhand.domain.notification.event.WeatherWarningAlertEvent;
+import com.ssafy.haeruhand.domain.notification.event.WeatherAlertEvent;
 import com.ssafy.haeruhand.domain.weather.client.WeatherWarningFetchClient;
 import com.ssafy.haeruhand.domain.weather.dto.WeatherWarningUpsertResultResponse;
 import com.ssafy.haeruhand.domain.weather.entity.*;
@@ -132,32 +132,7 @@ public class WeatherWarningRefreshService {
     private void notifyActiveRoomMembers(WeatherWarning warning) {
         List<LocationShareRoom> activeRooms = roomRepository.findByIsActiveTrue();
         
-        // 특보 메시지 생성
-        String alertMessage = buildAlertMessage(warning);
-        
-        for (LocationShareRoom room : activeRooms) {
-            List<LocationShareMember> members = memberRepository
-                .findByRoomIdAndActiveRoom(room.getId());
-            
-            for (LocationShareMember member : members) {
-                eventPublisher.publishEvent(
-                    new WeatherWarningAlertEvent(
-                        member.getUser().getId(),
-                        room.getId(),
-                        alertMessage
-                    )
-                );
-            }
-        }
-        
-        log.info("⚠️ 날씨 특보 알림 발송 - {}, 활성 룸: {}개", 
-            alertMessage, activeRooms.size());
-    }
-    
-    /**
-     * 특보 알림 메시지 생성
-     */
-    private String buildAlertMessage(WeatherWarning warning) {
+        // 지역명과 경보 수준 추출
         String regionName = RegionSeaArea.fromCode(warning.getRegionCode())
             .map(RegionSeaArea::label)
             .orElse("제주 해역");
@@ -166,19 +141,26 @@ public class WeatherWarningRefreshService {
         String warningLevelStr = warning.getWarningLevel() != null ? 
             warning.getWarningLevel().label() + "보" : "특보";
         
-        StringBuilder message = new StringBuilder();
-        message.append(regionName).append(" ")
-               .append(warningTypeStr).append(" ")
-               .append(warningLevelStr).append(" 발효");
+        // 알림 레벨 문자열 생성
+        String alertLevel = warningTypeStr + " " + warningLevelStr;
         
-        if (warning.getEffectiveAt() != null) {
-            message.append(" (")
-                   .append(warning.getEffectiveAt().format(
-                       DateTimeFormatter.ofPattern("MM/dd HH:mm")))
-                   .append(")");
+        for (LocationShareRoom room : activeRooms) {
+            List<LocationShareMember> members = memberRepository
+                .findByRoomIdAndActiveRoom(room.getId());
+            
+            for (LocationShareMember member : members) {
+                eventPublisher.publishEvent(
+                    new WeatherAlertEvent(
+                        member.getUser().getId(),
+                        regionName,
+                        alertLevel
+                    )
+                );
+            }
         }
         
-        return message.toString();
+        log.info("⚠️ 날씨 특보 알림 발송 - {} {}, 활성 룸: {}개", 
+            regionName, alertLevel, activeRooms.size());
     }
 
     private LocalDateTime parseKstTimestampOrNull(String timestamp) {
