@@ -1,11 +1,17 @@
 package com.ssafy.haeruhand.domain.weather.service;
 
+import com.ssafy.haeruhand.domain.location.entity.LocationShareMember;
+import com.ssafy.haeruhand.domain.location.entity.LocationShareRoom;
+import com.ssafy.haeruhand.domain.location.repository.LocationShareMemberRepository;
+import com.ssafy.haeruhand.domain.location.repository.LocationShareRoomRepository;
+import com.ssafy.haeruhand.domain.notification.event.WeatherWarningAlertEvent;
 import com.ssafy.haeruhand.domain.weather.client.WeatherWarningFetchClient;
 import com.ssafy.haeruhand.domain.weather.dto.WeatherWarningUpsertResultResponse;
 import com.ssafy.haeruhand.domain.weather.entity.*;
 import com.ssafy.haeruhand.domain.weather.repository.WeatherWarningRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,6 +28,9 @@ public class WeatherWarningRefreshService {
 
     private final WeatherWarningFetchClient fetchClient;
     private final WeatherWarningRepository warningRepository;
+    private final LocationShareRoomRepository roomRepository;
+    private final LocationShareMemberRepository memberRepository;
+    private final ApplicationEventPublisher eventPublisher;
 
     private static final Set<String> JEJU_SEA_REGION_CODES =
             Arrays.stream(RegionSeaArea.values())
@@ -93,6 +102,8 @@ public class WeatherWarningRefreshService {
                         regionCode, announcedAt, warningType, warningCommand)
                 .orElse(null);
 
+        boolean isNewWarning = (existing == null);
+
         WeatherWarning toSave = WeatherWarning.builder()
                 .id(existing == null ? null : existing.getId())
                 .regionCode(regionCode)
@@ -104,7 +115,70 @@ public class WeatherWarningRefreshService {
                 .expectedEndAt(expectedEndAt)
                 .build();
 
-        warningRepository.save(toSave);
+        WeatherWarning saved = warningRepository.save(toSave);
+        
+        // 새로 발표된 특보만 알림 (ISSUE 명령인 경우)
+        if (isNewWarning && 
+            warningCommand == WarningCommand.ISSUE &&
+            roomRepository.countByIsActiveTrue() > 0) {
+            
+            notifyActiveRoomMembers(saved);
+        }
+    }
+    
+    /**
+     * 활성 룸의 모든 멤버에게 날씨 특보 알림 발송
+     */
+    private void notifyActiveRoomMembers(WeatherWarning warning) {
+        List<LocationShareRoom> activeRooms = roomRepository.findByIsActiveTrue();
+        
+        // 특보 메시지 생성
+        String alertMessage = buildAlertMessage(warning);
+        
+        for (LocationShareRoom room : activeRooms) {
+            List<LocationShareMember> members = memberRepository
+                .findByRoomIdAndActiveRoom(room.getId());
+            
+            for (LocationShareMember member : members) {
+                eventPublisher.publishEvent(
+                    new WeatherWarningAlertEvent(
+                        member.getUser().getId(),
+                        room.getId(),
+                        alertMessage
+                    )
+                );
+            }
+        }
+        
+        log.info("⚠️ 날씨 특보 알림 발송 - {}, 활성 룸: {}개", 
+            alertMessage, activeRooms.size());
+    }
+    
+    /**
+     * 특보 알림 메시지 생성
+     */
+    private String buildAlertMessage(WeatherWarning warning) {
+        String regionName = RegionSeaArea.fromCode(warning.getRegionCode())
+            .map(RegionSeaArea::label)
+            .orElse("제주 해역");
+        
+        String warningTypeStr = warning.getWarningType().label();
+        String warningLevelStr = warning.getWarningLevel() != null ? 
+            warning.getWarningLevel().label() + "보" : "특보";
+        
+        StringBuilder message = new StringBuilder();
+        message.append(regionName).append(" ")
+               .append(warningTypeStr).append(" ")
+               .append(warningLevelStr).append(" 발효");
+        
+        if (warning.getEffectiveAt() != null) {
+            message.append(" (")
+                   .append(warning.getEffectiveAt().format(
+                       DateTimeFormatter.ofPattern("MM/dd HH:mm")))
+                   .append(")");
+        }
+        
+        return message.toString();
     }
 
     private LocalDateTime parseKstTimestampOrNull(String timestamp) {
