@@ -6,6 +6,7 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.ssafy.haeruhand.domain.notification.listener.NotificationSubscriber;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -24,10 +25,11 @@ import org.springframework.data.redis.listener.adapter.MessageListenerAdapter;
 @Slf4j
 public class NotificationConfig {
 
-    // 채널 이름 상수
-    public static final String NOTIFICATION_CHANNEL = "notification:send";
-    public static final String NOTIFICATION_RETRY_CHANNEL = "notification:retry";
-    public static final String NOTIFICATION_DLQ_CHANNEL = "notification:dlq";
+    @Value("${notification.redis.channel.send:notification:send}")
+    private String notificationChannel;
+
+    @Value("${notification.redis.channel.retry:notification:retry}")
+    private String retryChannel;
 
     /**
      * 알림 전용 Redis 메시지 리스너 컨테이너
@@ -45,9 +47,9 @@ public class NotificationConfig {
         container.setConnectionFactory(connectionFactory);
 
         container.addMessageListener(notificationMessageListenerAdapter,
-                new PatternTopic(NOTIFICATION_CHANNEL));
+                new PatternTopic(notificationChannel));
         container.addMessageListener(notificationRetryMessageListenerAdapter,
-                new PatternTopic(NOTIFICATION_RETRY_CHANNEL));
+                new PatternTopic(retryChannel));
 
         log.info("NotificationContainer 생성 완료");
 

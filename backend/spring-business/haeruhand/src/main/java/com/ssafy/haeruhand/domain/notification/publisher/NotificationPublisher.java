@@ -1,7 +1,6 @@
 package com.ssafy.haeruhand.domain.notification.publisher;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.ssafy.haeruhand.global.config.NotificationConfig;
 import com.ssafy.haeruhand.domain.notification.dto.NotificationTaskDto;
 import com.ssafy.haeruhand.domain.notification.event.BaseNotificationEvent;
 import com.ssafy.haeruhand.global.exception.GlobalException;
@@ -9,6 +8,7 @@ import com.ssafy.haeruhand.global.status.ErrorStatus;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 
@@ -27,6 +27,15 @@ public class NotificationPublisher {
 
     @Qualifier("notificationObjectMapper")
     private final ObjectMapper notificationObjectMapper;
+
+    @Value("${notification.redis.channel.send:notification:send}")
+    private String notificationChannel;
+
+    @Value("${notification.redis.channel.retry:notification:retry}")
+    private String retryChannel;
+
+    @Value("${notification.redis.channel.dlq:notification:dlq}")
+    private String dlqChannel;
 
     /**
      * 이벤트를 받아서 알림 작업으로 발행
@@ -56,7 +65,7 @@ public class NotificationPublisher {
             redisTemplate.expire(messageIdKey, java.time.Duration.ofMinutes(5));
 
             if (Boolean.TRUE.equals(isNew)) {
-                redisTemplate.convertAndSend(NotificationConfig.NOTIFICATION_CHANNEL, taskJson);
+                redisTemplate.convertAndSend(notificationChannel, taskJson);
 
                 log.info("알림 작업 발행 완료 - Type: {}, UserId: {}, MessageId: {}",
                         event.getNotificationType(), event.getUserId(), task.getMessageId());
@@ -77,7 +86,7 @@ public class NotificationPublisher {
     public void publishRetryTask(NotificationTaskDto task) {
         try {
             String taskJson = notificationObjectMapper.writeValueAsString(task);
-            redisTemplate.convertAndSend(NotificationConfig.NOTIFICATION_RETRY_CHANNEL, taskJson);
+            redisTemplate.convertAndSend(retryChannel, taskJson);
 
             log.info("재시도 작업 발행 완료 - UserId: {}, Attempt: {}, MessageId: {}",
                     task.getEvent().getUserId(), task.getAttemptCount(), task.getMessageId());
@@ -95,7 +104,7 @@ public class NotificationPublisher {
     public void publishToDLQ(NotificationTaskDto task, String errorReason) {
         try {
             String taskJson = notificationObjectMapper.writeValueAsString(task);
-            redisTemplate.convertAndSend(NotificationConfig.NOTIFICATION_DLQ_CHANNEL, taskJson);
+            redisTemplate.convertAndSend(dlqChannel, taskJson);
 
             log.warn("DLQ로 작업 발행 - UserId: {}, MessageId: {}, Reason: {}",
                     task.getEvent().getUserId(), task.getMessageId(), errorReason);
