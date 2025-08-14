@@ -80,7 +80,7 @@ pipeline {
                     // EC2에 저장된 인증서를 복사
                     def certExists = sh(
                         script: '''
-                            test -f /home/ubuntu/ssl-certificates/i13a405.p.ssafy.io/fullchain.pem && echo "EXISTS" || echo "NOT_EXISTS"
+                            test -f /var/jenkins_home/ssl-certificates/i13a405.p.ssafy.io/fullchain.pem && echo "EXISTS" || echo "NOT_EXISTS"
                         ''',
                         returnStdout: true
                     ).trim()
@@ -93,9 +93,9 @@ pipeline {
                             mkdir -p certbot/conf/live/i13a405.p.ssafy.io
                             mkdir -p certbot/www
                             
-                            # EC2에 저장된 인증서 복사
-                            cp /home/ubuntu/ssl-certificates/i13a405.p.ssafy.io/fullchain.pem certbot/conf/live/i13a405.p.ssafy.io/
-                            cp /home/ubuntu/ssl-certificates/i13a405.p.ssafy.io/privkey.pem certbot/conf/live/i13a405.p.ssafy.io/
+                            # Jenkins에 저장된 인증서 복사
+                            cp /var/jenkins_home/ssl-certificates/i13a405.p.ssafy.io/fullchain.pem certbot/conf/live/i13a405.p.ssafy.io/
+                            cp /var/jenkins_home/ssl-certificates/i13a405.p.ssafy.io/privkey.pem certbot/conf/live/i13a405.p.ssafy.io/
                             
                             echo "인증서 복사 완료"
                         '''
