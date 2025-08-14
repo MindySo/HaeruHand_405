@@ -87,6 +87,7 @@ pipeline {
                                 cd docker
                                 # certbot 디렉토리 생성
                                 mkdir -p certbot/conf/live/i13a405.p.ssafy.io
+                                mkdir -p certbot/conf/archive/i13a405.p.ssafy.io
                                 mkdir -p certbot/www
                                 
                                 # Jenkins Credentials에서 인증서 복사
