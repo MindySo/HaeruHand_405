@@ -101,7 +101,6 @@ services:
   certbot:
     image: certbot/certbot:latest
     container_name: haeruhand-certbot
-    entrypoint: /bin/sh
     volumes:
       - ./certbot/www:/var/www/certbot
       - ./certbot/conf:/etc/letsencrypt
