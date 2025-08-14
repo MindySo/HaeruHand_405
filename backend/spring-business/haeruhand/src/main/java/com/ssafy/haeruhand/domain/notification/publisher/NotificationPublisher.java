@@ -8,6 +8,7 @@ import com.ssafy.haeruhand.global.exception.GlobalException;
 import com.ssafy.haeruhand.global.status.ErrorStatus;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 
@@ -23,7 +24,9 @@ import java.time.LocalDateTime;
 public class NotificationPublisher {
 
     private final RedisTemplate<String, String> redisTemplate;
-    private final ObjectMapper redisObjectMapper;
+
+    @Qualifier("notificationObjectMapper")
+    private final ObjectMapper notificationObjectMapper;
 
     /**
      * 이벤트를 받아서 알림 작업으로 발행
@@ -46,7 +49,7 @@ public class NotificationPublisher {
                     .createdAt(LocalDateTime.now())
                     .build();
 
-            String taskJson = redisObjectMapper.writeValueAsString(task);
+            String taskJson = notificationObjectMapper.writeValueAsString(task);
 
             // 중복 처리 방지를 위한 메시지 ID 저장 (5분 TTL)
             String messageIdKey = "notification:processed:" + task.getMessageId();
@@ -74,7 +77,7 @@ public class NotificationPublisher {
      */
     public void publishRetryTask(NotificationTaskDto task) {
         try {
-            String taskJson = redisObjectMapper.writeValueAsString(task);
+            String taskJson = notificationObjectMapper.writeValueAsString(task);
             redisTemplate.convertAndSend(NotificationConfig.NOTIFICATION_RETRY_CHANNEL, taskJson);
 
             log.info("재시도 작업 발행 완료 - UserId: {}, Attempt: {}, MessageId: {}",
@@ -92,7 +95,7 @@ public class NotificationPublisher {
      */
     public void publishToDLQ(NotificationTaskDto task, String errorReason) {
         try {
-            String taskJson = redisObjectMapper.writeValueAsString(task);
+            String taskJson = notificationObjectMapper.writeValueAsString(task);
             redisTemplate.convertAndSend(NotificationConfig.NOTIFICATION_DLQ_CHANNEL, taskJson);
 
             log.warn("DLQ로 작업 발행 - UserId: {}, MessageId: {}, Reason: {}",

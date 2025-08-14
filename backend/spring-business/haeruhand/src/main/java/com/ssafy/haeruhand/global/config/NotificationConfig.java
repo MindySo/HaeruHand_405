@@ -1,11 +1,15 @@
 package com.ssafy.haeruhand.global.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.ssafy.haeruhand.domain.notification.subscriber.NotificationSubscriber;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.event.EventListener;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.listener.PatternTopic;
 import org.springframework.data.redis.listener.RedisMessageListenerContainer;
@@ -19,8 +23,6 @@ import org.springframework.data.redis.listener.adapter.MessageListenerAdapter;
 @RequiredArgsConstructor
 @Slf4j
 public class NotificationConfig {
-
-    private final ObjectMapper redisObjectMapper;  // RedisConfig에서 생성된 ObjectMapper 주입
 
     // 채널 이름 상수
     public static final String NOTIFICATION_CHANNEL = "notification:send";
@@ -47,10 +49,34 @@ public class NotificationConfig {
         container.addMessageListener(notificationRetryMessageListenerAdapter,
                 new PatternTopic(NOTIFICATION_RETRY_CHANNEL));
 
-        log.info("=== NotificationConfig: 컨테이너 시작 완료 ===");
-        log.info("컨테이너 실행 상태: {}", container.isRunning());
+        log.info("=== NotificationConfig: 컨테이너 설정 완료 ===");
 
         return container;
+    }
+
+    // ApplicationReadyEvent를 사용한 컨테이너 시작
+    @EventListener(ApplicationReadyEvent.class)
+    public void startNotificationContainer(ApplicationReadyEvent event) {
+        try {
+            RedisMessageListenerContainer container =
+                    event.getApplicationContext().getBean("notificationMessageListenerContainer", RedisMessageListenerContainer.class);
+
+            log.info("=== ApplicationReady: 컨테이너 상태 확인 ===");
+            log.info("컨테이너 실행 상태: {}", container.isRunning());
+
+            if (!container.isRunning()) {
+                log.info("=== ApplicationReady: 컨테이너 수동 시작 ===");
+                container.start();
+
+                // 잠시 대기 후 재확인
+                Thread.sleep(500);
+                log.info("컨테이너 시작 후 상태: {}", container.isRunning());
+            } else {
+                log.info("=== ApplicationReady: 컨테이너 이미 실행 중 ===");
+            }
+        } catch (Exception e) {
+            log.error("ApplicationReady 컨테이너 시작 실패: {}", e.getMessage(), e);
+        }
     }
 
     /**
@@ -69,5 +95,21 @@ public class NotificationConfig {
     public MessageListenerAdapter notificationRetryMessageListenerAdapter(
             NotificationSubscriber subscriber) {
         return new MessageListenerAdapter(subscriber, "handleRetryMessage");
+    }
+
+    /**
+     * 알림 전용 ObjectMapper (타입 정보 포함)
+     */
+    @Bean
+    public ObjectMapper notificationObjectMapper() {
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.registerModule(new JavaTimeModule());
+        mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+
+        // 알림 전용 타입 정보 포함 설정
+        mapper.activateDefaultTyping(mapper.getPolymorphicTypeValidator(),
+                ObjectMapper.DefaultTyping.NON_FINAL);
+
+        return mapper;
     }
 }

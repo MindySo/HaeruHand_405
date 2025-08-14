@@ -9,6 +9,8 @@ import com.ssafy.haeruhand.domain.notification.service.FCMService;
 import com.ssafy.haeruhand.domain.notification.service.FcmTokenService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.connection.Message;
 import org.springframework.data.redis.connection.MessageListener;
 import org.springframework.stereotype.Component;
@@ -28,16 +30,36 @@ public class NotificationSubscriber implements MessageListener {
     private final FCMService fcmService;
     private final FcmTokenService fcmTokenService;
     private final NotificationPublisher notificationPublisher;
-    private final ObjectMapper redisObjectMapper;
+
+    @Qualifier("notificationObjectMapper")
+    private final ObjectMapper notificationObjectMapper;
 
     private static final int MAX_RETRY_COUNT = 3;
     private static final long INITIAL_DELAY_SECONDS = 60L;
 
 
+//    @Value("${notification.pubsub.enabled:true}")  // notification 전용 설정
+//    private boolean pubsubEnabled;
+
+    @Override
+    public void onMessage(Message message, byte[] pattern) {
+        // if (!pubsubEnabled) 체크 제거
+
+        String channel = new String(message.getChannel());
+        String body = new String(message.getBody());
+
+        log.info("=== Direct Redis 메시지 수신 ===");
+        log.info("채널: {}, 메시지: {}", channel, body);
+
+        if ("notification:send".equals(channel)) {
+            handleNotificationMessage(body);
+        }
+    }
+
     @PostConstruct
     public void init() {
         log.info("NotificationSubscriber 초기화 완료 - ObjectMapper: {}",
-                redisObjectMapper != null ? "주입됨" : "주입 안됨");
+                notificationObjectMapper != null ? "주입됨" : "주입 안됨");
     }
 
     /**
@@ -45,7 +67,7 @@ public class NotificationSubscriber implements MessageListener {
      */
     public void handleNotificationMessage(String taskJson) {
         try {
-            NotificationTaskDto task = redisObjectMapper.readValue(taskJson, NotificationTaskDto.class);
+            NotificationTaskDto task = notificationObjectMapper.readValue(taskJson, NotificationTaskDto.class);
             log.info("=== 메시지 수신됨 ===");
             log.info("수신된 JSON: {}", taskJson);
             processNotificationTask(task);
@@ -60,7 +82,7 @@ public class NotificationSubscriber implements MessageListener {
      */
     public void handleRetryMessage(String taskJson) {
         try {
-            NotificationTaskDto task = redisObjectMapper.readValue(taskJson, NotificationTaskDto.class);
+            NotificationTaskDto task = notificationObjectMapper.readValue(taskJson, NotificationTaskDto.class);
 
             // 지연 시간 확인
             long currentTime = System.currentTimeMillis() / 1000;
@@ -194,9 +216,9 @@ public class NotificationSubscriber implements MessageListener {
                 task.getEvent().getUserId(), retryTask.getAttemptCount(), delaySeconds);
     }
 
-    @Override
-    public void onMessage(Message message, byte[] pattern) {
-        // MessageListenerAdapter를 사용하므로 이 메서드는 직접 사용되지 않음
-        log.debug("Direct message received: {}", new String(message.getBody()));
-    }
+//    @Override
+//    public void onMessage(Message message, byte[] pattern) {
+//        // MessageListenerAdapter를 사용하므로 이 메서드는 직접 사용되지 않음
+//        log.debug("Direct message received: {}", new String(message.getBody()));
+//    }
 }

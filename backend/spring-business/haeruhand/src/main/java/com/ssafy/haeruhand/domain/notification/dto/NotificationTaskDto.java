@@ -1,8 +1,10 @@
 package com.ssafy.haeruhand.domain.notification.dto;
 
 import com.ssafy.haeruhand.domain.notification.event.BaseNotificationEvent;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
@@ -12,6 +14,8 @@ import java.time.LocalDateTime;
  */
 @Getter
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class NotificationTaskDto {
 
     private String messageId;                    // 메시지 고유 ID (중복 처리 방지)
