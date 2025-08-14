@@ -103,3 +103,10 @@ location:
     enabled: true
     peak-hours-cron: "0 */5 6-22 * * ?" # 주간 6-22시 5분마다
     night-hours-cron: "0 */15 0-5,23 * * ?" # 야간 0-5시, 23시 15분마다
+
+notification:
+  redis:
+    channels:
+      send: "notification:send"
+      retry: "notification:retry"
+      dlq: "notification:dlq"
