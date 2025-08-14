@@ -93,11 +93,17 @@ pipeline {
                                 cp "$FULLCHAIN_TMP" certbot/conf/live/i13a405.p.ssafy.io/fullchain.pem
                                 cp "$PRIVKEY_TMP" certbot/conf/live/i13a405.p.ssafy.io/privkey.pem
                                 
+                                # 권한 설정
+                                chmod 644 certbot/conf/live/i13a405.p.ssafy.io/fullchain.pem
+                                chmod 600 certbot/conf/live/i13a405.p.ssafy.io/privkey.pem
+                                
                                 echo "인증서 복사 완료"
+                                ls -la certbot/conf/live/i13a405.p.ssafy.io/
                             '''
                         }
                     } catch (Exception e) {
-                        echo "Jenkins Credentials에 인증서가 없습니다. HTTP 설정으로 진행합니다."
+                        echo "Jenkins Credentials에 인증서가 없거나 복사에 실패했습니다: ${e.getMessage()}"
+                        echo "HTTP 설정으로 진행합니다."
                         sh '''
                             cd docker/nginx
                             # 임시 HTTP 설정으로 시작
