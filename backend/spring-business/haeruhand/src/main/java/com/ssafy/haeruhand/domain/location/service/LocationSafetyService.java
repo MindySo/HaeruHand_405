@@ -26,6 +26,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * 위치 기반 안전 서비스
@@ -155,25 +156,26 @@ public class LocationSafetyService {
         }
     }
     
-    /**
-     * 해루질 종료 알림을 방의 모든 멤버에게 발송
-     */
-    private void notifyFishingEndToMembers(LocationShareRoom room) {
-        List<LocationShareMember> members = memberRepository
-            .findByRoomIdAndActiveRoom(room.getId());
-        
-        String fisheryName = room.getFishery().getName();
-        
-        for (LocationShareMember member : members) {
-            eventPublisher.publishEvent(
-                new FishingEndAlertEvent(
-                    member.getUser().getId(),
-                    room.getId(),
-                    fisheryName
-                )
-            );
-        }
+/**
+ * 해루질 종료 알림을 방의 모든 멤버에게 발송
+ */
+private void notifyFishingEndToMembers(LocationShareRoom room) {
+    // 이미 존재하는 배치 쿼리 메서드를 사용하여 N+1 문제 해결
+    List<LocationShareMember> members = memberRepository
+        .findByRoomIdsAndActiveRoom(List.of(room.getId()));
+
+    String fisheryName = room.getFishery().getName();
+
+    for (LocationShareMember member : members) {
+        eventPublisher.publishEvent(
+            new FishingEndAlertEvent(
+                member.getUser().getId(),
+                room.getId(),
+                fisheryName
+            )
+        );
     }
+}
     
     /**
      * 그룹 중심점에서 멀어진 사용자 감지 및 알림
