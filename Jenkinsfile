@@ -102,14 +102,9 @@ pipeline {
                     } else {
                         echo "EC2에 저장된 인증서가 없습니다. HTTP 설정으로 진행합니다."
                         sh '''
-                            cd docker
-                            # 임시 HTTP 설정으로 시작 (nginx.conf를 HTTP 전용으로 수정)
-                            sed -i 's/listen 443 ssl http2;/# listen 443 ssl http2;/' nginx.conf
-                            sed -i 's/ssl_certificate/# ssl_certificate/' nginx.conf
-                            sed -i 's/ssl_certificate_key/# ssl_certificate_key/' nginx.conf
-                            sed -i 's/ssl_protocols/# ssl_protocols/' nginx.conf
-                            sed -i 's/add_header Strict-Transport-Security/# add_header Strict-Transport-Security/' nginx.conf
-                            sed -i 's/return 301 https/# return 301 https/' nginx.conf
+                            cd docker/nginx
+                            # 임시 HTTP 설정으로 시작
+                            cp nginx-http-only.conf nginx.conf
                         '''
                     }
                 }
