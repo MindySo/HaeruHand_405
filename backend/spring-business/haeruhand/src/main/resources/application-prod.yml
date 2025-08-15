@@ -24,7 +24,7 @@ spring:
         registration:
           kakao:
             client-id: ${CLIENT_ID}
-            redirect-uri: 'https://i13a405.p.ssafy.io/login'
+            redirect-uri: 'https://i13a405.p.ssafy.io/oauth/callback'
             authorization-grant-type: authorization_code
             scope:
               - profile_nickname
