@@ -220,7 +220,7 @@ export const MainPage = () => {
       <div className={styles.fixedContent}>
         {/* a-1. 헤더 */}
         <div className={styles.header}>
-          <Text size="xl">해루핸 로고</Text>
+          <img src="/haeruhand_logo.svg" alt="해루핸 로고" className={styles.logo} />
           <button className={styles.bellButton} onClick={handleWeatherAlertClick}>
             <img src="/bell.svg" alt="특보 조회" className={styles.bellIcon} />
             {hasNewWarning && <div className={styles.bellMarker} />}

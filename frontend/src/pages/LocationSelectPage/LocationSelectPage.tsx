@@ -82,6 +82,36 @@ const LocationSelectPage = () => {
     return transformedWarnings[0]; // 가장 최신 특보
   }, [warningsData]);
 
+  // 날씨 설명에 따른 아이콘 매핑 함수
+  const getWeatherIcon = (weatherDescription: string) => {
+    switch (weatherDescription) {
+      case '맑음':
+        return '/sun.png';
+      case '구름많음':
+        return '/cloudy.png';
+      case '흐림':
+        return '/foggy.png';
+      default:
+        return '/sun.png'; // 기본값
+    }
+  };
+
+  // seaTravelIndex에 따른 아이콘 매핑 함수
+  const getSeaTravelIcon = (seaTravelIndex: string) => {
+    switch (seaTravelIndex) {
+      case '보통':
+        return '/normal.svg';
+      case '좋음':
+        return '/smile.png';
+      case '나쁨':
+        return '/sad.png';
+      case '위험':
+        return '/danger.png';
+      default:
+        return '/normal.svg'; // 기본값
+    }
+  };
+
   const handleLocationClick = (locationId: string) => {
     setSelectedLocation(locationId);
 
@@ -266,8 +296,8 @@ const LocationSelectPage = () => {
                 {
                   icon: (
                     <img
-                      src="/seaTemp.svg"
-                      alt="수온 아이콘"
+                      src={getWeatherIcon(currentWeatherData?.weatherDescription || '맑음')}
+                      alt="날씨 아이콘"
                       style={{ width: '24px', height: '24px' }}
                     />
                   ),
@@ -279,8 +309,8 @@ const LocationSelectPage = () => {
                 {
                   icon: (
                     <img
-                      src="/normal.svg"
-                      alt="위험도 보통"
+                      src={getSeaTravelIcon(currentWeatherData?.seaTravelIndex || '보통')}
+                      alt="위험도 아이콘"
                       style={{ width: '24px', height: '24px' }}
                     />
                   ),
