@@ -13,6 +13,7 @@ type UserInfo = {
   profileImageUrl?: string;
   kakaoSub?: string | number;
 };
+
 type Member = {
   userId: number;
   nickname: string;
@@ -22,16 +23,13 @@ type Member = {
   accuracy?: number | null;
   lastUpdateTime?: string | null;
 };
+
 type RoomInfo = {
   roomId: number | null;
   roomCode: string;
   deepLink: string;
   joinToken: string | null;
 };
-
-const BuddyTrackingPage = () => {
-  const navigate = useNavigate();
-  const { isAuthenticated } = useAuth();
 
 declare global {
   interface Window {
@@ -60,8 +58,9 @@ const clearRoomSession = () => {
   sessionStorage.removeItem('hostRoomCode');
 };
 
-export default function BuddyTrackingPage() {
+const BuddyTrackingPage = () => {
   const navigate = useNavigate();
+  const { isAuthenticated } = useAuth();
   const {
     connected,
     connect,
@@ -89,6 +88,7 @@ export default function BuddyTrackingPage() {
       return null;
     }
   };
+
   const loadRoomFromStorage = (): RoomInfo | null => {
     try {
       const raw = sessionStorage.getItem('locationRoom');
@@ -97,6 +97,7 @@ export default function BuddyTrackingPage() {
       return null;
     }
   };
+
   const extractJoinToken = (deepLink: string): string | null => {
     try {
       const url = new URL(deepLink.replace('seafeet://', 'http://'));
@@ -184,8 +185,6 @@ export default function BuddyTrackingPage() {
     (async () => {
       await ensureScripts();
 
-  const buddyButtonClick = () => {
-    navigate({ to: '/tracking-share' });
       const u = loadUserInfo();
       setUserInfo(u);
 
@@ -358,6 +357,6 @@ export default function BuddyTrackingPage() {
       </div>
     </div>
   );
-}
+};
 
 export default BuddyTrackingPage;
