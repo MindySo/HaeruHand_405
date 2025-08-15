@@ -6,6 +6,7 @@ import { useNavigate } from '@tanstack/react-router';
 import { useAuth } from '../../hooks/useAuth';
 import { LoginModal } from '../../components/molecules/LoginModal/LoginModal';
 import { useLocationSocket } from '../../stores/useLocationSocket';
+import { useFCMWithSocket } from '../../hooks/useFCMWithSocket'; // 추가
 
 type UserInfo = {
   userId: number;
@@ -115,6 +116,9 @@ const BuddyTrackingPage = () => {
     getMembers,
     clearMembers,
   } = useLocationSocket();
+
+  // FCM 훅 추가
+  const { isRegistered: fcmRegistered, error: fcmError } = useFCMWithSocket(1); // 사용자 ID 1로 테스트
 
   const mapRef = useRef<any>(null);
   const myMarkerRef = useRef<any>(null);
@@ -478,8 +482,28 @@ const BuddyTrackingPage = () => {
           fontSize: 11,
         }}
       >
-        WS: {connected ? '🟢' : '🔴'} / members: {members.length}
+        WS: {connected ? '🟢' : '🔴'} / FCM: {fcmRegistered ? '🟢' : '🔴'} / members:{' '}
+        {members.length}
       </div>
+
+      {/* FCM 오류 표시 */}
+      {fcmError && (
+        <div
+          style={{
+            position: 'fixed',
+            top: 40,
+            right: 8,
+            zIndex: 9999,
+            background: 'rgba(255,0,0,0.8)',
+            color: '#fff',
+            padding: '4px 8px',
+            borderRadius: 6,
+            fontSize: 11,
+          }}
+        >
+          FCM 오류: {fcmError}
+        </div>
+      )}
 
       <div id="map" className={styles.map} />
       <div className={styles.wrapper}>

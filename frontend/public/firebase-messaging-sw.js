@@ -23,7 +23,7 @@ messaging.onBackgroundMessage((payload) => {
   const notificationTitle = payload.notification?.title || '알림';
   const notificationOptions = {
     body: payload.notification?.body || '새로운 메시지가 도착했습니다.',
-    icon: '/icon.png', // 선택사항
+    icon: '/haeruhand_app.png', // 선택사항
     tag: 'fcm-notification',
     requireInteraction: true, // 사용자가 클릭할 때까지 유지
     data: payload.data || {} // 추가 데이터
