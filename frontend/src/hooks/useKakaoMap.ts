@@ -5,6 +5,19 @@ interface FisheryLocation {
   longitude: number;
 }
 
+// 장소들의 경계를 계산하는 유틸리티 함수 추가
+const getBoundsFromPlaces = (places: any[]) => {
+  if (!places || places.length === 0) {
+    return new window.kakao.maps.LatLngBounds();
+  }
+
+  const bounds = new window.kakao.maps.LatLngBounds();
+  places.forEach((place) => {
+    bounds.extend(new window.kakao.maps.LatLng(place.y, place.x));
+  });
+  return bounds;
+};
+
 export function useKakaoMap(selectedFishery?: FisheryLocation, containerId: string = 'main-map') {
   const mapRef = useRef<any>(null);
   const markersRef = useRef<any[]>([]);
@@ -185,7 +198,12 @@ export function useKakaoMap(selectedFishery?: FisheryLocation, containerId: stri
           if (status === window.kakao.maps.services.Status.OK) {
             clearMarkers();
             result.forEach((place: any) => createMarker(place));
-            mapRef.current.setBounds(getBoundsFromPlaces(result));
+            // getBoundsFromPlaces 대신 직접 bounds 계산
+            const bounds = new window.kakao.maps.LatLngBounds();
+            result.forEach((place: any) => {
+              bounds.extend(new window.kakao.maps.LatLng(place.y, place.x));
+            });
+            mapRef.current.setBounds(bounds);
           } else if (status === window.kakao.maps.services.Status.ZERO_RESULT) {
             clearMarkers();
             showTemporaryOverlay('검색 결과가 없습니다');
