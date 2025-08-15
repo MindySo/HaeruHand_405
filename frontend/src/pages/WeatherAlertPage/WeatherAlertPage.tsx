@@ -120,67 +120,84 @@ const WeatherAlertPage: React.FC = () => {
 
   return (
     <div className={styles.container}>
-      <div className={styles.header}>
-        <button className={styles.backButton} onClick={handleBackButtonClick}>
-          <img src="/backButton.svg" alt="뒤로가기" className={styles.backButtonIcon} />
-        </button>
-        <Text size="xl" color="dark" weight="bold" className={styles.title}>
-          {selectedLocation?.displayName || '애월3리 어촌계'}
-        </Text>
-      </div>
-
-      <div className={styles.filterTabs}>
-        {filters.map((filter) => (
-          <button
-            key={filter.id}
-            className={`${styles.filterTab} ${filter.active ? styles.active : ''}`}
-            onClick={() => handleFilterClick(filter.id)}
-          >
-            <Text
-              size="md"
-              color={filter.active ? 'dark' : 'gray'}
-              weight={filter.active ? 'bold' : 'regular'}
-            >
-              {filter.name}
-            </Text>
+      {/* A. 고정된 영역 */}
+      <div className={styles.fixedContent}>
+        <div className={styles.header}>
+          <button className={styles.backButton} onClick={handleBackButtonClick}>
+            <img src="/backButton.svg" alt="뒤로가기" className={styles.backButtonIcon} />
           </button>
-        ))}
+          <Text size="xl" color="dark" weight="bold" className={styles.title}>
+            {selectedLocation?.displayName || '애월3리 어촌계'}
+          </Text>
+        </div>
+
+        <div className={styles.filterTabs}>
+          {filters.map((filter) => (
+            <button
+              key={filter.id}
+              className={`${styles.filterTab} ${filter.active ? styles.active : ''}`}
+              onClick={() => handleFilterClick(filter.id)}
+            >
+              <Text
+                size="md"
+                color={filter.active ? 'dark' : 'gray'}
+                weight={filter.active ? 'bold' : 'regular'}
+              >
+                {filter.name}
+              </Text>
+            </button>
+          ))}
+        </div>
       </div>
 
-      <div className={styles.alertList}>
-        {isLoading && (
-          <WarningBanner
-            type={'정보' as any}
-            date="불러오는 중..."
-            location=""
-            variant="info"
-            className={styles.alertItem}
-            suffix="발표"
-          />
-        )}
-        {error && !isLoading && (
-          <WarningBanner
-            type={'오류' as any}
-            date={error instanceof Error ? error.message : '요청 중 오류가 발생했습니다.'}
-            location=""
-            variant="info"
-            className={styles.alertItem}
-            suffix="발표"
-          />
-        )}
-        {!isLoading &&
-          !error &&
-          alerts.map((item, index) => (
+      {/* B. 스크롤 가능한 영역 */}
+      <div className={styles.scrollContent}>
+        <div className={styles.alertList}>
+          {isLoading && (
             <WarningBanner
-              key={item.id}
-              type={item.type as any}
-              date={item.date}
-              location={item.location}
-              variant={index === 0 ? 'latest' : 'past'}
+              type={'정보' as any}
+              date="불러오는 중..."
+              location=""
+              variant="info"
               className={styles.alertItem}
               suffix="발표"
             />
-          ))}
+          )}
+          {error && !isLoading && (
+            <WarningBanner
+              type={'오류' as any}
+              date={error instanceof Error ? error.message : '요청 중 오류가 발생했습니다.'}
+              location=""
+              variant="info"
+              className={styles.alertItem}
+              suffix="발표"
+            />
+          )}
+          {!isLoading && !error && alerts.length === 0 && (
+            <WarningBanner
+              type={'정보' as any}
+              date="현재 발효중인 특보가 없습니다"
+              location=""
+              variant="info"
+              className={styles.alertItem}
+              suffix=""
+            />
+          )}
+          {!isLoading &&
+            !error &&
+            alerts.length > 0 &&
+            alerts.map((item, index) => (
+              <WarningBanner
+                key={item.id}
+                type={item.type as any}
+                date={item.date}
+                location={item.location}
+                variant={index === 0 ? 'latest' : 'past'}
+                className={styles.alertItem}
+                suffix="발표"
+              />
+            ))}
+        </div>
       </div>
     </div>
   );
