@@ -2,6 +2,7 @@ import { useNavigate } from '@tanstack/react-router';
 import { useState, useRef } from 'react';
 import { Button } from '../../components/atoms';
 import { Text } from '../../components/atoms';
+import { LoadingSpinner } from '../../components/molecules';
 import { usePhotoAnalysis } from '../../hooks/usePhotoAnalysis';
 import styles from './PhotoAnalysisResultPage.module.css';
 import { useAuth } from '../../hooks/useAuth';
@@ -73,6 +74,9 @@ const PhotoAnalysisResultPage = () => {
     <div className={styles.container}>
       {/* 로그인 안 된 경우에만 모달 표시 */}
       {!isAuthenticated() && <LoginModal message="수확물을 AI로 확인" />}
+
+      {/* 로딩 중일 때 스피너 오버레이 */}
+      {isLoading && <LoadingSpinner message="AI가 분석 중입니다..." size="large" />}
 
       {/* Header */}
       <div className={styles.header}>

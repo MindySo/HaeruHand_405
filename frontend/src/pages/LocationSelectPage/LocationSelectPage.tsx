@@ -1,7 +1,12 @@
 import { useState, useMemo, useEffect } from 'react';
 import { Button } from '../../components/atoms';
 import { Text } from '../../components/atoms';
-import { WarningBanner, WeatherWidgets } from '../../components/molecules';
+import {
+  WarningBanner,
+  WeatherWidgets,
+  WarningBannerSkeleton,
+  WeatherWidgetSkeleton,
+} from '../../components/molecules';
 import { useNavigate } from '@tanstack/react-router';
 import { useFisheries, FISHERY_ID_BY_LOCATION, findFisheryById } from '../../hooks/useFisheries';
 import { useWeatherFishery } from '../../hooks/useWeatherFishery';
@@ -246,7 +251,7 @@ const LocationSelectPage = () => {
         {/* 에러 상태 표시 */}
         {hasError && (
           <div className={styles.errorMessage}>
-            <Text size="md" color="warning">
+            <Text size="md" color="red">
               정보를 불러올 수 없습니다.
             </Text>
           </div>
@@ -255,16 +260,10 @@ const LocationSelectPage = () => {
         {/* Bottom Button */}
         <div className={styles.buttonSection}>
           <div className={styles.infoSection}>
-            {/* 특보 배너 - MainPage와 동일한 로직 */}
+            {/* 특보 배너 - 독립적으로 로딩 */}
             <div className={styles.warningBanner}>
               {warningsLoading ? (
-                <WarningBanner
-                  type={'정보' as any}
-                  date="특보 정보 로딩 중..."
-                  location=""
-                  variant="info"
-                  suffix=""
-                />
+                <WarningBannerSkeleton />
               ) : warningsError ? (
                 <WarningBanner
                   type={'정보' as any}
@@ -291,34 +290,43 @@ const LocationSelectPage = () => {
                 />
               )}
             </div>
-            <WeatherWidgets
-              items={[
-                {
-                  icon: (
-                    <img
-                      src={getWeatherIcon(currentWeatherData?.weatherDescription || '맑음')}
-                      alt="날씨 아이콘"
-                      style={{ width: '24px', height: '24px' }}
-                    />
-                  ),
-                  subtitle: '현재 날씨',
-                  data: currentWeatherData
-                    ? `${currentWeatherData.averageWaterTemperature}℃ / ${currentWeatherData.weatherDescription}`
-                    : '32.7℃ / 맑음',
-                },
-                {
-                  icon: (
-                    <img
-                      src={getSeaTravelIcon(currentWeatherData?.seaTravelIndex || '보통')}
-                      alt="위험도 아이콘"
-                      style={{ width: '24px', height: '24px' }}
-                    />
-                  ),
-                  subtitle: '위험도',
-                  data: currentWeatherData?.seaTravelIndex || '보통',
-                },
-              ]}
-            />
+
+            {/* 날씨 위젯 - 독립적으로 로딩 */}
+            {weatherLoading ? (
+              <>
+                <WeatherWidgetSkeleton />
+                <WeatherWidgetSkeleton />
+              </>
+            ) : (
+              <WeatherWidgets
+                items={[
+                  {
+                    icon: (
+                      <img
+                        src={getWeatherIcon(currentWeatherData?.weatherDescription || '맑음')}
+                        alt="날씨 아이콘"
+                        style={{ width: '24px', height: '24px' }}
+                      />
+                    ),
+                    subtitle: '현재 날씨',
+                    data: currentWeatherData
+                      ? `${currentWeatherData.averageWaterTemperature}℃ / ${currentWeatherData.weatherDescription}`
+                      : '32.7℃ / 맑음',
+                  },
+                  {
+                    icon: (
+                      <img
+                        src={getSeaTravelIcon(currentWeatherData?.seaTravelIndex || '보통')}
+                        alt="위험도 아이콘"
+                        style={{ width: '24px', height: '24px' }}
+                      />
+                    ),
+                    subtitle: '위험도',
+                    data: currentWeatherData?.seaTravelIndex || '보통',
+                  },
+                ]}
+              />
+            )}
           </div>
           <Button
             size="large"

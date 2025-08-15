@@ -6,6 +6,11 @@ import {
   TrackingButton,
   WarningBanner,
   WeatherWidgets,
+  WarningBannerSkeleton,
+  WeatherWidgetSkeleton,
+  MapSkeleton,
+  HarvestButtonSkeleton,
+  ActionButtonsSkeleton,
 } from '../../components/molecules';
 import { useTides, formatTimeArray } from '../../hooks/useTides';
 import {
@@ -240,16 +245,10 @@ export const MainPage = () => {
 
       {/* B. 스크롤 가능한 영역 */}
       <div className={styles.scrollContent}>
-        {/* b-1. 특보 배너 */}
+        {/* b-1. 특보 배너 - 독립적으로 로딩 */}
         <div className={styles.warningBanner} onClick={handleWeatherAlertClick}>
           {warningsLoading ? (
-            <WarningBanner
-              type={'정보' as any}
-              date="특보 정보 로딩 중..."
-              location=""
-              variant="info"
-              suffix=""
-            />
+            <WarningBannerSkeleton />
           ) : warningsError ? (
             <WarningBanner
               type={'정보' as any}
@@ -276,101 +275,123 @@ export const MainPage = () => {
             />
           )}
         </div>
-        {/* b-2. 위젯: 해루 가능 시간, 현재 수온 */}
+
+        {/* b-2. 위젯: 해루 가능 시간, 현재 수온 - 독립적으로 로딩 */}
         <div className={styles.weatherWidgets}>
-          <WeatherWidgets
-            items={[
-              {
-                icon: (
-                  <img
-                    src="/wave.svg"
-                    alt="파도 아이콘"
-                    style={{ width: '24px', height: '24px' }}
-                  />
-                ),
-                subtitle: '해루 가능 시간',
-                data: tidesLoading ? '로딩 중...' : fishingTimeDisplay,
-              },
-              {
-                icon: (
-                  <img
-                    src="/seaTemp.svg"
-                    alt="수온 아이콘"
-                    style={{ width: '24px', height: '24px' }}
-                  />
-                ),
-                subtitle: '현재 수온',
-                data: currentWaterTemperature,
-              },
-            ]}
-          />
+          {tidesLoading ? (
+            <>
+              <WeatherWidgetSkeleton />
+              <WeatherWidgetSkeleton />
+            </>
+          ) : (
+            <WeatherWidgets
+              items={[
+                {
+                  icon: (
+                    <img
+                      src="/wave.svg"
+                      alt="파도 아이콘"
+                      style={{ width: '24px', height: '24px' }}
+                    />
+                  ),
+                  subtitle: '해루 가능 시간',
+                  data: fishingTimeDisplay,
+                },
+                {
+                  icon: (
+                    <img
+                      src="/seaTemp.svg"
+                      alt="수온 아이콘"
+                      style={{ width: '24px', height: '24px' }}
+                    />
+                  ),
+                  subtitle: '현재 수온',
+                  data: currentWaterTemperature,
+                },
+              ]}
+            />
+          )}
         </div>
-        {/* b-3. 지도 */}
+
+        {/* b-3. 지도 - 독립적으로 로딩 */}
         <div className={styles.mapContainer}>
-          <div className={styles.map}>
-            {selectedFishery ? (
+          {selectedFishery ? (
+            <div className={styles.map}>
               <div id="main-map" className={styles.kakaoMap} />
-            ) : (
-              <div className={styles.mapPlaceholder}>
-                <Text size="md" color="gray">
-                  지도 로딩 중...
-                </Text>
+              {/* 카테고리 버튼 */}
+              <div className={styles.categorySearch}>
+                <button
+                  className={styles.categoryButton}
+                  onClick={() => handleCategoryClick('convenienceStore', searchConvenienceStore)}
+                >
+                  <Badge
+                    variant={categorySelect === 'convenienceStore' ? 'primary' : 'neutral'}
+                    size="medium"
+                    style={{ borderRadius: '100px' }}
+                  >
+                    <img
+                      src="/convenienceStoreIcon.svg"
+                      alt="편의점"
+                      className={styles.badgeIcon}
+                    />
+                    편의점
+                  </Badge>
+                </button>
+                <button
+                  className={styles.categoryButton}
+                  onClick={() => handleCategoryClick('parkingLot', searchParkingLot)}
+                >
+                  <Badge
+                    variant={categorySelect === 'parkingLot' ? 'primary' : 'neutral'}
+                    size="medium"
+                    style={{ borderRadius: '100px' }}
+                  >
+                    <img src="/parkingIcon.svg" alt="주차장" className={styles.badgeIcon} />
+                    주차장
+                  </Badge>
+                </button>
+                <button
+                  className={styles.categoryButton}
+                  onClick={() => handleCategoryClick('toilet', searchToilet)}
+                >
+                  <Badge
+                    variant={categorySelect === 'toilet' ? 'primary' : 'neutral'}
+                    size="medium"
+                    style={{ borderRadius: '100px' }}
+                  >
+                    <img src="/toiletIcon.svg" alt="화장실" className={styles.badgeIcon} />
+                    화장실
+                  </Badge>
+                </button>
               </div>
-            )}
-            {/* 카테고리 버튼 */}
-            <div className={styles.categorySearch}>
-              <button
-                className={styles.categoryButton}
-                onClick={() => handleCategoryClick('convenienceStore', searchConvenienceStore)}
-              >
-                <Badge
-                  variant={categorySelect === 'convenienceStore' ? 'primary' : 'neutral'}
-                  size="medium"
-                  style={{ borderRadius: '100px' }}
-                >
-                  <img src="/convenienceStoreIcon.svg" alt="편의점" className={styles.badgeIcon} />
-                  편의점
-                </Badge>
-              </button>
-              <button
-                className={styles.categoryButton}
-                onClick={() => handleCategoryClick('parkingLot', searchParkingLot)}
-              >
-                <Badge
-                  variant={categorySelect === 'parkingLot' ? 'primary' : 'neutral'}
-                  size="medium"
-                  style={{ borderRadius: '100px' }}
-                >
-                  <img src="/parkingIcon.svg" alt="주차장" className={styles.badgeIcon} />
-                  주차장
-                </Badge>
-              </button>
-              <button
-                className={styles.categoryButton}
-                onClick={() => handleCategoryClick('toilet', searchToilet)}
-              >
-                <Badge
-                  variant={categorySelect === 'toilet' ? 'primary' : 'neutral'}
-                  size="medium"
-                  style={{ borderRadius: '100px' }}
-                >
-                  <img src="/toiletIcon.svg" alt="화장실" className={styles.badgeIcon} />
-                  화장실
-                </Badge>
-              </button>
             </div>
-          </div>
+          ) : (
+            <MapSkeleton />
+          )}
         </div>
-        {/* b-4. 수확물 확인하기 */}
+
+        {/* b-4. 수확물 확인하기 - 독립적으로 로딩 */}
         <div className={styles.harvestButton}>
-          <HarvestButton onClick={handleAnalysisButtonClick} />
+          {tidesLoading ? (
+            <HarvestButtonSkeleton />
+          ) : (
+            <HarvestButton onClick={handleAnalysisButtonClick} />
+          )}
         </div>
-        {/* b-5. 버튼: 채집 안내서, 위치 트래킹 */}
+
+        {/* b-5. 버튼: 채집 안내서, 위치 트래킹 - 독립적으로 로딩 */}
         <div className={styles.buttons}>
-          <InfoButton onClick={openInfoModal} />
-          <TrackingButton onClick={handleTrackingClick} />
+          {tidesLoading ? (
+            <ActionButtonsSkeleton />
+          ) : (
+            <>
+              <InfoButton onClick={openInfoModal} />
+              <TrackingButton onClick={handleTrackingClick} />
+            </>
+          )}
         </div>
-        {/* 채집 안내서 모달(InfoModal) 로직 */}-
+
+        {/* 채집 안내서 모달(InfoModal) 로직 */}
         {isInfoModalOpen && <InfoModal onClose={closeInfoModal} />}
       </div>
     </div>

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Text } from '../../components/atoms';
-import { WarningBanner } from '../../components/molecules';
+import { WarningBanner, WarningBannerSkeleton } from '../../components/molecules';
 import {
   useWeatherWarnings,
   useWeatherWarningsByRegion,
@@ -153,17 +153,16 @@ const WeatherAlertPage: React.FC = () => {
       {/* B. 스크롤 가능한 영역 */}
       <div className={styles.scrollContent}>
         <div className={styles.alertList}>
-          {isLoading && (
-            <WarningBanner
-              type={'정보' as any}
-              date="불러오는 중..."
-              location=""
-              variant="info"
-              className={styles.alertItem}
-              suffix="발표"
-            />
-          )}
-          {error && !isLoading && (
+          {/* 로딩 중일 때 스켈레톤 표시 */}
+          {isLoading ? (
+            <>
+              <WarningBannerSkeleton />
+              <WarningBannerSkeleton />
+              <WarningBannerSkeleton />
+              <WarningBannerSkeleton />
+              <WarningBannerSkeleton />
+            </>
+          ) : error ? (
             <WarningBanner
               type={'오류' as any}
               date={error instanceof Error ? error.message : '요청 중 오류가 발생했습니다.'}
@@ -172,8 +171,7 @@ const WeatherAlertPage: React.FC = () => {
               className={styles.alertItem}
               suffix="발표"
             />
-          )}
-          {!isLoading && !error && alerts.length === 0 && (
+          ) : alerts.length === 0 ? (
             <WarningBanner
               type={'정보' as any}
               date="현재 발효중인 특보가 없습니다"
@@ -182,10 +180,7 @@ const WeatherAlertPage: React.FC = () => {
               className={styles.alertItem}
               suffix=""
             />
-          )}
-          {!isLoading &&
-            !error &&
-            alerts.length > 0 &&
+          ) : (
             alerts.map((item, index) => (
               <WarningBanner
                 key={item.id}
@@ -196,7 +191,8 @@ const WeatherAlertPage: React.FC = () => {
                 className={styles.alertItem}
                 suffix="발표"
               />
-            ))}
+            ))
+          )}
         </div>
       </div>
     </div>
