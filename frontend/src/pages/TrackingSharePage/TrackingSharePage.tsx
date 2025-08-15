@@ -153,7 +153,7 @@ export default function TrackingSharePage() {
         if (joinToken) tryConnect(roomCode, joinToken);
       } catch (error) {
         console.error('방 생성 오류:', error);
-        alert(error?.message || '방을 생성할 수 없습니다. 다시 시도해 주세요.');
+        alert((error as any)?.message || '방을 생성할 수 없습니다. 다시 시도해 주세요.');
         navigate({ to: '/buddy' });
       }
     };

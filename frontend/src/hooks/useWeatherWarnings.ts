@@ -101,7 +101,7 @@ export const pad2 = (n: number) => String(n).padStart(2, '0');
 
 export const formatAnnouncedAt = (val: string | number[]) => {
   if (Array.isArray(val)) {
-    const [yy, mm, dd, hh, mi] = val;
+    const [, mm, dd, hh, mi] = val; // yy 변수 제거
     return `${pad2(mm)}월 ${pad2(dd)}일 ${pad2(hh)}시 ${pad2(mi)}분`;
   }
   const d = new Date(val);

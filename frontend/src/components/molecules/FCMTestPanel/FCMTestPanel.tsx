@@ -73,7 +73,7 @@ export const FCMTestPanel: React.FC = () => {
           토큰: {token ? `${token.substring(0, 20)}...` : '없음'}
         </Text>
         {error && (
-          <Text size="sm" color="error" style={{ marginTop: theme.spacing.xs }}>
+          <Text size="sm" color="warning" style={{ marginTop: theme.spacing.xs }}>
             오류: {error}
           </Text>
         )}
@@ -144,7 +144,7 @@ export const FCMTestPanel: React.FC = () => {
         <Text size="md" color="white" style={{ marginBottom: theme.spacing.sm }}>
           서비스 상태
         </Text>
-        <Button variant="neutral" size="small" onClick={handleCheckService}>
+        <Button variant="secondary" size="small" onClick={handleCheckService}>
           서비스 상태 확인
         </Button>
       </div>

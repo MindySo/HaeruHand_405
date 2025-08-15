@@ -5,18 +5,18 @@ interface FisheryLocation {
   longitude: number;
 }
 
-// 장소들의 경계를 계산하는 유틸리티 함수 추가
-const getBoundsFromPlaces = (places: any[]) => {
-  if (!places || places.length === 0) {
-    return new window.kakao.maps.LatLngBounds();
-  }
+// 장소들의 경계를 계산하는 유틸리티 함수 추가 (사용하지 않으므로 제거)
+// const getBoundsFromPlaces = (places: any[]) => {
+//   if (!places || places.length === 0) {
+//     return new window.kakao.maps.LatLngBounds();
+//   }
 
-  const bounds = new window.kakao.maps.LatLngBounds();
-  places.forEach((place) => {
-    bounds.extend(new window.kakao.maps.LatLng(place.y, place.x));
-  });
-  return bounds;
-};
+//   const bounds = new window.kakao.maps.LatLngBounds();
+//   places.forEach((place) => {
+//     bounds.extend(new window.kakao.maps.LatLng(place.y, place.x));
+//   });
+//   return bounds;
+// };
 
 export function useKakaoMap(selectedFishery?: FisheryLocation, containerId: string = 'main-map') {
   const mapRef = useRef<any>(null);
@@ -245,7 +245,10 @@ export function useKakaoMap(selectedFishery?: FisheryLocation, containerId: stri
         return;
       }
       const options = {
-        center: new window.kakao.maps.LatLng(selectedFishery.latitude, selectedFishery.longitude),
+        center: new window.kakao.maps.LatLng(
+          selectedFishery?.latitude || 33.4996,
+          selectedFishery?.longitude || 126.5312,
+        ),
         level: 4,
         draggable: true,
       };

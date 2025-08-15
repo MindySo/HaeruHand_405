@@ -95,6 +95,8 @@ export const colors = {
   warningLight: '#FFD5D5',
   middleGray: '#CDCDCD',
   green: '#6EDF74',
+  error: '#FF0000', // 추가
+  red: '#FF0000', // 추가
 } as const;
 
 // 스페이싱 토큰

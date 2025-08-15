@@ -52,16 +52,26 @@ const PhotoAnalysisResultPage = () => {
         const result = await analyzePhoto(file);
         console.log('분석 완료:', result);
         setFishName(result.analysisResult.fishName);
-        setBanStartDate(result.analysisResult.regulationFish.restrictionStartDate);
-        setBanEndDate(result.analysisResult.regulationFish.restrictionEndDate);
 
-        // minimumLengthCentimeter 처리
-        const minLength = result.analysisResult.regulationFish.minimumLengthCentimeter;
-        if (minLength === null || minLength === undefined) {
-          setSizeLimit('없음');
+        // regulationFish가 null인지 확인
+        if (result.analysisResult.regulationFish) {
+          setBanStartDate(result.analysisResult.regulationFish.restrictionStartDate);
+          setBanEndDate(result.analysisResult.regulationFish.restrictionEndDate);
+
+          // minimumLengthCentimeter 처리
+          const minLength = result.analysisResult.regulationFish.minimumLengthCentimeter;
+          if (minLength === null || minLength === undefined) {
+            setSizeLimit('없음');
+          } else {
+            setSizeLimit(`${minLength}cm`);
+          }
         } else {
-          setSizeLimit(`${minLength}cm`);
+          // regulationFish가 null인 경우
+          setBanStartDate('금어기 정보 없음');
+          setBanEndDate('');
+          setSizeLimit('정보 없음');
         }
+
         setCurrentlyRestricted(result.analysisResult.currentlyRestricted);
         setAnalysisCompleted(true);
       } catch (error) {
@@ -149,7 +159,7 @@ const PhotoAnalysisResultPage = () => {
             color="dark"
             className={currentlyRestricted ? styles.warningText : undefined}
           >
-            금어기: {banStartDate} ~ {banEndDate}
+            금어기: {banStartDate} {banEndDate && `~ ${banEndDate}`}
           </Text>
           <Text size="md" weight="regular" color="dark">
             금지체장: {sizeLimit}

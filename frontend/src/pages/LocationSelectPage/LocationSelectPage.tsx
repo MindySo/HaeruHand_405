@@ -81,9 +81,9 @@ const LocationSelectPage = () => {
 
   // 최신 특보 정보 (MainPage와 동일한 로직)
   const latestWarning = useMemo(() => {
-    if (!warningsData?.data || warningsData.data.length === 0) return null;
+    if (!warningsData?.data?.content || warningsData.data.content.length === 0) return null;
 
-    const transformedWarnings = transformWeatherWarnings(warningsData.data);
+    const transformedWarnings = transformWeatherWarnings(warningsData);
     return transformedWarnings[0]; // 가장 최신 특보
   }, [warningsData]);
 
@@ -276,7 +276,7 @@ const LocationSelectPage = () => {
         {/* 에러 상태 표시 */}
         {hasError && (
           <div className={styles.errorMessage}>
-            <Text size="md" color="red">
+            <Text size="md" color="error">
               정보를 불러올 수 없습니다.
             </Text>
           </div>
@@ -291,7 +291,7 @@ const LocationSelectPage = () => {
                 <WarningBannerSkeleton />
               ) : warningsError ? (
                 <WarningBanner
-                  type={'정보' as any}
+                  type="폭염주의보"
                   date="특보 정보를 불러올 수 없습니다"
                   location=""
                   variant="info"
@@ -307,7 +307,7 @@ const LocationSelectPage = () => {
                 />
               ) : (
                 <WarningBanner
-                  type="정보"
+                  type="폭염주의보"
                   date="현재 발효 중인 특보가 없습니다"
                   location=""
                   variant="info"

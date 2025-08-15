@@ -259,8 +259,8 @@ const BuddyTrackingPage = () => {
     console.log('currentUserInfo:', currentUserInfo);
     console.log('mapRef.current:', mapRef.current);
 
-    // userInfo가 아직 업데이트되지 않았으면 로컬 변수 사용
-    const effectiveUserInfo = currentUserInfo || userInfo;
+    // userInfo가 아직 업데이트되지 않았으면 로컬 변수 사용 (사용하지 않으므로 제거)
+    // const effectiveUserInfo = currentUserInfo || userInfo;
 
     // 아직 지도 이동을 하지 않았고, 위치 정보가 있으면 이동
     if (!hasMovedToLocation && member.latitude && member.longitude && mapRef.current) {
@@ -345,7 +345,8 @@ const BuddyTrackingPage = () => {
             // 위치 추적 + 전송
             geoWatchIdRef.current = navigator.geolocation.watchPosition(
               (p) => {
-                const ll2 = new window.kakao.maps.LatLng(p.coords.latitude, p.coords.longitude);
+                // ll2 변수 제거 (사용하지 않음)
+                // const ll2 = new window.kakao.maps.LatLng(p.coords.latitude, p.coords.longitude);
                 // 기본 마커 업데이트하지 않음
                 // myMarkerRef.current?.setPosition(ll2);
                 sendLocation({

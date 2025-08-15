@@ -3,7 +3,7 @@ import theme from '../../../theme';
 import { Text } from '../../atoms';
 import closeButtonImg from '../../../../public/closeButtonLightGray.png';
 import styles from './InfoModal.module.css';
-import { banData, BanRule } from './banData';
+import { banData, type BanRule } from './banData';
 
 // 모달 닫기 버튼 props
 interface InfoModalProps {

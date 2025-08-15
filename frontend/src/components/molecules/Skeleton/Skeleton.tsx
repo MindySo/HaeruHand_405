@@ -2,8 +2,14 @@ import React from 'react';
 import styles from './Skeleton.module.css';
 
 // 스켈레톤 애니메이션을 위한 기본 클래스
-const SkeletonBase: React.FC<{ className?: string }> = ({ className, children }) => (
-  <div className={`${styles.skeletonBase} ${className || ''}`}>{children}</div>
+const SkeletonBase: React.FC<{
+  className?: string;
+  style?: React.CSSProperties;
+  children?: React.ReactNode;
+}> = ({ className, children, style }) => (
+  <div className={`${styles.skeletonBase} ${className || ''}`} style={style}>
+    {children}
+  </div>
 );
 
 // 특보 배너 스켈레톤
@@ -91,11 +97,11 @@ export const RectangleSkeleton: React.FC<{
 );
 
 // 기본 스켈레톤 컴포넌트
-export const Skeleton: React.FC<{ className?: string; style?: React.CSSProperties }> = ({
-  className,
-  style,
-  children,
-}) => (
+export const Skeleton: React.FC<{
+  className?: string;
+  style?: React.CSSProperties;
+  children?: React.ReactNode;
+}> = ({ className, style, children }) => (
   <SkeletonBase className={className} style={style}>
     {children}
   </SkeletonBase>

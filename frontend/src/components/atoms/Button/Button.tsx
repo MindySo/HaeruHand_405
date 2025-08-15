@@ -3,7 +3,7 @@ import { theme } from '../../../theme';
 
 export interface ButtonProps {
   children: React.ReactNode;
-  variant?: 'primary' | 'secondary' | 'error' | 'success' | 'warning' | 'kakao';
+  variant?: 'primary' | 'secondary' | 'error' | 'success' | 'warning' | 'kakao' | 'neutral';
   size?: 'small' | 'medium' | 'large';
   disabled?: boolean;
   onClick?: () => void;
@@ -58,6 +58,12 @@ const Button: React.FC<ButtonProps> = ({
         return {
           backgroundColor: '#fee500',
           color: '#191919',
+          border: 'none',
+        };
+      case 'neutral':
+        return {
+          backgroundColor: theme.colors.lightGray,
+          color: theme.colors.dark,
           border: 'none',
         };
       default:
