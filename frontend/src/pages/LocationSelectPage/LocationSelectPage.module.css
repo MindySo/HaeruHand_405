@@ -42,14 +42,12 @@
 
 /* Map Section */
 .mapSection {
-  display: flex;
   flex: 1;
+  display: flex;
   align-items: center;
   justify-content: center;
   width: 100%;
-  margin: 20px 0;
-  /* 화면이 커질 때 지도 섹션을 위쪽에 배치 */
-  flex-shrink: 0;
+  position: relative; /* 오버레이를 위한 상대 위치 */
 }
 
 .map {
@@ -58,6 +56,46 @@
   height: auto;
   object-fit: contain;
   scale: 1.2;
+  transition: opacity 0.3s ease; /* 부드러운 전환 효과 */
+}
+
+.mapDimmed {
+  opacity: 0.3; /* 선택 시 배경 지도를 연하게 */
+}
+
+.hanlimMap {
+  position: absolute;
+  top: 45%;
+  left: 20%;
+  transform: translate(-50%, -50%);
+  width: 160px; /* 배경 지도보다 더 크게 */
+  height: auto;
+  object-fit: contain;
+  z-index: 1; /* 배경 지도 위에 표시 */
+  animation: fadeIn 0.5s ease; /* 나타나는 애니메이션 */
+}
+
+.aewolMap {
+  position: absolute;
+  top: 38%;
+  left: 40%;
+  transform: translate(-50%, -50%);
+  width: 160px;
+  height: auto;
+  object-fit: contain;
+  z-index: 1;
+  animation: fadeIn 0.5s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
 }
 
 /* 중간 콘텐츠 영역 */

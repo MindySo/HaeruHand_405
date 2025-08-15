@@ -220,7 +220,32 @@ const LocationSelectPage = () => {
       <div className={styles.scrollContent}>
         {/* Map Section */}
         <div className={styles.mapSection}>
-          <img src="/jeju_map.svg" alt="제주도 지도" className={styles.map} />
+          {/* 배경 지도 (항상 표시, 선택 시 opacity 낮춤) */}
+          <img
+            src="/jeju_map.svg"
+            alt="제주도 지도"
+            className={`${styles.map} ${selectedLocation === 'suwon' || selectedLocation === 'aewol' || selectedLocation === 'gonae' || selectedLocation === 'gueom' ? styles.mapDimmed : ''}`}
+          />
+
+          {/* 수원 선택 시 한림 지도 오버레이 */}
+          {selectedLocation === 'suwon' && (
+            <img src="/jeju_hanlim_1.svg" alt="한림 지도" className={styles.hanlimMap} />
+          )}
+
+          {/* 애월 선택 시 애월 지도 오버레이 */}
+          {selectedLocation === 'aewol' && (
+            <img src="/jeju_aewol_3.svg" alt="애월 지도" className={styles.aewolMap} />
+          )}
+
+          {/* 고내 선택 시 고내 지도 오버레이 */}
+          {selectedLocation === 'gonae' && (
+            <img src="/jeju_aewol_2.svg" alt="고내 지도" className={styles.aewolMap} />
+          )}
+
+          {/* 구역 선택 시 구역 지도 오버레이 */}
+          {selectedLocation === 'gueom' && (
+            <img src="/jeju_aewol_1.svg" alt="구역 지도" className={styles.aewolMap} />
+          )}
         </div>
 
         {/* Location Buttons */}
