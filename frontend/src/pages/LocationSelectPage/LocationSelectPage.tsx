@@ -192,7 +192,7 @@ const LocationSelectPage = () => {
       {/* 에러 상태 표시 */}
       {hasError && (
         <div className={styles.errorMessage}>
-          <Text size="md" color="red">
+          <Text size="md" color="warning">
             정보를 불러올 수 없습니다.
           </Text>
         </div>

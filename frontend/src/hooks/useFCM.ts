@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useCallback } from 'react';
 import { messaging, getToken, onMessage } from '../config/firebase';
 import { apiClient } from '../apis/apiClient';
 import { FCM_CONFIG, API_ENDPOINTS } from '../config/constants';
