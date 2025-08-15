@@ -8,6 +8,7 @@ export interface WarningBannerProps {
   location: string;
   className?: string;
   variant?: 'latest' | 'past' | 'info';
+  suffix?: string;
 }
 
 const WarningBanner: React.FC<WarningBannerProps> = ({
@@ -16,6 +17,7 @@ const WarningBanner: React.FC<WarningBannerProps> = ({
   location,
   className = '',
   variant = 'latest',
+  suffix = '',
 }) => {
   const isLatest = variant === 'latest';
   const isInfo = variant === 'info';
@@ -37,7 +39,7 @@ const WarningBanner: React.FC<WarningBannerProps> = ({
         {type}
       </Badge>
       <span className={styles.text}>
-        {date} {location} 발효
+        {date} {location} {suffix}
       </span>
     </div>
   );

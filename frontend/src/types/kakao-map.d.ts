@@ -31,7 +31,6 @@ interface Map {
 interface LatLng {
   // LatLng 인스턴스의 메서드들
 }
-
 interface Marker {
   // Marker 인스턴스의 메서드들
 }

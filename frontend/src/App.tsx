@@ -1,10 +1,14 @@
 import './App.css';
 import { theme } from './theme';
 import { Button, Badge, Text } from './components/atoms';
-import { WarningBanner, HarvestButton, WeatherWidgets } from './components/molecules';
+import { WarningBanner, HarvestButton, WeatherWidgets, FCMTestPanel } from './components/molecules';
 import { Link } from '@tanstack/react-router';
+import { useFCMWithSocket } from './hooks/useFCMWithSocket';
 
 function App() {
+  // FCM 초기화 (임시로 userId 1 사용, 실제로는 로그인된 사용자 ID를 사용해야 함)
+  useFCMWithSocket(1);
+
   return (
     <div
       className="App"
@@ -37,22 +41,22 @@ function App() {
           페이지 이동:
         </Text>
         <div style={{ display: 'flex', gap: theme.spacing.md }}>
-          <Link to="/weather-alert" style={{ textDecoration: 'none' }}>
+          <Link to="/weather" style={{ textDecoration: 'none' }}>
             <Button variant="primary" size="medium">
               WeatherAlertPage
             </Button>
           </Link>
-          <Link to="/photo-analysis" style={{ textDecoration: 'none' }}>
+          <Link to="/photo" style={{ textDecoration: 'none' }}>
             <Button variant="primary" size="medium">
               PhotoAnalysisPage
             </Button>
           </Link>
-          <Link to="/tracking-share" style={{ textDecoration: 'none' }}>
+          <Link to="/share" style={{ textDecoration: 'none' }}>
             <Button variant="secondary" size="medium">
               TrackingSharePage
             </Button>
           </Link>
-          <Link to="/location-select" style={{ textDecoration: 'none' }}>
+          <Link to="/map" style={{ textDecoration: 'none' }}>
             <Button variant="primary" size="medium">
               LocationSelectPage
             </Button>
@@ -122,6 +126,14 @@ function App() {
             채집금지구역
           </Badge>
         </div>
+      </section>
+
+      {/* FCM Test Panel */}
+      <section style={{ marginBottom: theme.spacing.xxxl }}>
+        <Text size="xxxl" color="white" style={{ marginBottom: theme.spacing.lg }}>
+          FCM 테스트
+        </Text>
+        <FCMTestPanel />
       </section>
 
       {/* Molecule Components Section */}

@@ -55,3 +55,74 @@
   flex-direction: column;
   gap: 12px;
 }
+
+.locationButton {
+  margin-bottom: 12px;
+}
+
+/* 기존 스타일에 추가 */
+.locationButtons {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin: 20px 0;
+}
+
+.locationButton {
+  padding: 12px 24px;
+  border: 2px solid #007bff;
+  color: #007bff;
+  border-radius: 8px;
+  background: white;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.locationButton:hover {
+  border-color: #0056b3;
+  background: #f8f9fa;
+  color: #0056b3;
+}
+
+.locationButton.selected {
+  border-color: #007bff;
+  background: #007bff;
+  color: white;
+}
+
+.locationButton.selected:hover {
+  border-color: #007bff;
+  background: #007bff;
+  color: white;
+}
+
+/* Button 컴포넌트의 비활성화 상태 스타일 (필요시) */
+.buttonSection button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* 기존 스타일에 추가 */
+.loadingMessage {
+  text-align: center;
+  margin: 20px 0;
+  padding: 12px;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+}
+
+.errorMessage {
+  text-align: center;
+  margin: 20px 0;
+  padding: 12px;
+  background-color: #f8d7da;
+  border: 1px solid #f5c6cb;
+  border-radius: 8px;
+}
+
+.locationButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}

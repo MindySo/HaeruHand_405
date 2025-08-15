@@ -79,3 +79,28 @@
   width: 100%;
   pointer-events: auto;
 }
+
+/* 참가자 바(좌측 하단 리스트가 이미 있으면 그걸 사용) */
+.buddyList {
+  position: absolute;
+  left: 16px;
+  bottom: 96px; /* 하단 버튼 위 */
+  background: rgba(0, 0, 0, 0.55);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 12px;
+  padding: 10px 12px;
+  backdrop-filter: blur(6px);
+  max-width: calc(100% - 32px);
+}
+.buddy {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 4px;
+}
+.dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.7);
+}
