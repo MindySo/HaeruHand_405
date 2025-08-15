@@ -69,6 +69,8 @@ async def detect_fish(signed_url: str, prompt: str, mime_subtype: str) -> str:
         logger.info(f"물고기 탐지 시작: {signed_url}")
         
         base64_image = await download_and_encode_image(str(signed_url))
+        if mime_subtype and mime_subtype.lower() == "jpg":
+            mime_subtype = "jpeg"
         mime_type = f"image/{mime_subtype.lower()}"
         
         image_part = {
