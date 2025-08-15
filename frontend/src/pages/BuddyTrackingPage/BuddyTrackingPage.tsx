@@ -3,6 +3,8 @@ import { Button, Text } from '../../components/atoms';
 import styles from './BuddyTrackingPage.module.css';
 import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from '@tanstack/react-router';
+import { useAuth } from '../../hooks/useAuth';
+import { LoginModal } from '../../components/molecules/LoginModal/LoginModal';
 import { useLocationSocket } from '../../stores/useLocationSocket';
 
 type UserInfo = {
@@ -26,6 +28,10 @@ type RoomInfo = {
   deepLink: string;
   joinToken: string | null;
 };
+
+const BuddyTrackingPage = () => {
+  const navigate = useNavigate();
+  const { isAuthenticated } = useAuth();
 
 declare global {
   interface Window {
@@ -178,6 +184,8 @@ export default function BuddyTrackingPage() {
     (async () => {
       await ensureScripts();
 
+  const buddyButtonClick = () => {
+    navigate({ to: '/tracking-share' });
       const u = loadUserInfo();
       setUserInfo(u);
 
@@ -294,6 +302,7 @@ export default function BuddyTrackingPage() {
 
   return (
     <div className={styles.container}>
+      {!isAuthenticated() && <LoginModal message="위치 트래킹을 시작" />}
       <div
         style={{
           position: 'fixed',
@@ -350,3 +359,5 @@ export default function BuddyTrackingPage() {
     </div>
   );
 }
+
+export default BuddyTrackingPage;
