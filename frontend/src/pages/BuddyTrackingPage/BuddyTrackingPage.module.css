@@ -45,37 +45,12 @@
   pointer-events: auto;
 }
 
-.buddyList {
-  position: absolute;
-  bottom: 120px;
-  z-index: 10;
+.buttonSection {
   display: flex;
   flex-direction: column;
-  gap: 8px;
-}
-
-.buddy {
-  width: 116px;
-  height: 20px;
-  background: rgba(0, 0, 0, 0.8);
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  border-radius: 8px;
-  padding: 0 12px;
-  gap: 20px;
-}
-
-.dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  flex-shrink: 0;
-}
-
-.buttonSection {
+  gap: 12px;
   position: absolute;
-  bottom: 60px;
+  bottom: 90px;
   width: 100%;
   pointer-events: auto;
 }
@@ -83,24 +58,29 @@
 /* 참가자 바(좌측 하단 리스트가 이미 있으면 그걸 사용) */
 .buddyList {
   position: absolute;
-  left: 16px;
-  bottom: 96px; /* 하단 버튼 위 */
+  bottom: 160px;
+  right: 0;
   background: rgba(0, 0, 0, 0.55);
   border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: 12px;
   padding: 10px 12px;
   backdrop-filter: blur(6px);
   max-width: calc(100% - 32px);
+  z-index: 10;
 }
+
 .buddy {
   display: flex;
   align-items: center;
   gap: 8px;
   margin-top: 4px;
+  padding: 2px 0;
 }
+
 .dot {
   width: 10px;
   height: 10px;
   border-radius: 999px;
   border: 1px solid rgba(255, 255, 255, 0.7);
+  flex-shrink: 0;
 }

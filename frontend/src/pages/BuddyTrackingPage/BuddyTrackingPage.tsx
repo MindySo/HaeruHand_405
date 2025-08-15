@@ -73,7 +73,7 @@ const BuddyTrackingPage = () => {
 
   const mapRef = useRef<any>(null);
   const myMarkerRef = useRef<any>(null);
-  const memberMarkersRef = useRef<Map<number, any>>(new Map());
+  const memberMarkersRef = useRef<Map<number, { marker: any; overlay: any }>>(new Map());
   const geoWatchIdRef = useRef<number | null>(null);
   const isInitializedRef = useRef(false);
 
@@ -114,7 +114,10 @@ const BuddyTrackingPage = () => {
         navigator.geolocation.clearWatch(geoWatchIdRef.current);
         geoWatchIdRef.current = null;
       }
-      memberMarkersRef.current.forEach((m) => m.setMap && m.setMap(null));
+      memberMarkersRef.current.forEach((m) => {
+        m.marker.setMap && m.marker.setMap(null);
+        m.overlay.setMap && m.overlay.setMap(null);
+      });
       memberMarkersRef.current.clear();
       if (myMarkerRef.current?.setMap) myMarkerRef.current.setMap(null);
       myMarkerRef.current = null;
@@ -138,6 +141,8 @@ const BuddyTrackingPage = () => {
     let marker = memberMarkersRef.current.get(key);
     if (!marker) {
       const color = member.color || '#2196F3';
+
+      // 마커 이미지 생성 (원형 마커)
       const markerImage = new window.kakao.maps.MarkerImage(
         `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(`
           <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18">
@@ -146,14 +151,43 @@ const BuddyTrackingPage = () => {
         `)}`,
         new window.kakao.maps.Size(18, 18),
       );
+
+      // 커스텀 오버레이로 이름 표시
+      const nameOverlay = new window.kakao.maps.CustomOverlay({
+        position: latLng,
+        content: `
+          <div style="
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+            white-space: nowrap;
+            margin-bottom: 8px;
+            text-align: center;
+          ">
+            ${member.nickname}
+          </div>
+        `,
+        yAnchor: 1,
+      });
+
       marker = new window.kakao.maps.Marker({
         map: mapRef.current,
         position: latLng,
         image: markerImage,
       });
-      memberMarkersRef.current.set(key, marker);
+
+      // 마커와 오버레이를 함께 저장
+      memberMarkersRef.current.set(key, { marker, overlay: nameOverlay });
+
+      // 오버레이를 지도에 추가
+      nameOverlay.setMap(mapRef.current);
     } else {
-      marker.setPosition(latLng);
+      // 기존 마커가 있으면 위치만 업데이트
+      marker.marker.setPosition(latLng);
+      marker.overlay.setPosition(latLng);
     }
   };
 
@@ -325,7 +359,7 @@ const BuddyTrackingPage = () => {
         </button>
 
         <div className={styles.buddyList}>
-          <div style={{ marginBottom: 6 }}>
+          <div>
             <Text size="xs" weight="regular" color="white">
               참여자 {members.length}명
             </Text>
@@ -349,7 +383,6 @@ const BuddyTrackingPage = () => {
           >
             QR 공유하기
           </Button>
-          <div style={{ height: 8 }} />
           <Button size="large" variant="secondary" fullWidth onClick={endSharing}>
             그만하기
           </Button>

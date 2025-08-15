@@ -71,8 +71,8 @@ export const useLocationSocket = create<State & { onMemberUpdate?: (m: Member) =
       client.debug = null;
 
       // 하트비트 설정 (프록시 타임아웃과 맞춰 여유 있게)
-      client.heartbeat.outgoing = 10000; // 10s
-      client.heartbeat.incoming = 10000; // 서버가 보낸 핑 수신
+      client.heartbeat.outgoing = 1000; // 1s
+      client.heartbeat.incoming = 1000; // 서버가 보낸 핑 수신
 
       // 자동 재연결 설정 (stompjs 2.x)
       client.reconnect_delay = 3000;

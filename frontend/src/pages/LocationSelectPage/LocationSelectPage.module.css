@@ -3,28 +3,46 @@
   height: 100vh;
   display: flex;
   flex-direction: column;
-  position: relative;
-  overflow: hidden;
-  padding: 0 16px;
+  min-width: 280px;
+  padding: 16px 16px 0 16px;
+}
+
+/* A. 고정 영역 */
+.fixedContent {
+  position: sticky;
+  top: 0;
+  flex-shrink: 0;
+  margin-top: 20px;
+  margin-bottom: 12px;
 }
 
 .header {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  margin-top: 52px;
   margin-bottom: 16px;
   gap: 8px;
-  flex-shrink: 0;
+}
+
+/* B. 스크롤 영역 */
+.scrollContent {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding-bottom: 20px;
+}
+
+.scrollContent::-webkit-scrollbar {
+  display: none;
 }
 
 /* Map Section */
 .mapSection {
-  flex: 1;
   display: flex;
   align-items: center;
   justify-content: center;
   width: 100%;
+  margin: 20px 0;
 }
 
 .map {
@@ -56,45 +74,34 @@
   gap: 12px;
 }
 
-.locationButton {
-  margin-bottom: 12px;
-}
-
 /* 기존 스타일에 추가 */
 .locationButtons {
   display: flex;
-  justify-content: center;
-  gap: 12px;
-  margin: 20px 0;
+  justify-content: space-between;
+  margin-top: 40px;
+  margin-bottom: 16px;
 }
 
 .locationButton {
-  padding: 12px 24px;
-  border: 2px solid #007bff;
-  color: #007bff;
+  padding: 8px 20px;
+  border: 2px solid #20aeea;
+  color: #20aeea;
   border-radius: 8px;
   background: white;
   cursor: pointer;
   transition: all 0.2s ease;
-  font-size: 16px;
-  font-weight: 500;
-}
-
-.locationButton:hover {
-  border-color: #0056b3;
-  background: #f8f9fa;
-  color: #0056b3;
+  font-size: 14px;
+  font-weight: 600;
+  box-sizing: border-box;
 }
 
 .locationButton.selected {
-  border-color: #007bff;
-  background: #007bff;
+  background: #20aeea;
   color: white;
 }
 
 .locationButton.selected:hover {
-  border-color: #007bff;
-  background: #007bff;
+  background: #20aeea;
   color: white;
 }
 
@@ -125,4 +132,8 @@
 .locationButton:disabled {
   opacity: 0.6;
   cursor: not-allowed;
+}
+
+.warningBanner {
+  width: 100%;
 }
