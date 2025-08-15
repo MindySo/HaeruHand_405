@@ -11,9 +11,10 @@ export default defineConfig({
       // 로컬에서 /api 로 들어오는 요청/웹소켓을
       // 원격 서버(i13a405.p.ssafy.io)로 프록시
       '/api': {
-        target: 'http://i13a405.p.ssafy.io',
+        target: 'https://i13a405.p.ssafy.io',
         changeOrigin: true,
         ws: true,
+        secure: true,
         // 서버가 경로에 이미 /api 를 기대하므로 rewrite는 생략
         // (만약 서버가 /v1 로 바로 시작한다면 ↓ 주석 해제)
         // rewrite: (path) => path.replace(/^\/api/, ''),
