@@ -15,6 +15,7 @@ import {
 import styles from './MainPage.module.css';
 import { InfoModal } from '../../components/molecules/InfoModal/InfoModal';
 import { useNavigate } from '@tanstack/react-router';
+import { Footer } from '../../components/molecules/Footer/Footer';
 
 // 특보 배너 props
 export interface WarningBannerProps {
@@ -231,12 +232,13 @@ export const MainPage = () => {
       : '09:10 ~ 11:00'; // 기본값
 
   return (
+    // <div>
     <div className={styles.container}>
       {/* A. 고정된 영역 */}
       <div className={styles.fixedContent}>
         {/* a-1. 헤더 */}
         <div className={styles.header}>
-          <Text size="xl">해루핸 로고</Text>
+          <img src="/해루핸로고.svg" alt="로고" className={styles.logo} />
           <button className={styles.bellButton} onClick={handleWeatherAlertClick}>
             <img src="/bell.svg" alt="특보 조회" className={styles.bellIcon} />
             {hasNewWarning && <div className={styles.bellMarker} />}
@@ -256,113 +258,120 @@ export const MainPage = () => {
 
       {/* B. 스크롤 가능한 영역 */}
       <div className={styles.scrollContent}>
-        {/* b-1. 특보 배너 */}
-        <div className={styles.warningBanner} onClick={handleWeatherAlertClick}>
-          {warningsLoading ? (
-            <WarningBanner
-              type={'정보' as any}
-              date="특보 정보 로딩 중..."
-              location=""
-              variant="info"
-              suffix=""
-            />
-          ) : warningsError ? (
-            <WarningBanner
-              type={'정보' as any}
-              date="특보 정보를 불러올 수 없습니다"
-              location=""
-              variant="info"
-              suffix=""
-            />
-          ) : latestWarning ? (
-            <WarningBanner
-              type={latestWarning.type as any}
-              date={latestWarning.date}
-              location={latestWarning.location}
-              variant="latest"
-              suffix="발효"
-            />
-          ) : (
-            <WarningBanner
-              type="정보"
-              date="현재 발효 중인 특보가 없습니다"
-              location=""
-              variant="info"
-              suffix=""
-            />
-          )}
-        </div>
-
-        {/* b-2. 위젯: 해루 가능 시간, 현재 수온 */}
-        <div className={styles.weatherWidgets}>
-          <WeatherWidgets
-            items={[
-              {
-                icon: (
-                  <img
-                    src="/wave.svg"
-                    alt="파도 아이콘"
-                    style={{ width: '24px', height: '24px' }}
-                  />
-                ),
-                subtitle: '해루 가능 시간',
-                data: tidesLoading ? '로딩 중...' : fishingTimeDisplay,
-              },
-              {
-                icon: (
-                  <img
-                    src="/seaTemp.svg"
-                    alt="수온 아이콘"
-                    style={{ width: '24px', height: '24px' }}
-                  />
-                ),
-                subtitle: '현재 수온',
-                data: currentWaterTemperature,
-              },
-            ]}
-          />
-        </div>
-
-        {/* b-3. 지도 */}
-        <div className={styles.mapContainer}>
-          <div className={styles.map}>
-            {selectedFishery ? (
-              <div id="main-map" className={styles.kakaoMap} />
+        <div className={styles.notFooter}>
+          {/* b-1. 특보 배너 */}
+          <div className={styles.warningBanner} onClick={handleWeatherAlertClick}>
+            {warningsLoading ? (
+              <WarningBanner
+                type={'정보' as any}
+                date="특보 정보 로딩 중..."
+                location=""
+                variant="info"
+                suffix=""
+              />
+            ) : warningsError ? (
+              <WarningBanner
+                type={'정보' as any}
+                date="특보 정보를 불러올 수 없습니다"
+                location=""
+                variant="info"
+                suffix=""
+              />
+            ) : latestWarning ? (
+              <WarningBanner
+                type={latestWarning.type as any}
+                date={latestWarning.date}
+                location={latestWarning.location}
+                variant="latest"
+                suffix="발효"
+              />
             ) : (
-              <div className={styles.mapPlaceholder}>
-                <Text size="md" color="gray">
-                  지도 로딩 중...
-                </Text>
-              </div>
+              <WarningBanner
+                type="정보"
+                date="현재 발효 중인 특보가 없습니다"
+                location=""
+                variant="info"
+                suffix=""
+              />
             )}
+          </div>
 
-            {/* 뱃지 */}
-            <div className={styles.mapBadges}>
-              <Badge variant="neutral" size="small" style={{ borderRadius: '100px' }}>
-                <div className={styles.badgeMarker1} />
-                채집 가능구역
-              </Badge>
-              <Badge variant="neutral" size="small" style={{ borderRadius: '100px' }}>
-                <div className={styles.badgeMarker2} />
-                채집 금지구역
-              </Badge>
+          {/* b-2. 위젯: 해루 가능 시간, 현재 수온 */}
+          <div className={styles.weatherWidgets}>
+            <WeatherWidgets
+              items={[
+                {
+                  icon: (
+                    <img
+                      src="/wave.svg"
+                      alt="파도 아이콘"
+                      style={{ width: '24px', height: '24px' }}
+                    />
+                  ),
+                  subtitle: '해루 가능 시간',
+                  data: tidesLoading ? '로딩 중...' : fishingTimeDisplay,
+                },
+                {
+                  icon: (
+                    <img
+                      src="/seaTemp.svg"
+                      alt="수온 아이콘"
+                      style={{ width: '24px', height: '24px' }}
+                    />
+                  ),
+                  subtitle: '현재 수온',
+                  data: currentWaterTemperature,
+                },
+              ]}
+            />
+          </div>
+
+          {/* b-3. 지도 */}
+          <div className={styles.mapContainer}>
+            <div className={styles.map}>
+              {selectedFishery ? (
+                <div id="main-map" className={styles.kakaoMap} />
+              ) : (
+                <div className={styles.mapPlaceholder}>
+                  <Text size="md" color="gray">
+                    지도 로딩 중...
+                  </Text>
+                </div>
+              )}
+
+              {/* 뱃지 */}
+              <div className={styles.mapBadges}>
+                <Badge variant="neutral" size="small" style={{ borderRadius: '100px' }}>
+                  <div className={styles.badgeMarker1} />
+                  채집 가능구역
+                </Badge>
+                <Badge variant="neutral" size="small" style={{ borderRadius: '100px' }}>
+                  <div className={styles.badgeMarker2} />
+                  채집 금지구역
+                </Badge>
+              </div>
             </div>
           </div>
+
+          {/* b-4. 수확물 확인하기 */}
+          <div className={styles.harvestButton}>
+            <HarvestButton onClick={handleAnalysisButtonClick} />
+          </div>
+
+          {/* b-5. 버튼: 채집 안내서, 위치 트래킹 */}
+          <div className={styles.buttons}>
+            <InfoButton onClick={openInfoModal} />
+            <TrackingButton onClick={handleTrackingClick} />
+          </div>
+
+          {/* 채집 안내서 모달(InfoModal) 로직 */}
+          {isInfoModalOpen && <InfoModal onClose={closeInfoModal} />}
         </div>
 
-        {/* b-4. 수확물 확인하기 */}
-        <div className={styles.harvestButton}>
-          <HarvestButton onClick={handleAnalysisButtonClick} />
-        </div>
-
-        {/* b-5. 버튼: 채집 안내서, 위치 트래킹 */}
-        <div className={styles.buttons}>
-          <InfoButton onClick={openInfoModal} />
-          <TrackingButton onClick={handleTrackingClick} />
-        </div>
-
-        {/* 채집 안내서 모달(InfoModal) 로직 */}
-        {isInfoModalOpen && <InfoModal onClose={closeInfoModal} />}
+        {/* Footer */}
+        <footer>
+          <Footer />
+        </footer>
       </div>
     </div>
   );
