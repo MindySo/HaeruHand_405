@@ -23,11 +23,39 @@ messaging.onBackgroundMessage((payload) => {
   const notificationTitle = payload.notification?.title || '알림';
   const notificationOptions = {
     body: payload.notification?.body || '새로운 메시지가 도착했습니다.',
-    icon: '/haeruhand_app.png', // 선택사항
+    icon: '/haeruhand_app.png', // 해루핸 앱 아이콘
+    badge: '/haeruhand_app.png', // 배지 아이콘도 설정
     tag: 'fcm-notification',
     requireInteraction: true, // 사용자가 클릭할 때까지 유지
-    data: payload.data || {} // 추가 데이터
+    data: payload.data || {}, // 추가 데이터
+    // 추가 옵션들
+    silent: false,
+    renotify: true,
+    actions: [
+      {
+        action: 'open',
+        title: '열기'
+      },
+      {
+        action: 'close',
+        title: '닫기'
+      }
+    ]
   };
 
   return self.registration.showNotification(notificationTitle, notificationOptions);
+});
+
+// 알림 클릭 이벤트 처리
+self.addEventListener('notificationclick', (event) => {
+  console.log('알림 클릭됨:', event);
+
+  event.notification.close();
+
+  if (event.action === 'open') {
+    // 앱 열기
+    event.waitUntil(
+      clients.openWindow('/')
+    );
+  }
 });
