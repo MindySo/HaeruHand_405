@@ -162,8 +162,8 @@
 
 /* 도구 이미지 스타일 */
 .listItem img {
-  width: 40px;
-  height: 40px;
+  width: 160px;
+  height: auto;
   object-fit: contain;
   margin-bottom: 8px;
 }
