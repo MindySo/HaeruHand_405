@@ -42,7 +42,7 @@ public class NotificationSubscriber implements MessageListener {
         String body = new String(message.getBody());
 
         log.info("=== Direct Redis 메시지 수신 ===");
-        log.info("채널: {}, 메시지: {}", channel, body);
+        log.info("채널: {}", channel);
 
         if ("notification:send".equals(channel)) {
             handleNotificationMessage(body);
@@ -61,10 +61,7 @@ public class NotificationSubscriber implements MessageListener {
     public void handleNotificationMessage(String taskJson) {
         try {
             NotificationTaskDto task = notificationObjectMapper.readValue(taskJson, NotificationTaskDto.class);
-            log.info("=== 메시지 수신됨 ===");
-            log.info("수신된 JSON: {}", taskJson);
             processNotificationTask(task);
-
         } catch (Exception e) {
             log.error("알림 작업 처리 중 파싱 오류: {}", e.getMessage(), e);
         }
@@ -193,7 +190,6 @@ public class NotificationSubscriber implements MessageListener {
         // 지수 백오프 계산
         long delaySeconds = INITIAL_DELAY_SECONDS * (long) Math.pow(2, task.getAttemptCount());
 
-        // 팀 컨벤션에 따라 Builder 패턴으로 재시도 작업 생성
         NotificationTaskDto retryTask = NotificationTaskDto.builder()
                 .messageId(task.getMessageId())
                 .event(task.getEvent())
