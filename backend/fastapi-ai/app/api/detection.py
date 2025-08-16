@@ -4,7 +4,7 @@ from app.schemas.response import DetectionResponse
 from app.service.gpt import detect_fish
 from app.prompts.fish_detection import get_fish_detection_prompt
 
-router = APIRouter()
+router = APIRouter(prefix="/detection", tags=["detection"])
 
 @router.post("/", response_model=DetectionResponse)
 async def detect(request: DetectionRequest):

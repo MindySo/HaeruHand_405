@@ -4,5 +4,5 @@ from app.api.health import router as health_router
 
 api_router = APIRouter()
 
-api_router.include_router(detection_router, prefix="/detection")
-api_router.include_router(health_router,   prefix="/health")
+api_router.include_router(health_router)
+api_router.include_router(detection_router)
