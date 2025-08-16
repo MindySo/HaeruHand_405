@@ -3,7 +3,7 @@ class ApiClient {
   private baseURL: string;
 
   constructor() {
-    this.baseURL = 'http://i13a405.p.ssafy.io/api';
+    this.baseURL = import.meta.env.VITE_API_BASE_URL;
   }
 
   private getHeaders(): Record<string, string> {

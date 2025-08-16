@@ -2,8 +2,11 @@ import { useNavigate } from '@tanstack/react-router';
 import { useState, useRef } from 'react';
 import { Button } from '../../components/atoms';
 import { Text } from '../../components/atoms';
+import { LoadingSpinner } from '../../components/molecules';
 import { usePhotoAnalysis } from '../../hooks/usePhotoAnalysis';
 import styles from './PhotoAnalysisResultPage.module.css';
+import { useAuth } from '../../hooks/useAuth';
+import { LoginModal } from '../../components/molecules/LoginModal/LoginModal';
 
 const PhotoAnalysisResultPage = () => {
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
@@ -12,10 +15,11 @@ const PhotoAnalysisResultPage = () => {
   const [banEndDate, setBanEndDate] = useState<string>('');
   const [sizeLimit, setSizeLimit] = useState<string>('');
   const [analysisCompleted, setAnalysisCompleted] = useState<boolean>(false);
-  const [currentlyRestricted, setCurrentlyRestricted] = useState<boolean>(false); // 추가
+  const [currentlyRestricted, setCurrentlyRestricted] = useState<boolean>(false);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
+  const { isAuthenticated } = useAuth();
   const { analyzePhoto, isLoading, error } = usePhotoAnalysis();
 
   const handleBackButtonClick = () => {
@@ -48,17 +52,27 @@ const PhotoAnalysisResultPage = () => {
         const result = await analyzePhoto(file);
         console.log('분석 완료:', result);
         setFishName(result.analysisResult.fishName);
-        setBanStartDate(result.analysisResult.regulationFish.restrictionStartDate);
-        setBanEndDate(result.analysisResult.regulationFish.restrictionEndDate);
 
-        // minimumLengthCentimeter 처리
-        const minLength = result.analysisResult.regulationFish.minimumLengthCentimeter;
-        if (minLength === null || minLength === undefined) {
-          setSizeLimit('없음');
+        // regulationFish가 null인지 확인
+        if (result.analysisResult.regulationFish) {
+          setBanStartDate(result.analysisResult.regulationFish.restrictionStartDate);
+          setBanEndDate(result.analysisResult.regulationFish.restrictionEndDate);
+
+          // minimumLengthCentimeter 처리
+          const minLength = result.analysisResult.regulationFish.minimumLengthCentimeter;
+          if (minLength === null || minLength === undefined) {
+            setSizeLimit('없음');
+          } else {
+            setSizeLimit(`${minLength}cm`);
+          }
         } else {
-          setSizeLimit(`${minLength}cm`);
+          // regulationFish가 null인 경우
+          setBanStartDate('금어기 정보 없음');
+          setBanEndDate('');
+          setSizeLimit('정보 없음');
         }
-        setCurrentlyRestricted(result.analysisResult.currentlyRestricted); // 추가
+
+        setCurrentlyRestricted(result.analysisResult.currentlyRestricted);
         setAnalysisCompleted(true);
       } catch (error) {
         console.error('파일 분석 중 오류 발생:', error);
@@ -68,6 +82,12 @@ const PhotoAnalysisResultPage = () => {
 
   return (
     <div className={styles.container}>
+      {/* 로그인 안 된 경우에만 모달 표시 */}
+      {!isAuthenticated() && <LoginModal message="수확물을 AI로 확인" />}
+
+      {/* 로딩 중일 때 스피너 오버레이 */}
+      {isLoading && <LoadingSpinner message="AI가 분석 중입니다..." size="large" />}
+
       {/* Header */}
       <div className={styles.header}>
         <button className={styles.backButton} onClick={handleBackButtonClick}>
@@ -139,7 +159,7 @@ const PhotoAnalysisResultPage = () => {
             color="dark"
             className={currentlyRestricted ? styles.warningText : undefined}
           >
-            금어기: {banStartDate} ~ {banEndDate}
+            금어기: {banStartDate} {banEndDate && `~ ${banEndDate}`}
           </Text>
           <Text size="md" weight="regular" color="dark">
             금지체장: {sizeLimit}

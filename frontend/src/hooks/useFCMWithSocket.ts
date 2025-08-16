@@ -27,7 +27,7 @@ export const useFCMWithSocket = (userId: number) => {
         if (success) {
           console.log('FCM 초기화 성공');
         } else {
-          console.error('FCM 초기화 실패:', error);
+          console.error('FCM 초기화 실패:', error || '알 수 없는 오류');
         }
       }
     };

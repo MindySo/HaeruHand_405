@@ -1,11 +1,20 @@
 import { useState, useMemo, useEffect } from 'react';
 import { Button } from '../../components/atoms';
 import { Text } from '../../components/atoms';
-import { WarningBanner, WeatherWidgets } from '../../components/molecules';
+import {
+  WarningBanner,
+  WeatherWidgets,
+  WarningBannerSkeleton,
+  WeatherWidgetSkeleton,
+} from '../../components/molecules';
 import { useNavigate } from '@tanstack/react-router';
 import { useFisheries, FISHERY_ID_BY_LOCATION, findFisheryById } from '../../hooks/useFisheries';
 import { useWeatherFishery } from '../../hooks/useWeatherFishery';
 import { useAuth } from '../../hooks/useAuth';
+import {
+  useWeatherWarningsByRegion,
+  transformWeatherWarnings,
+} from '../../hooks/useWeatherWarnings';
 import styles from './LocationSelectPage.module.css';
 
 // 지역 정보 타입 정의
@@ -37,6 +46,13 @@ const LocationSelectPage = () => {
   // 날씨 데이터 가져오기 (로그인 완료 후에만)
   const { data: weatherData, isLoading: weatherLoading, error: weatherError } = useWeatherFishery();
 
+  // 특보 데이터 가져오기 (MainPage와 동일)
+  const {
+    data: warningsData,
+    isLoading: warningsLoading,
+    error: warningsError,
+  } = useWeatherWarningsByRegion('L1090700');
+
   // 로그인 상태 확인 및 리다이렉트
   useEffect(() => {
     if (!isAuthenticated()) {
@@ -62,6 +78,44 @@ const LocationSelectPage = () => {
       weatherData.data.find((item) => item.forecastTimePeriod === timePeriod) || weatherData.data[0]
     );
   }, [weatherData]);
+
+  // 최신 특보 정보 (MainPage와 동일한 로직)
+  const latestWarning = useMemo(() => {
+    if (!warningsData?.data?.content || warningsData.data.content.length === 0) return null;
+
+    const transformedWarnings = transformWeatherWarnings(warningsData);
+    return transformedWarnings[0]; // 가장 최신 특보
+  }, [warningsData]);
+
+  // 날씨 설명에 따른 아이콘 매핑 함수
+  const getWeatherIcon = (weatherDescription: string) => {
+    switch (weatherDescription) {
+      case '맑음':
+        return '/sun.png';
+      case '구름많음':
+        return '/cloudy.png';
+      case '흐림':
+        return '/foggy.png';
+      default:
+        return '/sun.png'; // 기본값
+    }
+  };
+
+  // seaTravelIndex에 따른 아이콘 매핑 함수
+  const getSeaTravelIcon = (seaTravelIndex: string) => {
+    switch (seaTravelIndex) {
+      case '보통':
+        return '/normal.svg';
+      case '좋음':
+        return '/smile.png';
+      case '나쁨':
+        return '/sad.png';
+      case '위험':
+        return '/danger.png';
+      default:
+        return '/normal.svg'; // 기본값
+    }
+  };
 
   const handleLocationClick = (locationId: string) => {
     setSelectedLocation(locationId);
@@ -149,103 +203,166 @@ const LocationSelectPage = () => {
 
   return (
     <div className={styles.container}>
-      {/* Header */}
-      <div className={styles.header}>
-        <Text size="xl" weight="bold" color="dark" className={styles.title}>
-          오늘은 어디서 해루질 해볼까요?
-        </Text>
-        <Text size="md" weight="regular" color="dark" className={styles.subtitle}>
-          지역에 맞는 날씨와 주의사항을 알려드릴게요
-        </Text>
+      {/* A. 고정된 영역 */}
+      <div className={styles.fixedContent}>
+        {/* Header */}
+        <div className={styles.header}>
+          <Text size="xl" weight="bold" color="dark" className={styles.title}>
+            오늘은 어디서 해루질 해볼까요?
+          </Text>
+          <Text size="md" weight="regular" color="dark" className={styles.subtitle}>
+            지역에 맞는 날씨와 주의사항을 알려드릴게요
+          </Text>
+        </div>
       </div>
 
-      {/* Map Section */}
-      <div className={styles.mapSection}>
-        <img src="/jeju_map.svg" alt="제주도 지도" className={styles.map} />
-      </div>
+      {/* B. 스크롤 가능한 영역 */}
+      <div className={styles.scrollContent}>
+        {/* Map Section */}
+        <div className={styles.mapSection}>
+          {/* 배경 지도 (항상 표시, 선택 시 opacity 낮춤) */}
+          <img
+            src="/jeju_map.svg"
+            alt="제주도 지도"
+            className={`${styles.map} ${selectedLocation === 'suwon' || selectedLocation === 'aewol' || selectedLocation === 'gonae' || selectedLocation === 'gueom' ? styles.mapDimmed : ''}`}
+          />
 
-      {/* Location Buttons */}
-      <div className={styles.locationButtons}>
-        {locations.map((location) => (
-          <button
-            key={location.id}
-            className={`${styles.locationButton} ${
-              selectedLocation === location.id ? styles.selected : ''
-            }`}
-            onClick={() => handleLocationClick(location.id)}
-            disabled={isLoading}
+          {/* 수원 선택 시 한림 지도 오버레이 */}
+          {selectedLocation === 'suwon' && (
+            <img src="/jeju_hanlim_1.svg" alt="한림 지도" className={styles.hanlimMap} />
+          )}
+
+          {/* 애월 선택 시 애월 지도 오버레이 */}
+          {selectedLocation === 'aewol' && (
+            <img src="/jeju_aewol_3.svg" alt="애월 지도" className={styles.aewolMap} />
+          )}
+
+          {/* 고내 선택 시 고내 지도 오버레이 */}
+          {selectedLocation === 'gonae' && (
+            <img src="/jeju_aewol_2.svg" alt="고내 지도" className={styles.aewolMap} />
+          )}
+
+          {/* 구역 선택 시 구역 지도 오버레이 */}
+          {selectedLocation === 'gueom' && (
+            <img src="/jeju_aewol_1.svg" alt="구역 지도" className={styles.aewolMap} />
+          )}
+        </div>
+
+        {/* Location Buttons */}
+        <div className={styles.locationButtons}>
+          {locations.map((location) => (
+            <button
+              key={location.id}
+              className={`${styles.locationButton} ${
+                selectedLocation === location.id ? styles.selected : ''
+              }`}
+              onClick={() => handleLocationClick(location.id)}
+              disabled={isLoading}
+            >
+              {location.name}
+            </button>
+          ))}
+        </div>
+
+        {/* 로딩 상태 표시 */}
+        {isLoading && (
+          <div className={styles.loadingMessage}>
+            <Text size="md" color="gray">
+              정보를 불러오는 중...
+            </Text>
+          </div>
+        )}
+
+        {/* 에러 상태 표시 */}
+        {hasError && (
+          <div className={styles.errorMessage}>
+            <Text size="md" color="error">
+              정보를 불러올 수 없습니다.
+            </Text>
+          </div>
+        )}
+
+        {/* Bottom Button */}
+        <div className={styles.buttonSection}>
+          <div className={styles.infoSection}>
+            {/* 특보 배너 - 독립적으로 로딩 */}
+            <div className={styles.warningBanner}>
+              {warningsLoading ? (
+                <WarningBannerSkeleton />
+              ) : warningsError ? (
+                <WarningBanner
+                  type="폭염주의보"
+                  date="특보 정보를 불러올 수 없습니다"
+                  location=""
+                  variant="info"
+                  suffix=""
+                />
+              ) : latestWarning ? (
+                <WarningBanner
+                  type={latestWarning.type as any}
+                  date={latestWarning.date}
+                  location={latestWarning.location}
+                  variant="latest"
+                  suffix="발효"
+                />
+              ) : (
+                <WarningBanner
+                  type="폭염주의보"
+                  date="현재 발효 중인 특보가 없습니다"
+                  location=""
+                  variant="info"
+                  suffix=""
+                />
+              )}
+            </div>
+
+            {/* 날씨 위젯 - 독립적으로 로딩 */}
+            {weatherLoading ? (
+              <>
+                <WeatherWidgetSkeleton />
+                <WeatherWidgetSkeleton />
+              </>
+            ) : (
+              <WeatherWidgets
+                items={[
+                  {
+                    icon: (
+                      <img
+                        src={getWeatherIcon(currentWeatherData?.weatherDescription || '맑음')}
+                        alt="날씨 아이콘"
+                        style={{ width: '24px', height: '24px' }}
+                      />
+                    ),
+                    subtitle: '현재 날씨',
+                    data: currentWeatherData
+                      ? `${currentWeatherData.averageWaterTemperature}℃ / ${currentWeatherData.weatherDescription}`
+                      : '32.7℃ / 맑음',
+                  },
+                  {
+                    icon: (
+                      <img
+                        src={getSeaTravelIcon(currentWeatherData?.seaTravelIndex || '보통')}
+                        alt="위험도 아이콘"
+                        style={{ width: '24px', height: '24px' }}
+                      />
+                    ),
+                    subtitle: '위험도',
+                    data: currentWeatherData?.seaTravelIndex || '보통',
+                  },
+                ]}
+              />
+            )}
+          </div>
+          <Button
+            size="large"
+            variant="primary"
+            fullWidth
+            onClick={handleStartHarvesting}
+            disabled={!selectedLocation || isLoading}
           >
-            {location.name}
-          </button>
-        ))}
-      </div>
-
-      {/* 로딩 상태 표시 */}
-      {isLoading && (
-        <div className={styles.loadingMessage}>
-          <Text size="md" color="gray">
-            정보를 불러오는 중...
-          </Text>
+            해루하러 가기
+          </Button>
         </div>
-      )}
-
-      {/* 에러 상태 표시 */}
-      {hasError && (
-        <div className={styles.errorMessage}>
-          <Text size="md" color="red">
-            정보를 불러올 수 없습니다.
-          </Text>
-        </div>
-      )}
-
-      {/* Bottom Button */}
-      <div className={styles.buttonSection}>
-        <div className={styles.infoSection}>
-          <WarningBanner
-            type="호우주의보"
-            date="07월 24일 22시 00분"
-            location="서울"
-            variant="info"
-            className={styles.bannerSection}
-          />
-          <WeatherWidgets
-            items={[
-              {
-                icon: (
-                  <img
-                    src="/seaTemp.svg"
-                    alt="수온 아이콘"
-                    style={{ width: '24px', height: '24px' }}
-                  />
-                ),
-                subtitle: '현재 날씨',
-                data: currentWeatherData
-                  ? `${currentWeatherData.averageWaterTemperature}℃ / ${currentWeatherData.weatherDescription}`
-                  : '32.7℃ / 맑음',
-              },
-              {
-                icon: (
-                  <img
-                    src="/normal.svg"
-                    alt="위험도 보통"
-                    style={{ width: '24px', height: '24px' }}
-                  />
-                ),
-                subtitle: '위험도',
-                data: currentWeatherData?.seaTravelIndex || '보통',
-              },
-            ]}
-          />
-        </div>
-        <Button
-          size="large"
-          variant="primary"
-          fullWidth
-          onClick={handleStartHarvesting}
-          disabled={!selectedLocation || isLoading}
-        >
-          해루하러 가기
-        </Button>
       </div>
     </div>
   );

@@ -6,6 +6,11 @@ import {
   TrackingButton,
   WarningBanner,
   WeatherWidgets,
+  WarningBannerSkeleton,
+  WeatherWidgetSkeleton,
+  MapSkeleton,
+  HarvestButtonSkeleton,
+  ActionButtonsSkeleton,
 } from '../../components/molecules';
 import { useTides, formatTimeArray } from '../../hooks/useTides';
 import {
@@ -16,6 +21,7 @@ import styles from './MainPage.module.css';
 import { InfoModal } from '../../components/molecules/InfoModal/InfoModal';
 import { useNavigate } from '@tanstack/react-router';
 import { Footer } from '../../components/molecules/Footer/Footer';
+import { useKakaoMap } from '../../hooks/useKakaoMap';
 
 // 특보 배너 props
 export interface WarningBannerProps {
@@ -38,6 +44,7 @@ export const MainPage = () => {
   const [weatherData, setWeatherData] = useState<any[]>([]);
   const [selectedFishery, setSelectedFishery] = useState<any>(null);
   const [hasNewWarning, setHasNewWarning] = useState<boolean>(false);
+  const [categorySelect, setCategorySelect] = useState<string | null>(null);
 
   // 조석 데이터 가져오기 (기본 stationCode: DT_0004)
   const { data: tidesData, isLoading: tidesLoading, error: tidesError } = useTides('DT_0004');
@@ -102,13 +109,13 @@ export const MainPage = () => {
 
   // 새로운 특보 감지
   useEffect(() => {
-    if (!warningsData?.data || warningsData.data.length === 0) {
+    if (!warningsData?.data?.content || warningsData.data.content.length === 0) {
       setHasNewWarning(false);
       return;
     }
 
     // 현재 최신 특보 정보
-    const currentLatestWarning = warningsData.data[0];
+    const currentLatestWarning = warningsData.data.content[0];
 
     // currentLatestWarning이 유효한지 확인
     if (
@@ -121,7 +128,11 @@ export const MainPage = () => {
       return;
     }
 
-    const currentWarningKey = `${currentLatestWarning.warningType}${currentLatestWarning.warningLevel}_${currentLatestWarning.announcedAt.join('_')}`;
+    const currentWarningKey = `${currentLatestWarning.warningType}${currentLatestWarning.warningLevel}_${
+      Array.isArray(currentLatestWarning.announcedAt)
+        ? currentLatestWarning.announcedAt.join('_')
+        : currentLatestWarning.announcedAt
+    }`;
 
     // localStorage에서 마지막으로 확인한 특보 정보 가져오기
     const lastCheckedWarning = localStorage.getItem('lastCheckedWarning');
@@ -137,8 +148,8 @@ export const MainPage = () => {
 
   // 특보 페이지로 이동 시 마지막 확인 시간 업데이트
   const handleWeatherAlertClick = () => {
-    if (warningsData?.data && warningsData.data.length > 0) {
-      const currentLatestWarning = warningsData.data[0];
+    if (warningsData?.data?.content && warningsData.data.content.length > 0) {
+      const currentLatestWarning = warningsData.data.content[0];
 
       // currentLatestWarning이 유효한지 확인
       if (
@@ -147,7 +158,11 @@ export const MainPage = () => {
         currentLatestWarning.warningLevel &&
         currentLatestWarning.announcedAt
       ) {
-        const currentWarningKey = `${currentLatestWarning.warningType}${currentLatestWarning.warningLevel}_${currentLatestWarning.announcedAt.join('_')}`;
+        const currentWarningKey = `${currentLatestWarning.warningType}${currentLatestWarning.warningLevel}_${
+          Array.isArray(currentLatestWarning.announcedAt)
+            ? currentLatestWarning.announcedAt.join('_')
+            : currentLatestWarning.announcedAt
+        }`;
         localStorage.setItem('lastCheckedWarning', currentWarningKey);
         setHasNewWarning(false);
       }
@@ -155,33 +170,14 @@ export const MainPage = () => {
     navigate({ to: '/weather' });
   };
 
-  // 카카오 지도 초기화
-  useEffect(() => {
-    if (!selectedFishery) return;
+  // 카카오 지도
+  const { searchConvenienceStore, searchParkingLot, searchToilet } = useKakaoMap(selectedFishery);
 
-    const script = document.createElement('script');
-    script.src = `//dapi.kakao.com/v2/maps/sdk.js?appkey=${import.meta.env.VITE_KAKAO_MAP_API_KEY}&autoload=false`;
-    script.async = true;
-
-    script.onload = () => {
-      window.kakao.maps.load(() => {
-        const container = document.getElementById('main-map');
-
-        if (!container) {
-          console.error('Map container not found');
-          return;
-        }
-
-        const options = {
-          center: new window.kakao.maps.LatLng(selectedFishery.latitude, selectedFishery.longitude),
-          level: 4,
-        };
-        const map = new window.kakao.maps.Map(container, options);
-      });
-    };
-
-    document.head.appendChild(script);
-  }, [selectedFishery]);
+  //
+  const handleCategoryClick = (category: string, searchFunc: () => void) => {
+    setCategorySelect(category); // 어떤 버튼을 눌렀는지 상태에 저장
+    searchFunc(); // 기존 카카오맵 검색 실행
+  };
 
   // 현재 시간에 따른 수온 데이터 선택
   const currentWaterTemperature = useMemo(() => {
@@ -199,9 +195,9 @@ export const MainPage = () => {
 
   // 최신 특보 데이터 (첫 번째 항목)
   const latestWarning = useMemo(() => {
-    if (!warningsData?.data || warningsData.data.length === 0) return null;
+    if (!warningsData?.data?.content || warningsData.data.content.length === 0) return null;
 
-    const alerts = transformWeatherWarnings(warningsData.data);
+    const alerts = transformWeatherWarnings(warningsData);
     return alerts.length > 0 ? alerts[0] : null;
   }, [warningsData]);
 
@@ -238,7 +234,7 @@ export const MainPage = () => {
       <div className={styles.fixedContent}>
         {/* a-1. 헤더 */}
         <div className={styles.header}>
-          <img src="/해루핸로고.svg" alt="로고" className={styles.logo} />
+          <img src="/haeruhand_logo.svg" alt="해루핸 로고" className={styles.logo} />
           <button className={styles.bellButton} onClick={handleWeatherAlertClick}>
             <img src="/bell.svg" alt="특보 조회" className={styles.bellIcon} />
             {hasNewWarning && <div className={styles.bellMarker} />}
@@ -259,45 +255,46 @@ export const MainPage = () => {
       {/* B. 스크롤 가능한 영역 */}
       <div className={styles.scrollContent}>
         <div className={styles.notFooter}>
-          {/* b-1. 특보 배너 */}
-          <div className={styles.warningBanner} onClick={handleWeatherAlertClick}>
-            {warningsLoading ? (
-              <WarningBanner
-                type={'정보' as any}
-                date="특보 정보 로딩 중..."
-                location=""
-                variant="info"
-                suffix=""
-              />
-            ) : warningsError ? (
-              <WarningBanner
-                type={'정보' as any}
-                date="특보 정보를 불러올 수 없습니다"
-                location=""
-                variant="info"
-                suffix=""
-              />
-            ) : latestWarning ? (
-              <WarningBanner
-                type={latestWarning.type as any}
-                date={latestWarning.date}
-                location={latestWarning.location}
-                variant="latest"
-                suffix="발효"
-              />
-            ) : (
-              <WarningBanner
-                type="정보"
-                date="현재 발효 중인 특보가 없습니다"
-                location=""
-                variant="info"
-                suffix=""
-              />
-            )}
-          </div>
+          
+        {/* b-1. 특보 배너 - 독립적으로 로딩 */}
+        <div className={styles.warningBanner} onClick={handleWeatherAlertClick}>
+          {warningsLoading ? (
+            <WarningBannerSkeleton />
+          ) : warningsError ? (
+            <WarningBanner
+              type="폭염주의보"
+              date="특보 정보를 불러올 수 없습니다"
+              location=""
+              variant="info"
+              suffix=""
+            />
+          ) : latestWarning ? (
+            <WarningBanner
+              type={latestWarning.type as any}
+              date={latestWarning.date}
+              location={latestWarning.location}
+              variant="latest"
+              suffix="발효"
+            />
+          ) : (
+            <WarningBanner
+              type="폭염주의보"
+              date="현재 발효 중인 특보가 없습니다"
+              location=""
+              variant="info"
+              suffix=""
+            />
+          )}
+        </div>
 
-          {/* b-2. 위젯: 해루 가능 시간, 현재 수온 */}
-          <div className={styles.weatherWidgets}>
+        {/* b-2. 위젯: 해루 가능 시간, 현재 수온 - 독립적으로 로딩 */}
+        <div className={styles.weatherWidgets}>
+          {tidesLoading ? (
+            <>
+              <WeatherWidgetSkeleton />
+              <WeatherWidgetSkeleton />
+            </>
+          ) : (
             <WeatherWidgets
               items={[
                 {
@@ -309,7 +306,8 @@ export const MainPage = () => {
                     />
                   ),
                   subtitle: '해루 가능 시간',
-                  data: tidesLoading ? '로딩 중...' : fishingTimeDisplay,
+                  // data: tidesLoading ? '로딩 중...' : fishingTimeDisplay,
+                  data: fishingTimeDisplay,
                 },
                 {
                   icon: (
@@ -324,49 +322,90 @@ export const MainPage = () => {
                 },
               ]}
             />
-          </div>
+          )}
+        </div>
 
-          {/* b-3. 지도 */}
-          <div className={styles.mapContainer}>
+        {/* b-3. 지도 - 독립적으로 로딩 */}
+        <div className={styles.mapContainer}>
+          {selectedFishery ? (
             <div className={styles.map}>
-              {selectedFishery ? (
-                <div id="main-map" className={styles.kakaoMap} />
-              ) : (
-                <div className={styles.mapPlaceholder}>
-                  <Text size="md" color="gray">
-                    지도 로딩 중...
-                  </Text>
-                </div>
-              )}
-
-              {/* 뱃지 */}
-              <div className={styles.mapBadges}>
-                <Badge variant="neutral" size="small" style={{ borderRadius: '100px' }}>
-                  <div className={styles.badgeMarker1} />
-                  채집 가능구역
-                </Badge>
-                <Badge variant="neutral" size="small" style={{ borderRadius: '100px' }}>
-                  <div className={styles.badgeMarker2} />
-                  채집 금지구역
-                </Badge>
+              <div id="main-map" className={styles.kakaoMap} />
+              {/* 카테고리 버튼 */}
+              <div className={styles.categorySearch}>
+                <button
+                  className={styles.categoryButton}
+                  onClick={() => handleCategoryClick('convenienceStore', searchConvenienceStore)}
+                >
+                  <Badge
+                    variant={categorySelect === 'convenienceStore' ? 'primary' : 'neutral'}
+                    size="medium"
+                    style={{ borderRadius: '100px' }}
+                  >
+                    <img
+                      src="/convenienceStoreIcon.svg"
+                      alt="편의점"
+                      className={styles.badgeIcon}
+                    />
+                    편의점
+                  </Badge>
+                </button>
+                <button
+                  className={styles.categoryButton}
+                  onClick={() => handleCategoryClick('parkingLot', searchParkingLot)}
+                >
+                  <Badge
+                    variant={categorySelect === 'parkingLot' ? 'primary' : 'neutral'}
+                    size="medium"
+                    style={{ borderRadius: '100px' }}
+                  >
+                    <img src="/parkingIcon.svg" alt="주차장" className={styles.badgeIcon} />
+                    주차장
+                  </Badge>
+                </button>
+                <button
+                  className={styles.categoryButton}
+                  onClick={() => handleCategoryClick('toilet', searchToilet)}
+                >
+                  <Badge
+                    variant={categorySelect === 'toilet' ? 'primary' : 'neutral'}
+                    size="medium"
+                    style={{ borderRadius: '100px' }}
+                  >
+                    <img src="/toiletIcon.svg" alt="화장실" className={styles.badgeIcon} />
+                    화장실
+                  </Badge>
+                </button>
               </div>
             </div>
-          </div>
-
-          {/* b-4. 수확물 확인하기 */}
-          <div className={styles.harvestButton}>
-            <HarvestButton onClick={handleAnalysisButtonClick} />
-          </div>
-
-          {/* b-5. 버튼: 채집 안내서, 위치 트래킹 */}
-          <div className={styles.buttons}>
-            <InfoButton onClick={openInfoModal} />
-            <TrackingButton onClick={handleTrackingClick} />
-          </div>
-
-          {/* 채집 안내서 모달(InfoModal) 로직 */}
-          {isInfoModalOpen && <InfoModal onClose={closeInfoModal} />}
+          ) : (
+            <MapSkeleton />
+          )}
         </div>
+
+        {/* b-4. 수확물 확인하기 - 독립적으로 로딩 */}
+        <div className={styles.harvestButton}>
+          {tidesLoading ? (
+            <HarvestButtonSkeleton />
+          ) : (
+            <HarvestButton onClick={handleAnalysisButtonClick} />
+          )}
+        </div>
+
+        {/* b-5. 버튼: 채집 안내서, 위치 트래킹 - 독립적으로 로딩 */}
+        <div className={styles.buttons}>
+          {tidesLoading ? (
+            <ActionButtonsSkeleton />
+          ) : (
+            <>
+              <InfoButton onClick={openInfoModal} />
+              <TrackingButton onClick={handleTrackingClick} />
+            </>
+          )}
+        </div>
+
+        {/* 채집 안내서 모달(InfoModal) 로직 */}
+        {isInfoModalOpen && <InfoModal onClose={closeInfoModal} />}
+</div>
 
         {/* Footer */}
         <footer>

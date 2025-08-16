@@ -133,19 +133,31 @@
   border-radius: 8px;
 }
 
-.mapBadges {
+.categorySearch {
   position: absolute;
   top: 0;
   left: 0;
   z-index: 10;
   display: flex;
   justify-content: baseline;
-  gap: 10px;
-  margin: 14px;
+  gap: 8px;
+  margin: 16px 20px;
   overflow: hidden;
 }
 
-.badgeMarker1 {
+.categoryButton {
+  cursor: pointer;
+  padding: 0;
+  background-color: transparent;
+}
+
+.badgeIcon {
+  width: 16px;
+  height: 16px;
+  margin-right: 4px;
+}
+
+/* .badgeMarker1 {
   width: 8px;
   height: 8px;
   background-color: #6edf74;
@@ -159,7 +171,7 @@
   background-color: #ff0000;
   border-radius: 50%;
   margin-right: 4px;
-}
+} */
 
 .harvestButton {
   margin: 12px 0px;
@@ -192,4 +204,9 @@ footer {
   background-color: #f5f5f6;
   margin: 40px 0px 0px;
   padding: 20px 0px 80px;
+
+.logo {
+  height: 32px; /* 로고 높이 설정 */
+  width: auto; /* 비율 유지 */
+  object-fit: contain;
 }

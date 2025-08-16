@@ -71,8 +71,8 @@ export const useLocationSocket = create<State & { onMemberUpdate?: (m: Member) =
       client.debug = null;
 
       // 하트비트 설정 (프록시 타임아웃과 맞춰 여유 있게)
-      client.heartbeat.outgoing = 10000; // 10s
-      client.heartbeat.incoming = 10000; // 서버가 보낸 핑 수신
+      client.heartbeat.outgoing = 1000; // 1s
+      client.heartbeat.incoming = 1000; // 서버가 보낸 핑 수신
 
       // 자동 재연결 설정 (stompjs 2.x)
       client.reconnect_delay = 3000;
@@ -118,14 +118,12 @@ export const useLocationSocket = create<State & { onMemberUpdate?: (m: Member) =
           const payload = JSON.parse(msg.body);
           console.log('위치 메시지 수신:', payload); // 디버깅용
 
-          // LOCATION 타입 메시지 처리
-          if (payload?.type === 'LOCATION') {
+          // MEMBER_JOINED 타입 메시지 처리 추가
+          if (payload?.type === 'MEMBER_JOINED') {
             const m: Member = {
               userId: payload.userId,
-              nickname: `User ${payload.userId}`, // 서버에서 nickname이 오지 않으면 기본값
-              latitude: payload.latitude,
-              longitude: payload.longitude,
-              accuracy: payload.accuracy,
+              nickname: payload.nickname || `User ${payload.userId}`,
+              color: payload.color,
               lastUpdateTime: new Date().toLocaleTimeString(),
             };
             // 화면 콜백
@@ -134,6 +132,37 @@ export const useLocationSocket = create<State & { onMemberUpdate?: (m: Member) =
             set((s) => ({
               members: { ...s.members, [m.userId]: { ...(s.members[m.userId] || {}), ...m } },
             }));
+          }
+          // LOCATION 타입 메시지 처리
+          else if (payload?.type === 'LOCATION') {
+            console.log('LOCATION 처리:', payload);
+
+            // 기존 멤버 정보에서 nickname 가져오기
+            const existingMember = get().members[payload.userId];
+            const nickname =
+              existingMember?.nickname || payload.nickname || `User ${payload.userId}`;
+
+            const m: Member = {
+              userId: payload.userId,
+              nickname: nickname, // 기존 멤버의 nickname 사용
+              latitude: payload.latitude,
+              longitude: payload.longitude,
+              accuracy: payload.accuracy,
+              color: existingMember?.color, // 기존 멤버의 color도 유지
+              lastUpdateTime: new Date().toLocaleTimeString(),
+            };
+            console.log('생성된 위치 멤버 객체:', m);
+            // 화면 콜백
+            get().onMemberUpdate?.(m);
+            // 멤버 병합
+            set((s) => {
+              const newMembers = {
+                ...s.members,
+                [m.userId]: { ...(s.members[m.userId] || {}), ...m },
+              };
+              console.log('위치 멤버 상태 업데이트:', newMembers);
+              return { members: newMembers };
+            });
           }
           // 기존 LOCATION_UPDATE 타입도 지원 (하위 호환성)
           else if (payload?.type === 'LOCATION_UPDATE' && payload.data) {
