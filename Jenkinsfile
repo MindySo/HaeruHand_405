@@ -100,8 +100,7 @@ pipeline {
         stage('Build & Push - Nginx') {
             steps {
                 sh '''
-                    cd docker/nginx
-                    docker build -t $DOCKER_ID/haeruhand-nginx:latest .
+                    docker build -f docker/nginx/Dockerfile -t $DOCKER_ID/haeruhand-nginx:latest .
                     docker push    $DOCKER_ID/haeruhand-nginx:latest
                 '''
             }
