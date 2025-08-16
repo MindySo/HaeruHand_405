@@ -38,24 +38,35 @@ export const LoginPage: React.FC = () => {
 
   // 이미 인증된 상태라면 로딩 표시
   if (isAuthenticated()) {
-    return <div>해루핸으로 들어가는 중...</div>;
+    return <div>리다이렉트 중...</div>;
   }
 
   return (
     <div className={styles.container}>
-      {/* 로고 */}
       <div className={styles.content}>
-        <Text size="sm" color="gray" className={styles.text}>
-          즐겁고 안전한 해루질을 위한 스마트 가이드
-        </Text>
-        <img src="/haeruhand_logo.svg" alt="해루핸 로고" className={styles.logo} />
-      </div>
+        {/* 로고 */}
+        <div className={styles.logo}>
+          <Text size="hero" weight="bold" color="main">
+            해루핸
+          </Text>
+          <Text size="md" color="gray" style={{ marginTop: theme.spacing.sm }}>
+            안전한 해루질을 위한 스마트 가이드
+          </Text>
+        </div>
 
-      <div className={styles.loginSection}>
         {/* 로그인 버튼 */}
-        <Button variant="kakao" size="large" onClick={handleKakaoLoginClick} disabled={isLoading}>
-          {isLoading ? '로그인 중...' : '카카오로 시작하기'}
-        </Button>
+        <div className={styles.loginSection}>
+          <Button
+            variant="primary"
+            size="large"
+            onClick={handleKakaoLoginClick}
+            className={styles.kakaoButton}
+            disabled={isLoading}
+          >
+            <span style={{ fontSize: '18px', fontWeight: 'bold' }}>K</span>
+            {isLoading ? '로그인 중...' : '카카오로 시작하기'}
+          </Button>
+        </div>
 
         {/* 약관 동의 */}
         <div className={styles.terms}>
