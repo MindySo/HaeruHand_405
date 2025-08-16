@@ -78,7 +78,7 @@ public class WeatherTestController {
         
         String warningTypeStr = warning.getWarningType().label();
         String warningLevelStr = warning.getWarningLevel() != null ? 
-                warning.getWarningLevel().label() + "보" : "특보";
+                warning.getWarningLevel().label() : "특보";
         
         String alertLevel = warningTypeStr + " " + warningLevelStr;
         

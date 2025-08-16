@@ -143,7 +143,7 @@ public class WeatherWarningRefreshService {
         
         String warningTypeStr = warning.getWarningType().label();
         String warningLevelStr = warning.getWarningLevel() != null ? 
-            warning.getWarningLevel().label() + "보" : "특보";
+            warning.getWarningLevel().label() : "특보";
         
         // 알림 레벨 문자열 생성
         String alertLevel = warningTypeStr + " " + warningLevelStr;
