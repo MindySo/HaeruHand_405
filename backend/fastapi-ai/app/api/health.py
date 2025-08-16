@@ -8,6 +8,7 @@ def _instance_id() -> str:
     return os.getenv("INSTANCE_ID") or socket.gethostname()
 
 @router.get("/liveness")
+@router.head("/liveness")
 async def liveness():
     return {
         "status": "ok",
@@ -16,8 +17,8 @@ async def liveness():
     }
 
 @router.get("/readiness")
+@router.head("/readiness")
 async def readiness():
-    # TODO: 추후 Redis/MySQL 연결 점검 로직 추가
     return {
         "status": "ready",
         "service": "haeruhand-ai",
