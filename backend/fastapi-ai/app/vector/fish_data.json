@@ -1,0 +1,1349 @@
+[
+  {
+    "species_name": "전복류",
+    "restriction_region": "NATIONAL",
+    "restriction_start_date": "2025-10-01",
+    "restriction_end_date": "2025-12-31",
+    "minimum_length_centimeter": 10,
+    "minimum_weight_gram": null,
+    "measurement_type": "SHELL_LENGTH",
+    "law_announcement_date": "2021-01-01",
+    "note": null,
+    "jeju_native": null,
+    "abundance_level": null,
+    "similar_species": [
+      "둥근전복",
+      "북방전복"
+    ],
+    "key_features": [
+      "타원형 두껍고 단단한 패각, 호흡공 여러 개가 일렬로 뚫림",
+      "내면 강한 진주광택, 얕은 암반에 부착 서식",
+      "해조류를 갉아 먹음(미역, 다시마 등)"
+    ]
+  },
+  {
+    "species_name": "넓미역",
+    "restriction_region": "NATIONAL",
+    "restriction_start_date": "2025-09-01",
+    "restriction_end_date": "2025-11-30",
+    "minimum_length_centimeter": null,
+    "minimum_weight_gram": null,
+    "measurement_type": null,
+    "law_announcement_date": "2021-01-01",
+    "note": "단, 제주도 고시로 5.1~11.30 중 3개월 이상 지정 가능",
+    "jeju_native": null,
+    "abundance_level": null,
+    "similar_species": [],
+    "key_features": [
+      "다시마목 나래미역과 갈조류",
+      "학명 Undariopsis peterseniana"
+    ]
+  },
+  {
+    "species_name": "연어",
+    "restriction_region": "NATIONAL",
+    "restriction_start_date": "2025-10-01",
+    "restriction_end_date": "2025-11-30",
+    "minimum_length_centimeter": null,
+    "minimum_weight_gram": null,
+    "measurement_type": null,
+    "law_announcement_date": "2021-01-01",
+    "note": null,
+    "jeju_native": null,
+    "abundance_level": null,
+    "similar_species": [
+      "송어류"
+    ],
+    "key_features": [
+      "연어과 어류, 바다-하천 회유성",
+      "몸 은색, 산란기 체색 변화",
+      "우리나라 연안에 계절적 출현"
+    ]
+  },
+  {
+    "species_name": "톳",
+    "restriction_region": "NATIONAL",
+    "restriction_start_date": "2025-10-01",
+    "restriction_end_date": "2026-01-31",
+    "minimum_length_centimeter": null,
+    "minimum_weight_gram": null,
+    "measurement_type": null,
+    "law_announcement_date": "2021-01-01",
+    "note": null,
+    "jeju_native": null,
+    "abundance_level": null,
+    "similar_species": [
+      "모자반류"
+    ],
+    "key_features": [
+      "식용 갈조류, 엽체 최대 50cm",
+      "부착기는 섬유상, 줄기는 직립 원주형",
+      "조간대 암반에서 군락 형성"
+    ]
+  },
+  {
+    "species_name": "쥐노래미",
+    "restriction_region": "NATIONAL",
+    "restriction_start_date": "2025-11-01",
+    "restriction_end_date": "2025-12-31",
+    "minimum_length_centimeter": 20,
+    "minimum_weight_gram": null,
+    "measurement_type": "TOTAL_LENGTH",
+    "law_announcement_date": "2021-01-01",
+    "note": null,
+    "jeju_native": null,
+    "abundance_level": null,
+    "similar_species": [
+      "노래미"
+    ],
+    "key_features": [
+      "쏨뱅이목 쥐노래미과, 암수색이 뚜렷",
+      "머리가 약간 뾰족, 체측에 얼룩무늬",
+      "연안 암반대에 흔함"
+    ]
+  },
+  {
+    "species_name": "우뭇가사리",
+    "restriction_region": "NATIONAL",
+    "restriction_start_date": "2025-11-01",
+    "restriction_end_date": "2026-03-31",
+    "minimum_length_centimeter": null,
+    "minimum_weight_gram": null,
+    "measurement_type": null,
+    "law_announcement_date": "2021-01-01",
+    "note": null,
+    "jeju_native": null,
+    "abundance_level": null,
+    "similar_species": [
+      "천초류"
+    ],
+    "key_features": [
+      "홍조류, 자홍색 납작한 가지가 부채꼴",
+      "여러해살이, 5—6월 최대로 자람",
+      "암반에 붙어 해녀가 채취"
+    ]
+  },
+  {
+    "species_name": "문치가자미",
+    "restriction_region": "NATIONAL",
+    "restriction_start_date": "2025-12-01",
+    "restriction_end_date": "2026-01-31",
+    "minimum_length_centimeter": 20,
+    "minimum_weight_gram": null,
+    "measurement_type": "TOTAL_LENGTH",
+    "law_announcement_date": "2021-01-01",
+    "note": null,
+    "jeju_native": null,
+    "abundance_level": null,
+    "similar_species": [
+      "참가자미"
+    ],
+    "key_features": [
+      "달걀형 타원체, 우안어(두 눈이 오른쪽)",
+      "눈 있는 쪽은 갈색 바탕에 반점, 반대쪽은 백색",
+      "연안 저서성, 12—2월 산란"
+    ]
+  },
+  {
+    "species_name": "기름가자미",
+    "restriction_region": "NATIONAL",
+    "restriction_start_date": "2025-01-01",
+    "restriction_end_date": "2025-12-31",
+    "minimum_length_centimeter": 20,
+    "minimum_weight_gram": null,
+    "measurement_type": "TOTAL_LENGTH",
+    "law_announcement_date": "2021-01-01",
+    "note": null,
+    "jeju_native": null,
+    "abundance_level": null,
+    "similar_species": [
+      "참가자미",
+      "문치가자미"
+    ],
+    "key_features": [
+      "몸길이 45cm 정도, 타원형으로 납작하고 주둥이 매우 짧음",
+      "눈은 모두 몸의 오른쪽에 있고, 두 눈 사이 간격이 좁음",
+      "눈이 없는 쪽은 회백색 바탕에 등지느러미와 뒷지느러미 가장자리가 검음",
+      "수심 40~700m 해역의 밑바닥에 서식"
+    ]
+  },
+  {
+    "species_name": "기수재첩",
+    "restriction_region": "NATIONAL",
+    "restriction_start_date": "2025-01-01",
+    "restriction_end_date": "2025-12-31",
+    "minimum_length_centimeter": 1.5,
+    "minimum_weight_gram": null,
+    "measurement_type": "SHELL_LENGTH",
+    "law_announcement_date": "2021-01-01",
+    "note": null,
+    "jeju_native": null,
+    "abundance_level": null,
+    "similar_species": [
+      "참재첩",
+      "애기재첩"
+    ],
+    "key_features": [
+      "백합목 재첩과의 민물조개, 삼각형에 황색 바탕에 흑갈색 무늬",
+      "안쪽은 자백색 또는 회백색, 패각 길이 약 2.5cm",
+      "기수역(강물과 바닷물이 섞이는 곳)에 분포",
+      "모래가 많은 진흙바닥에 서식, 간기능 개선에 도움"
+    ]
+  },
+  {
+    "species_name": "갯장어",
+    "restriction_region": "NATIONAL",
+    "restriction_start_date": "2025-01-01",
+    "restriction_end_date": "2025-12-31",
+    "minimum_length_centimeter": 40,
+    "minimum_weight_gram": null,
+    "measurement_type": "TOTAL_LENGTH",
+    "law_announcement_date": "2021-01-01",
+    "note": null,
+    "jeju_native": null,
+    "abundance_level": null,
+    "similar_species": [
+      "뱀장어",
+      "붕장어"
+    ],
+    "key_features": [
+      "뱀장어목 갯장어과, 몸길이 120-200cm",
+      "주둥이 길고 입이 크며 앞쪽에 날카로운 송곳니",
+      "위턱이 아래턱보다 약간 앞으로 돌출, 양쪽에 2~3줄 이빨",
+      "등쪽 회갈색, 배쪽 은백색, 야행성으로 생명력이 강함"
+    ]
+  },
+  {
+    "species_name": "넙치(광어)",
+    "restriction_region": "NATIONAL",
+    "restriction_start_date": "2025-01-01",
+    "restriction_end_date": "2025-12-31",
+    "minimum_length_centimeter": 35,
+    "minimum_weight_gram": null,
+    "measurement_type": "TOTAL_LENGTH",
+    "law_announcement_date": "2021-01-01",
+    "note": null,
+    "jeju_native": null,
+    "abundance_level": "풍부",
+    "similar_species": [
+      "도다리",
+      "가자미류"
+    ],
+    "key_features": [
+      "가자미목 넙치과, 몸길이 최대 80cm, 납작한 타원형",
+      "두 눈이 왼쪽에 몰려 있음(좌안어)",
+      "입이 크고 날카로운 이빨을 가진 육식성",
+      "자연산은 배가 새하얗고, 양식산은 배에 검은 반점"
+    ]
+  },
+  {
+    "species_name": "농어",
+    "restriction_region": "NATIONAL",
+    "restriction_start_date": "2025-01-01",
+    "restriction_end_date": "2025-12-31",
+    "minimum_length_centimeter": 30,
+    "minimum_weight_gram": null,
+    "measurement_type": "TOTAL_LENGTH",
+    "law_announcement_date": "2021-01-01",
+    "note": null,
+    "jeju_native": null,
+    "abundance_level": null,
+    "similar_species": [
+      "우럭",
+      "농어류"
+    ],
+    "key_features": [
+      "농어목 농어과, 몸길이 30-100cm",
+      "은백색 바탕에 등쪽이 청회색",
+      "아가미뚜껑에 가시, 등지느러미 2개로 분리",
+      "강하구와 연안에서 서식하는 회유성"
+    ]
+  },
+  {
+    "species_name": "도루묵",
+    "restriction_region": "NATIONAL",
+    "restriction_start_date": "2025-01-01",
+    "restriction_end_date": "2025-12-31",
+    "minimum_length_centimeter": 11,
+    "minimum_weight_gram": null,
+    "measurement_type": "TOTAL_LENGTH",
+    "law_announcement_date": "2021-01-01",
+    "note": null,
+    "jeju_native": null,
+    "abundance_level": null,
+    "similar_species": [
+      "빙어",
+      "도루묵류"
+    ],
+    "key_features": [
+      "도루묵목 도루묵과, 몸길이 10-15cm",
+      "은백색 바탕에 등쪽이 담갈색",
+      "3개의 등지느러미, 아래턱이 위턱보다 길어",
+      "한류성 어종, 11-2월에 연안으로 회유"
+    ]
+  },
+  {
+    "species_name": "대문어",
+    "restriction_region": "NATIONAL",
+    "restriction_start_date": "2025-01-01",
+    "restriction_end_date": "2025-12-31",
+    "minimum_length_centimeter": null,
+    "minimum_weight_gram": 600,
+    "measurement_type": null,
+    "law_announcement_date": "2021-01-01",
+    "note": null,
+    "jeju_native": null,
+    "abundance_level": null,
+    "similar_species": [
+      "참문어",
+      "문어류"
+    ],
+    "key_features": [
+      "두족류 문어과의 대형 문어",
+      "몸길이 3m 이상까지 성장 가능",
+      "8개의 굵고 긴 다리와 큰 흡반",
+      "심해성으로 수심 100-1000m에 서식"
+    ]
+  },
+  {
+    "species_name": "돌돔",
+    "restriction_region": "NATIONAL",
+    "restriction_start_date": "2025-01-01",
+    "restriction_end_date": "2025-12-31",
+    "minimum_length_centimeter": 24,
+    "minimum_weight_gram": null,
+    "measurement_type": "TOTAL_LENGTH",
+    "law_announcement_date": "2021-01-01",
+    "note": null,
+    "jeju_native": null,
+    "abundance_level": null,
+    "similar_species": [
+      "벤자리",
+      "돔류"
+    ],
+    "key_features": [
+      "농어목 돌돔과, 몸길이 50-80cm",
+      "체고가 높고 옆으로 납작",
+      "돌처럼 단단한 이빨로 조개와 성게를 부숨",
+      "은회색 바탕에 검은 세로줄 무늬"
+    ]
+  },
+  {
+    "species_name": "미거지",
+    "restriction_region": "NATIONAL",
+    "restriction_start_date": "2025-01-01",
+    "restriction_end_date": "2025-12-31",
+    "minimum_length_centimeter": 40,
+    "minimum_weight_gram": null,
+    "measurement_type": "TOTAL_LENGTH",
+    "law_announcement_date": "2021-01-01",
+    "note": null,
+    "jeju_native": null,
+    "abundance_level": null,
+    "similar_species": [
+      "민어",
+      "농어류"
+    ],
+    "key_features": [
+      "농어목 민어과, 몸길이 30-60cm",
+      "은백색 바탕에 등쪽이 청회색",
+      "부레가 발달하여 소리를 냄",
+      "연안 모래바닥에 서식"
+    ]
+  },
+  {
+    "species_name": "민어",
+    "restriction_region": "NATIONAL",
+    "restriction_start_date": "2025-01-01",
+    "restriction_end_date": "2025-12-31",
+    "minimum_length_centimeter": 33,
+    "minimum_weight_gram": null,
+    "measurement_type": "TOTAL_LENGTH",
+    "law_announcement_date": "2021-01-01",
+    "note": null,
+    "jeju_native": null,
+    "abundance_level": null,
+    "similar_species": [
+      "참조기",
+      "농어류"
+    ],
+    "key_features": [
+      "농어목 민어과, 몸길이 50-100cm",
+      "황갈색 바탕에 등쪽이 청회색",
+      "큰 부레로 소리를 내는 발성어",
+      "강하구와 연안 모래바닥에 서식"
+    ]
+  },
+  {
+    "species_name": "방어",
+    "restriction_region": "NATIONAL",
+    "restriction_start_date": "2025-01-01",
+    "restriction_end_date": "2025-12-31",
+    "minimum_length_centimeter": 30,
+    "minimum_weight_gram": null,
+    "measurement_type": "TOTAL_LENGTH",
+    "law_announcement_date": "2021-01-01",
+    "note": null,
+    "jeju_native": null,
+    "abundance_level": null,
+    "similar_species": [
+      "부시리",
+      "방어류"
+    ],
+    "key_features": [
+      "농어목 전갱이과, 몸길이 80-150cm",
+      "방추형 몸, 등쪽이 청록색, 배쪽은 은백색",
+      "눈을 지나는 검은 세로줄",
+      "회유성 대형 어종, 겨울이 제철"
+    ]
+  },
+  {
+    "species_name": "볼락",
+    "restriction_region": "NATIONAL",
+    "restriction_start_date": "2025-01-01",
+    "restriction_end_date": "2025-12-31",
+    "minimum_length_centimeter": 15,
+    "minimum_weight_gram": null,
+    "measurement_type": "TOTAL_LENGTH",
+    "law_announcement_date": "2021-01-01",
+    "note": null,
+    "jeju_native": null,
+    "abundance_level": null,
+    "similar_species": [
+      "우럭",
+      "조피볼락"
+    ],
+    "key_features": [
+      "농어목 양볼락과, 몸길이 15-25cm",
+      "적갈색 바탕에 얼룩무늬",
+      "등지느러미에 독가시",
+      "암반지대와 해조류 사이에 서식"
+    ]
+  },
+  {
+    "species_name": "붕장어",
+    "restriction_region": "NATIONAL",
+    "restriction_start_date": "2025-01-01",
+    "restriction_end_date": "2025-12-31",
+    "minimum_length_centimeter": 35,
+    "minimum_weight_gram": null,
+    "measurement_type": "TOTAL_LENGTH",
+    "law_announcement_date": "2021-01-01",
+    "note": null,
+    "jeju_native": null,
+    "abundance_level": null,
+    "similar_species": [
+      "갯장어",
+      "뱀장어"
+    ],
+    "key_features": [
+      "뱀장어목 붕장어과, 몸길이 40-90cm",
+      "원통형 몸, 등쪽이 갈색, 배쪽은 은백색",
+      "몸통에 가로로 흰색 점이 일렬로 배열",
+      "구멍을 뚫고 서식하는 야행성"
+    ]
+  },
+  {
+    "species_name": "용가자미",
+    "restriction_region": "NATIONAL",
+    "restriction_start_date": "2025-01-01",
+    "restriction_end_date": "2025-12-31",
+    "minimum_length_centimeter": 20,
+    "minimum_weight_gram": null,
+    "measurement_type": "TOTAL_LENGTH",
+    "law_announcement_date": "2021-01-01",
+    "note": null,
+    "jeju_native": null,
+    "abundance_level": null,
+    "similar_species": [
+      "참가자미",
+      "문치가자미"
+    ],
+    "key_features": [
+      "가자미목 가자미과, 몸길이 15-30cm",
+      "우안어(두 눈이 오른쪽)",
+      "등지느러미 앞부분이 긴 실 모양으로 돌출",
+      "모래바닥에 서식하는 소형 가자미"
+    ]
+  },
+  {
+    "species_name": "조피볼락(우럭)",
+    "restriction_region": "NATIONAL",
+    "restriction_start_date": "2025-01-01",
+    "restriction_end_date": "2025-12-31",
+    "minimum_length_centimeter": 23,
+    "minimum_weight_gram": null,
+    "measurement_type": "TOTAL_LENGTH",
+    "law_announcement_date": "2021-01-01",
+    "note": null,
+    "jeju_native": null,
+    "abundance_level": null,
+    "similar_species": [
+      "볼락",
+      "우럭볼락"
+    ],
+    "key_features": [
+      "농어목 양볼락과, 몸길이 30-50cm",
+      "흑갈색 바탕에 얼룩무늬",
+      "등지느러미에 독가시 12-13개",
+      "암반지대에 서식, 태상어"
+    ]
+  },
+  {
+    "species_name": "참가자미",
+    "restriction_region": "NATIONAL",
+    "restriction_start_date": "2025-01-01",
+    "restriction_end_date": "2025-12-31",
+    "minimum_length_centimeter": 20,
+    "minimum_weight_gram": null,
+    "measurement_type": "TOTAL_LENGTH",
+    "law_announcement_date": "2021-01-01",
+    "note": null,
+    "jeju_native": null,
+    "abundance_level": null,
+    "similar_species": [
+      "문치가자미",
+      "용가자미"
+    ],
+    "key_features": [
+      "가자미목 가자미과, 몸길이 20-40cm",
+      "우안어(두 눈이 오른쪽)",
+      "갈색 바탕에 어두운 반점",
+      "연안 모래바닥에 서식"
+    ]
+  },
+  {
+    "species_name": "참돔",
+    "restriction_region": "NATIONAL",
+    "restriction_start_date": "2025-01-01",
+    "restriction_end_date": "2025-12-31",
+    "minimum_length_centimeter": 24,
+    "minimum_weight_gram": null,
+    "measurement_type": "TOTAL_LENGTH",
+    "law_announcement_date": "2021-01-01",
+    "note": null,
+    "jeju_native": null,
+    "abundance_level": null,
+    "similar_species": [
+      "감성돔",
+      "벵에돔"
+    ],
+    "key_features": [
+      "농어목 도미과, 몸길이 30-80cm",
+      "분홍색 바탕에 등쪽이 붉은색",
+      "체고가 높고 옆으로 납작",
+      "고급 횟감, 연안 암반지대에 서식"
+    ]
+  },
+  {
+    "species_name": "청어",
+    "restriction_region": "NATIONAL",
+    "restriction_start_date": "2025-01-01",
+    "restriction_end_date": "2025-12-31",
+    "minimum_length_centimeter": 20,
+    "minimum_weight_gram": null,
+    "measurement_type": "TOTAL_LENGTH",
+    "law_announcement_date": "2021-01-01",
+    "note": null,
+    "jeju_native": null,
+    "abundance_level": null,
+    "similar_species": [
+      "전어",
+      "정어리"
+    ],
+    "key_features": [
+      "청어목 청어과, 몸길이 20-35cm",
+      "방추형 몸, 등쪽이 청록색, 배쪽은 은백색",
+      "복부에 날카로운 능선",
+      "회유성 어종, 한류성"
+    ]
+  },
+  {
+    "species_name": "보라성게",
+    "restriction_region": null,
+    "restriction_start_date": null,
+    "restriction_end_date": null,
+    "minimum_length_centimeter": null,
+    "minimum_weight_gram": null,
+    "measurement_type": null,
+    "law_announcement_date": null,
+    "note": null,
+    "jeju_native": null,
+    "abundance_level": null,
+    "similar_species": [
+      "말똥성게"
+    ],
+    "key_features": [
+      "만두성게과 극피동물, 껍데기 지름 5cm, 높이 2.5cm",
+      "얕은 바다 바위지대에 서식, 껍데기는 단단하고 평평한 반구형",
+      "몸 표면에 밤송이처럼 짙은 보라색 큰 가시들이 돋음",
+      "7-8월에 산란, 암컷의 난소는 식용으로 이용"
+    ]
+  },
+  {
+    "species_name": "말똥성게",
+    "restriction_region": null,
+    "restriction_start_date": null,
+    "restriction_end_date": null,
+    "minimum_length_centimeter": null,
+    "minimum_weight_gram": null,
+    "measurement_type": null,
+    "law_announcement_date": null,
+    "note": null,
+    "jeju_native": null,
+    "abundance_level": null,
+    "similar_species": [
+      "보라성게"
+    ],
+    "key_features": [
+      "말똥성게과, 학명 Hemicentrotus pulcherrimus, 껍데기 지름 약 5cm",
+      "조간대의 바위가 많은 곳에서 돌 밑이나 돌 틈에 서식",
+      "가시가 짧아서 말똥처럼 보임, 암록색을 띔",
+      "봄에 산란, 조밀한 알포기에 깊고 진한 바다향이 응축"
+    ]
+  },
+  {
+    "species_name": "감태",
+    "restriction_region": null,
+    "restriction_start_date": null,
+    "restriction_end_date": null,
+    "minimum_length_centimeter": null,
+    "minimum_weight_gram": null,
+    "measurement_type": null,
+    "law_announcement_date": null,
+    "note": null,
+    "jeju_native": null,
+    "abundance_level": null,
+    "similar_species": [
+      "미역",
+      "다시마"
+    ],
+    "key_features": [
+      "갈조류 다시마목 감태과, 학명 Ecklonia cava",
+      "원기둥 모양 줄기 1~2미터, 갈색, 줄기 끝에 겹잎조각 모양 납작한 가운댓잎",
+      "깊은 바다에 서식, 전복의 먹이로 중요",
+      "탄닌계열 폴리페놀 함량이 높아 떫은 맛, 양식 불가능한 자연산"
+    ]
+  },
+  {
+    "species_name": "미역",
+    "restriction_region": null,
+    "restriction_start_date": null,
+    "restriction_end_date": null,
+    "minimum_length_centimeter": null,
+    "minimum_weight_gram": null,
+    "measurement_type": null,
+    "law_announcement_date": null,
+    "note": null,
+    "jeju_native": null,
+    "abundance_level": null,
+    "similar_species": [
+      "다시마",
+      "감태"
+    ],
+    "key_features": [
+      "갈조류 다시마목 미역과, 여러해살이 해조류",
+      "중앙맥이 뚜렷하고 깃꼴로 갈라진 엽체",
+      "길이 1-3m, 폭 20-50cm, 갈색에서 암갈색",
+      "조간대 하부에서 수심 20m까지 암반에 부착"
+    ]
+  },
+  {
+    "species_name": "무릅",
+    "restriction_region": null,
+    "restriction_start_date": null,
+    "restriction_end_date": null,
+    "minimum_length_centimeter": null,
+    "minimum_weight_gram": null,
+    "measurement_type": null,
+    "law_announcement_date": null,
+    "note": null,
+    "jeju_native": "제주 특산",
+    "abundance_level": "희귀",
+    "similar_species": [
+      "모자반류"
+    ],
+    "key_features": [
+      "제주도 특산 갈조류",
+      "모자반과에 속하는 해조류",
+      "제주 연안 특정 지역에만 분포",
+      "전통적으로 제주에서 식용 및 약용으로 사용"
+    ]
+  },
+  {
+    "species_name": "바퀴고둥",
+    "restriction_region": null,
+    "restriction_start_date": null,
+    "restriction_end_date": null,
+    "minimum_length_centimeter": null,
+    "minimum_weight_gram": null,
+    "measurement_type": null,
+    "law_announcement_date": null,
+    "note": null,
+    "jeju_native": null,
+    "abundance_level": null,
+    "similar_species": [
+      "소라",
+      "고둥류"
+    ],
+    "key_features": [
+      "복족류 고둥과, 나선형 패각",
+      "패각이 바퀴 모양으로 편평하게 말려있음",
+      "조간대에서 조하대 상부 암반지대에 서식",
+      "패각 표면에 나선상 늑이 발달"
+    ]
+  },
+  {
+    "species_name": "구멍밤고둥",
+    "restriction_region": null,
+    "restriction_start_date": null,
+    "restriction_end_date": null,
+    "minimum_length_centimeter": null,
+    "minimum_weight_gram": null,
+    "measurement_type": null,
+    "law_announcement_date": null,
+    "note": null,
+    "jeju_native": null,
+    "abundance_level": null,
+    "similar_species": [
+      "밤고둥",
+      "고둥류"
+    ],
+    "key_features": [
+      "복족류 고둥과, 작은 크기의 고둥",
+      "패각에 특징적인 구멍이나 홈이 있음",
+      "밤처럼 갈색을 띠는 작은 패각",
+      "조간대 바위틈이나 해조류 사이에 서식"
+    ]
+  },
+  {
+    "species_name": "참곱슬이",
+    "restriction_region": null,
+    "restriction_start_date": null,
+    "restriction_end_date": null,
+    "minimum_length_centimeter": null,
+    "minimum_weight_gram": null,
+    "measurement_type": null,
+    "law_announcement_date": null,
+    "note": null,
+    "jeju_native": null,
+    "abundance_level": null,
+    "similar_species": [
+      "곱슬이류"
+    ],
+    "key_features": [
+      "홍조류, 곱슬거리는 실 모양의 엽체",
+      "적자색에서 보라색을 띔",
+      "조간대에서 조하대 암반에 부착",
+      "식용 가능한 해조류"
+    ]
+  },
+  {
+    "species_name": "돌조개",
+    "restriction_region": null,
+    "restriction_start_date": null,
+    "restriction_end_date": null,
+    "minimum_length_centimeter": null,
+    "minimum_weight_gram": null,
+    "measurement_type": null,
+    "law_announcement_date": null,
+    "note": null,
+    "jeju_native": null,
+    "abundance_level": null,
+    "similar_species": [
+      "담치",
+      "홍합"
+    ],
+    "key_features": [
+      "이매패류, 단단한 패각",
+      "암반이나 돌에 단단히 부착",
+      "패각이 두껍고 견고함",
+      "조간대에서 조하대 암반지대에 서식"
+    ]
+  },
+  {
+    "species_name": "애기돌맛조개",
+    "restriction_region": null,
+    "restriction_start_date": null,
+    "restriction_end_date": null,
+    "minimum_length_centimeter": null,
+    "minimum_weight_gram": null,
+    "measurement_type": null,
+    "law_announcement_date": null,
+    "note": null,
+    "jeju_native": null,
+    "abundance_level": null,
+    "similar_species": [
+      "돌맛조개",
+      "맛조개"
+    ],
+    "key_features": [
+      "이매패류, 작은 크기의 조개",
+      "길쭉한 타원형 패각",
+      "모래나 펄 속에 수직으로 서식",
+      "돌맛조개보다 작은 크기"
+    ]
+  },
+  {
+    "species_name": "태생굴",
+    "restriction_region": null,
+    "restriction_start_date": null,
+    "restriction_end_date": null,
+    "minimum_length_centimeter": null,
+    "minimum_weight_gram": null,
+    "measurement_type": null,
+    "law_announcement_date": null,
+    "note": null,
+    "jeju_native": null,
+    "abundance_level": null,
+    "similar_species": [
+      "굴",
+      "참굴"
+    ],
+    "key_features": [
+      "이매패류 굴과, 태생(새끼를 낳는) 특성",
+      "불규칙한 패각 모양",
+      "암반이나 다른 조개 껍데기에 부착",
+      "일반 굴과 달리 새끼를 직접 방출"
+    ]
+  },
+  {
+    "species_name": "굴류",
+    "restriction_region": null,
+    "restriction_start_date": null,
+    "restriction_end_date": null,
+    "minimum_length_centimeter": null,
+    "minimum_weight_gram": null,
+    "measurement_type": null,
+    "law_announcement_date": null,
+    "note": null,
+    "jeju_native": null,
+    "abundance_level": "풍부",
+    "similar_species": [
+      "참굴",
+      "토굴"
+    ],
+    "key_features": [
+      "이매패류 굴과의 총칭",
+      "불규칙한 패각, 한쪽 껍데기가 깊고 다른 쪽은 편평",
+      "암반이나 갯벌, 양식장에 부착 서식",
+      "여과섭식자로 플랑크톤을 먹음"
+    ]
+  },
+  {
+    "species_name": "명태",
+    "restriction_region": "NATIONAL",
+    "restriction_start_date": "2025-01-01",
+    "restriction_end_date": "2025-12-31",
+    "minimum_length_centimeter": null,
+    "minimum_weight_gram": null,
+    "measurement_type": null,
+    "law_announcement_date": "2021-01-01",
+    "note": null,
+    "jeju_native": null,
+    "abundance_level": null,
+    "similar_species": [
+      "대구"
+    ],
+    "key_features": [
+      "몸길이 최대 약 80cm, 체고 낮고 옆으로 납작",
+      "아가미뚜껑 뒤 검은 반점이 없음(대구와 구분)",
+      "턱수염(턱수염=턱수염)이 짧고 아래턱이 약간 길다",
+      "등지느러미 3개, 뒷지느러미 2개"
+    ]
+  },
+  {
+    "species_name": "대구",
+    "restriction_region": "NATIONAL",
+    "restriction_start_date": "2025-01-16",
+    "restriction_end_date": "2025-02-15",
+    "minimum_length_centimeter": 35,
+    "minimum_weight_gram": null,
+    "measurement_type": "TOTAL_LENGTH",
+    "law_announcement_date": "2021-01-01",
+    "note": null,
+    "jeju_native": null,
+    "abundance_level": null,
+    "similar_species": [
+      "명태"
+    ],
+    "key_features": [
+      "몸길이 보통 70—75cm, 넓고 튼튼한 체형",
+      "턱 밑에 잘 발달한 턱수염 1개",
+      "등지느러미 3개, 뒷지느러미 2개",
+      "작은 윤상비늘, 큰 입과 상대적으로 큰 머리"
+    ]
+  },
+  {
+    "species_name": "가리비",
+    "restriction_region": "NATIONAL",
+    "restriction_start_date": "2025-03-01",
+    "restriction_end_date": "2025-06-03",
+    "minimum_length_centimeter": null,
+    "minimum_weight_gram": null,
+    "measurement_type": null,
+    "law_announcement_date": "2021-01-01",
+    "note": null,
+    "jeju_native": null,
+    "abundance_level": null,
+    "similar_species": [
+      "비단가리비"
+    ],
+    "key_features": [
+      "원형의 좌우대칭 패각, 방사상 늑이 뚜렷",
+      "좌각은 붉고 우각은 흰색(흰가리비 특징)",
+      "패각 가장자리 물결 모양의 융기"
+    ]
+  },
+  {
+    "species_name": "살오징어",
+    "restriction_region": "NATIONAL",
+    "restriction_start_date": "2025-04-01",
+    "restriction_end_date": "2025-05-31",
+    "minimum_length_centimeter": 15,
+    "minimum_weight_gram": null,
+    "measurement_type": "OUTER_MANTLE_LENGTH",
+    "law_announcement_date": "2021-01-01",
+    "note": "단, 근해채낚기, 연안복합, 정치망 4.1 ~ 4.30",
+    "jeju_native": null,
+    "abundance_level": null,
+    "similar_species": [
+      "꼴뚜기류"
+    ],
+    "key_features": [
+      "외투막 길이 약 30cm 내외, 원통형으로 뒤로 갈수록 좁아짐",
+      "좌우로 긴 마름모꼴 지느러미(외투장 약 30%)",
+      "등쪽에 진한 띠, 야행성 포식성 두족류"
+    ]
+  },
+  {
+    "species_name": "고등어",
+    "restriction_region": "NATIONAL",
+    "restriction_start_date": "2025-04-01",
+    "restriction_end_date": "2025-06-30",
+    "minimum_length_centimeter": 21,
+    "minimum_weight_gram": null,
+    "measurement_type": "TOTAL_LENGTH",
+    "law_announcement_date": "2021-01-01",
+    "note": "금어기 중 1개월(수산자원의 포획금지 금지기간에 관한 고시)",
+    "jeju_native": null,
+    "abundance_level": null,
+    "similar_species": [],
+    "key_features": [
+      "방추형 몸, 보통 30cm 내외(최대 60cm)",
+      "등은 녹청색·검은 얼룩, 배는 은백색",
+      "부레가 발달(국내산과 구별 포인트로 활용됨)"
+    ]
+  },
+  {
+    "species_name": "감성돔",
+    "restriction_region": "NATIONAL",
+    "restriction_start_date": "2025-05-01",
+    "restriction_end_date": "2025-05-31",
+    "minimum_length_centimeter": 25,
+    "minimum_weight_gram": null,
+    "measurement_type": "TOTAL_LENGTH",
+    "law_announcement_date": "2021-01-01",
+    "note": null,
+    "jeju_native": null,
+    "abundance_level": null,
+    "similar_species": [
+      "벵에돔"
+    ],
+    "key_features": [
+      "몸길이 약 40cm, 타원형으로 측편",
+      "은청색 바탕에 불분명한 암회색 가로무늬",
+      "성전환(일부 수컷→암컷), 3—7월 산란"
+    ]
+  },
+  {
+    "species_name": "삼치",
+    "restriction_region": "NATIONAL",
+    "restriction_start_date": "2025-05-01",
+    "restriction_end_date": "2025-05-31",
+    "minimum_length_centimeter": null,
+    "minimum_weight_gram": null,
+    "measurement_type": null,
+    "law_announcement_date": "2021-01-01",
+    "note": null,
+    "jeju_native": null,
+    "abundance_level": null,
+    "similar_species": [],
+    "key_features": [
+      "가늘고 길게 자라는 체형(최대 1m 이상)",
+      "꼬리지느러미 깊게 갈라짐, 측선이 등쪽에서 급격히 굽음",
+      "부레가 거의 없음",
+      "등은 푸른색, 옆구리에 회색 반점 무늬"
+    ]
+  },
+  {
+    "species_name": "참문어",
+    "restriction_region": "NATIONAL",
+    "restriction_start_date": "2025-05-16",
+    "restriction_end_date": "2025-06-30",
+    "minimum_length_centimeter": null,
+    "minimum_weight_gram": null,
+    "measurement_type": null,
+    "law_announcement_date": "2021-01-01",
+    "note": "시·도지사는 5.1~9.15 중 46일 이상 지정 가능",
+    "jeju_native": null,
+    "abundance_level": null,
+    "similar_species": [
+      "왜문어"
+    ],
+    "key_features": [
+      "대형 문어, 몸길이 1m+까지 성장",
+      "근육질 타원형 몸통, 8개의 굵은 다리와 발달한 빨판",
+      "암반 대륙붕 가장자리 바닥에 서식"
+    ]
+  },
+  {
+    "species_name": "대하",
+    "restriction_region": "NATIONAL",
+    "restriction_start_date": "2025-05-01",
+    "restriction_end_date": "2025-06-30",
+    "minimum_length_centimeter": null,
+    "minimum_weight_gram": null,
+    "measurement_type": null,
+    "law_announcement_date": "2021-01-01",
+    "note": null,
+    "jeju_native": null,
+    "abundance_level": null,
+    "similar_species": [
+      "흰다리새우"
+    ],
+    "key_features": [
+      "이마뿔 위 7—8개, 아래 2—5개의 가시",
+      "반투명한 몸에 흑갈색 반점 산재",
+      "이마뿔이 더듬이비늘 끝을 넘어 길게 돌출"
+    ]
+  },
+  {
+    "species_name": "전어",
+    "restriction_region": "NATIONAL",
+    "restriction_start_date": "2025-05-01",
+    "restriction_end_date": "2025-07-15",
+    "minimum_length_centimeter": null,
+    "minimum_weight_gram": null,
+    "measurement_type": null,
+    "law_announcement_date": "2021-01-01",
+    "note": "단, 강원, 경북 제외",
+    "jeju_native": null,
+    "abundance_level": null,
+    "similar_species": [
+      "청어"
+    ],
+    "key_features": [
+      "몸길이 20—30cm, 옆으로 납작한 방추형",
+      "등지느러미 마지막 연조가 실처럼 길게 늘어짐",
+      "아가미뚜껑 뒤에 큰 검은 반점 1개"
+    ]
+  },
+  {
+    "species_name": "말쥐치",
+    "restriction_region": "NATIONAL",
+    "restriction_start_date": "2025-05-01",
+    "restriction_end_date": "2025-07-31",
+    "minimum_length_centimeter": 18,
+    "minimum_weight_gram": null,
+    "measurement_type": "TOTAL_LENGTH",
+    "law_announcement_date": "2021-01-01",
+    "note": null,
+    "jeju_native": null,
+    "abundance_level": null,
+    "similar_species": [
+      "쥐치"
+    ],
+    "key_features": [
+      "길이 약 24cm, 옆으로 납작한 타원형",
+      "주둥이 길고 입 작음",
+      "회갈색 바탕에 흑갈색 얼룩, 지느러미는 회청색"
+    ]
+  },
+  {
+    "species_name": "주꾸미",
+    "restriction_region": "NATIONAL",
+    "restriction_start_date": "2025-05-11",
+    "restriction_end_date": "2025-08-31",
+    "minimum_length_centimeter": null,
+    "minimum_weight_gram": null,
+    "measurement_type": null,
+    "law_announcement_date": "2021-01-01",
+    "note": null,
+    "jeju_native": null,
+    "abundance_level": null,
+    "similar_species": [
+      "낙지"
+    ],
+    "key_features": [
+      "소형 문어류, 타원형 몸통이 길이>폭",
+      "체색 변이가 크고, 눈과 다리 사이에 황금빛 둥근무늬",
+      "팔 기저부에 한 쌍의 맥락(팔집) 발달"
+    ]
+  },
+  {
+    "species_name": "낙지",
+    "restriction_region": "NATIONAL",
+    "restriction_start_date": "2025-06-01",
+    "restriction_end_date": "2025-06-30",
+    "minimum_length_centimeter": null,
+    "minimum_weight_gram": null,
+    "measurement_type": null,
+    "law_announcement_date": "2021-01-01",
+    "note": "시·도지사는 4.1~9.30 중 1개월 이상 지정 가능",
+    "jeju_native": null,
+    "abundance_level": null,
+    "similar_species": [
+      "문어"
+    ],
+    "key_features": [
+      "몸통 최대 10cm, 다리가 가늘고 몸길이의 4—5배",
+      "갯벌에 깊은 구멍을 파고 생활",
+      "8개의 팔과 빨판, 체색 변화"
+    ]
+  },
+  {
+    "species_name": "참홍어",
+    "restriction_region": "NATIONAL",
+    "restriction_start_date": "2025-06-01",
+    "restriction_end_date": "2025-07-15",
+    "minimum_length_centimeter": 42,
+    "minimum_weight_gram": null,
+    "measurement_type": "TOTAL_LENGTH",
+    "law_announcement_date": "2021-01-01",
+    "note": null,
+    "jeju_native": null,
+    "abundance_level": null,
+    "similar_species": [
+      "가오리류"
+    ],
+    "key_features": [
+      "홍어목 홍어과 가오리속, 한국 주변해 분포",
+      "체반원형, 꼬리 길고 편평",
+      "연골성 골격의 연골어류"
+    ]
+  },
+  {
+    "species_name": "꽃게",
+    "restriction_region": "NATIONAL",
+    "restriction_start_date": "2025-06-21",
+    "restriction_end_date": "2025-08-20",
+    "minimum_length_centimeter": 6.4,
+    "minimum_weight_gram": null,
+    "measurement_type": "CARAPACE_WIDTH",
+    "law_announcement_date": "2021-01-01",
+    "note": "단, 연평 7.1~8.31/백령, 대청, 소청 7.16~9.15. 수산자원의 포획금지기간에 관한 고시",
+    "jeju_native": null,
+    "abundance_level": null,
+    "similar_species": [
+      "돌게"
+    ],
+    "key_features": [
+      "갑각 앞가장자리 작은 가시 9개, 눈 사이 이마가시 3개",
+      "뒷다리(제5다리) 노처럼 편평",
+      "등면에 H자형 무늬, 암컷 복부는 둥근 부채꼴"
+    ]
+  },
+  {
+    "species_name": "소라",
+    "restriction_region": "NATIONAL",
+    "restriction_start_date": "2025-06-01",
+    "restriction_end_date": "2025-08-31",
+    "minimum_length_centimeter": 7,
+    "minimum_weight_gram": null,
+    "measurement_type": "SHELL_LENGTH",
+    "law_announcement_date": "2021-01-01",
+    "note": null,
+    "jeju_native": null,
+    "abundance_level": null,
+    "similar_species": [
+      "왕고둥류"
+    ],
+    "key_features": [
+      "두껍고 단단한 나사 모양 패각, 7층의 나층",
+      "층마다 성장맥 뚜렷, 긴 손빈 뿔 모양 돌기",
+      "둥근 패각입구, 내부 진주광택, 석회질 뚜껑"
+    ]
+  },
+  {
+    "species_name": "새조개",
+    "restriction_region": "NATIONAL",
+    "restriction_start_date": "2025-06-01",
+    "restriction_end_date": "2025-09-30",
+    "minimum_length_centimeter": null,
+    "minimum_weight_gram": null,
+    "measurement_type": null,
+    "law_announcement_date": "2021-01-01",
+    "note": null,
+    "jeju_native": null,
+    "abundance_level": null,
+    "similar_species": [
+      "피조개"
+    ],
+    "key_features": [
+      "두껍고 깊은 방사상 골이 있는 패각",
+      "살이 붉은색(헤모글로빈)으로 유명",
+      "사질저에 반쯤 묻혀 서식"
+    ]
+  },
+  {
+    "species_name": "대게",
+    "restriction_region": "NATIONAL",
+    "restriction_start_date": "2025-06-01",
+    "restriction_end_date": "2025-11-30",
+    "minimum_length_centimeter": 9,
+    "minimum_weight_gram": null,
+    "measurement_type": "CARAPACE_WIDTH",
+    "law_announcement_date": "2021-01-01",
+    "note": null,
+    "jeju_native": null,
+    "abundance_level": null,
+    "similar_species": [
+      "붉은대게"
+    ],
+    "key_features": [
+      "갑각은 거의 원형, 등면 납작하고 돌기 산재",
+      "이마는 V자 홈으로 갈라진 2개의 가시",
+      "걷는다리는 길고 편평, 집게다리 손가락 매끄"
+    ]
+  },
+  {
+    "species_name": "갈치",
+    "restriction_region": "NATIONAL",
+    "restriction_start_date": "2025-07-01",
+    "restriction_end_date": "2025-07-31",
+    "minimum_length_centimeter": 18,
+    "minimum_weight_gram": null,
+    "measurement_type": "ANAL_LENGTH",
+    "law_announcement_date": "2021-01-01",
+    "note": "근해채낚기, 연안복합 제외",
+    "jeju_native": null,
+    "abundance_level": null,
+    "similar_species": [],
+    "key_features": [
+      "은백색 칼모양 몸, 옆으로 납작",
+      "마치 칼날처럼 길고 얇은 체형",
+      "입 크고 송곳니 발달"
+    ]
+  },
+  {
+    "species_name": "참조기",
+    "restriction_region": "NATIONAL",
+    "restriction_start_date": "2025-07-01",
+    "restriction_end_date": "2025-07-31",
+    "minimum_length_centimeter": 15,
+    "minimum_weight_gram": null,
+    "measurement_type": "TOTAL_LENGTH",
+    "law_announcement_date": "2021-01-01",
+    "note": "단, 유자망 4.22∼8.10",
+    "jeju_native": null,
+    "abundance_level": null,
+    "similar_species": [
+      "민어"
+    ],
+    "key_features": [
+      "몸길이 30—40cm, 길고 측편, 꼬리자루 가늘다",
+      "아래턱이 위턱보다 약간 길고, 아래턱에 치열 1줄",
+      "등·뒷지느러미 연조부에 작은 비늘 덮임, 몸은 황갈색"
+    ]
+  },
+  {
+    "species_name": "해삼",
+    "restriction_region": "NATIONAL",
+    "restriction_start_date": "2025-07-01",
+    "restriction_end_date": "2025-07-31",
+    "minimum_length_centimeter": null,
+    "minimum_weight_gram": null,
+    "measurement_type": null,
+    "law_announcement_date": "2021-01-01",
+    "note": null,
+    "jeju_native": null,
+    "abundance_level": null,
+    "similar_species": [
+      "눈해삼"
+    ],
+    "key_features": [
+      "원통형 몸, 배면·복면이 뚜렷이 구분",
+      "체벽 단단하고 몸 표면에 돌기(우족) 산재",
+      "배면 큰 돌기, 복면에 관족 밀집"
+    ]
+  },
+  {
+    "species_name": "오분자기",
+    "restriction_region": "NATIONAL",
+    "restriction_start_date": "2025-07-01",
+    "restriction_end_date": "2025-08-31",
+    "minimum_length_centimeter": 4,
+    "minimum_weight_gram": null,
+    "measurement_type": "TOTAL_LENGTH",
+    "law_announcement_date": "2021-01-01",
+    "note": null,
+    "jeju_native": null,
+    "abundance_level": null,
+    "similar_species": [
+      "전복류"
+    ],
+    "key_features": [
+      "난대성 소형 전복류, 주로 제주 분포",
+      "패각 타원형, 표면 암갈색~회갈색",
+      "얕은 암반에서 서식"
+    ]
+  },
+  {
+    "species_name": "키조개",
+    "restriction_region": "NATIONAL",
+    "restriction_start_date": "2025-07-01",
+    "restriction_end_date": "2025-08-31",
+    "minimum_length_centimeter": null,
+    "minimum_weight_gram": null,
+    "measurement_type": "SHELL_LENGTH",
+    "law_announcement_date": "2021-01-01",
+    "note": null,
+    "jeju_native": null,
+    "abundance_level": null,
+    "similar_species": [],
+    "key_features": [
+      "삼각형 큰 패각, 각정이 좁고 아래로 넓어짐",
+      "패각 표면에 방사상 늑 발달, 길이 22cm 내외",
+      "모래·펄 바닥에 박혀 서식"
+    ]
+  },
+  {
+    "species_name": "붉은대게",
+    "restriction_region": "NATIONAL",
+    "restriction_start_date": "2025-07-10",
+    "restriction_end_date": "2025-08-25",
+    "minimum_length_centimeter": null,
+    "minimum_weight_gram": null,
+    "measurement_type": null,
+    "law_announcement_date": "2021-01-01",
+    "note": "단, 강원 연안자망 6.1∼7.10",
+    "jeju_native": null,
+    "abundance_level": null,
+    "similar_species": [
+      "대게"
+    ],
+    "key_features": [
+      "갑각 침상 돌기 촘촘, 전반적으로 붉은 색조",
+      "집게발 손바닥 등면에 길고 뾰족한 가시",
+      "걷는다리 뒷가장자리와 복면에 털발달"
+    ]
+  },
+  {
+    "species_name": "옥돔",
+    "restriction_region": "NATIONAL",
+    "restriction_start_date": "2025-07-21",
+    "restriction_end_date": "2025-08-20",
+    "minimum_length_centimeter": null,
+    "minimum_weight_gram": null,
+    "measurement_type": null,
+    "law_announcement_date": "2021-01-01",
+    "note": null,
+    "jeju_native": null,
+    "abundance_level": null,
+    "similar_species": [],
+    "key_features": [
+      "농어목 옥돔과, 몸길이 30—60cm"
+    ]
+  }
+]
