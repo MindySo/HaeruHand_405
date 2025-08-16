@@ -20,6 +20,7 @@ import {
 import styles from './MainPage.module.css';
 import { InfoModal } from '../../components/molecules/InfoModal/InfoModal';
 import { useNavigate } from '@tanstack/react-router';
+import { Footer } from '../../components/molecules/Footer/Footer';
 import { useKakaoMap } from '../../hooks/useKakaoMap';
 
 // 특보 배너 props
@@ -227,6 +228,7 @@ export const MainPage = () => {
       : '09:10 ~ 11:00'; // 기본값
 
   return (
+    // <div>
     <div className={styles.container}>
       {/* A. 고정된 영역 */}
       <div className={styles.fixedContent}>
@@ -252,6 +254,8 @@ export const MainPage = () => {
 
       {/* B. 스크롤 가능한 영역 */}
       <div className={styles.scrollContent}>
+        <div className={styles.notFooter}>
+          
         {/* b-1. 특보 배너 - 독립적으로 로딩 */}
         <div className={styles.warningBanner} onClick={handleWeatherAlertClick}>
           {warningsLoading ? (
@@ -302,6 +306,7 @@ export const MainPage = () => {
                     />
                   ),
                   subtitle: '해루 가능 시간',
+                  // data: tidesLoading ? '로딩 중...' : fishingTimeDisplay,
                   data: fishingTimeDisplay,
                 },
                 {
@@ -400,6 +405,12 @@ export const MainPage = () => {
 
         {/* 채집 안내서 모달(InfoModal) 로직 */}
         {isInfoModalOpen && <InfoModal onClose={closeInfoModal} />}
+</div>
+
+        {/* Footer */}
+        <footer>
+          <Footer />
+        </footer>
       </div>
     </div>
   );

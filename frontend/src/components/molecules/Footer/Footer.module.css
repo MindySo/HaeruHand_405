@@ -1,0 +1,37 @@
+.container {
+  margin: 40px 24px;
+}
+
+.title {
+  display: flex;
+  margin: 12px 0px;
+}
+
+.logo {
+  height: 24px;
+  width: auto;
+  opacity: 70%;
+}
+
+.description {
+  margin: 28px 0px;
+}
+
+.line {
+  height: 1px;
+  background-color: #ababab;
+  transform: scaleY(0.5);
+  opacity: 70%;
+}
+
+.callPublic {
+  margin: 52px 0px 20px;
+}
+
+.callVillage {
+  margin: 0px 0px 52px;
+}
+
+.appLaunch {
+  margin: 0px 0px 20px;
+}
