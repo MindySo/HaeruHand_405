@@ -20,10 +20,10 @@ import java.util.Map;
 )
 @JsonSubTypes({
         @JsonSubTypes.Type(value = TestEvent.class, name = "BUDDY_OUT_OF_RANGE"),
-        @JsonSubTypes.Type(value = TestEvent.class, name = "FISHERY_ALERT"),
-        @JsonSubTypes.Type(value = TestEvent.class, name = "FISHING_END_ALERT"),
+        @JsonSubTypes.Type(value = FisheryAlertEvent.class, name = "FISHERY_ALERT"),
+        @JsonSubTypes.Type(value = FishingEndAlertEvent.class, name = "FISHING_END_ALERT"),
         @JsonSubTypes.Type(value = TestEvent.class, name = "TEST"),
-        @JsonSubTypes.Type(value = TestEvent.class, name = "WEATHER_ALERT")
+        @JsonSubTypes.Type(value = WeatherAlertEvent.class, name = "WEATHER_ALERT")
 })
 public abstract class BaseNotificationEvent {
 
