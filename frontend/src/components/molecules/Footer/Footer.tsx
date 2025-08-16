@@ -5,7 +5,7 @@ export const Footer = () => {
   return (
     <div className={styles.container}>
       <div className={styles.title}>
-        <img src="/해루핸로고.svg" alt="로고" className={styles.logo} />
+        <img src="/haeruhand_logo.svg" alt="해루핸 로고" className={styles.logo} />
       </div>
 
       <div className={styles.description}>
