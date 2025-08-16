@@ -87,7 +87,7 @@ location:
     stationary-minutes: 30
     stationary-log-count: 150
     stationary-min-duration: 25
-    distance-threshold-meters: 500.0
+    distance-threshold-meters: 200.0
   room:
     max-members: 4
     join-token-expiry-minutes: 1440
