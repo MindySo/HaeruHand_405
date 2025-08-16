@@ -1,7 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import { useSearch, useNavigate } from '@tanstack/react-router';
 import { Button, Text } from '../../components/atoms';
-import { theme } from '../../theme';
 import { useKakaoLogin } from '../../hooks/useKakaoLogin';
 import { useAuth } from '../../hooks/useAuth';
 import styles from './LoginPage.module.css';
