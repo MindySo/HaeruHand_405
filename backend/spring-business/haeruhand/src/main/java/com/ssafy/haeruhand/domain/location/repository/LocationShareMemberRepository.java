@@ -37,9 +37,9 @@ public interface LocationShareMemberRepository extends JpaRepository<LocationSha
         SELECT m
         FROM LocationShareMember m
         JOIN FETCH m.user
-        WHERE m.room.id = :roomId
+        WHERE m.room.id IN :roomIds
         AND m.isDeleted = false
         AND m.room.isActive = true
         """)
-    List<LocationShareMember> findByRoomIdAndActiveRoom(@Param("roomId") Long roomId);
+    List<LocationShareMember> findByRoomIdsAndActiveRoom(@Param("roomIds") List<Long> roomIds);
 }
