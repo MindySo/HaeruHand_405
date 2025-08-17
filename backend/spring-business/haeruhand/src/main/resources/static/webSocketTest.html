@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>위치 공유 테스트</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.6.1/sockjs.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+</head>
+<body>
+    <h1>위치 공유 테스트</h1>
+    
+    <div>
+        <h3>1. 방 생성 및 조회</h3>
+        <button onclick="createRoom()">방 생성</button>
+        <button onclick="getRoomInfo()">방 정보 조회</button>
+        <div id="roomInfo"></div>
+    </div>
+    
+    <div>
+        <h3>2. WebSocket 연결</h3>
+        <input type="text" id="roomCode" placeholder="방 코드 입력" />
+        <button onclick="connectWebSocket()">연결</button>
+        <button onclick="disconnect()">연결 해제</button>
+        <div id="connectionStatus">연결 안됨</div>
+    </div>
+    
+    <div>
+        <h3>3. 메시지</h3>
+        <button onclick="joinRoom()">방 참가</button>
+        <button onclick="sendLocation()">위치 전송</button>
+        <button onclick="leaveRoom()">방 퇴장</button>
+    </div>
+    
+    <div>
+        <h3>4. 받은 메시지</h3>
+        <div id="messages" style="height: 300px; overflow-y: scroll; border: 1px solid #ccc; padding: 10px;"></div>
+    </div>
+
+    <script>
+        let stompClient = null;
+        let currentRoomCode = null;
+
+        // API 기본 URL 설정
+        const API_BASE_URL = 'http://localhost:8080/api';
+        const WS_URL = 'http://localhost:8080/api/ws';
+
+        async function createRoom() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/v1/location/rooms`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: '{}'
+                });
+                
+                const result = await response.json();
+                document.getElementById('roomInfo').innerHTML = `
+                    <p>방 생성 성공!</p>
+                    <p>방 코드: <strong>${result.data.roomCode}</strong></p>
+                    <p>딥링크: <small><code>${result.data.deepLink}</code></small></p>
+                    <p>생성 시간: ${result.data.startedAt}</p>
+                `;
+                
+                document.getElementById('roomCode').value = result.data.roomCode;
+                currentRoomCode = result.data.roomCode;
+            } catch (error) {
+                console.error('방 생성 실패:', error);
+                document.getElementById('roomInfo').innerHTML = `<p style="color: red;">방 생성 실패: ${error.message}</p>`;
+            }
+        }
+
+        async function getRoomInfo() {
+            const roomCode = document.getElementById('roomCode').value;
+            if (!roomCode) {
+                alert('방 코드를 입력하세요');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/v1/location/rooms/${roomCode}`);
+                const result = await response.json();
+                
+                if (result.status === 'OK') {
+                    const roomInfo = result.data.roomInfo;
+                    const members = result.data.members;
+                    
+                    let memberListHtml = members.map(member => 
+                        `<li style="color: ${member.color}">
+                            ${member.nickname} ${member.isHost ? '(호스트)' : ''}
+                            <small>(마지막 활동: ${member.lastActiveAt || 'N/A'})</small>
+                        </li>`
+                    ).join('');
+                    
+                    document.getElementById('roomInfo').innerHTML = `
+                        <h4>방 정보</h4>
+                        <p>방 코드: <strong>${roomInfo.roomCode}</strong></p>
+                        <p>상태: ${roomInfo.isActive ? '활성' : '비활성'}</p>
+                        <p>진행 시간: ${roomInfo.elapsedMin}분</p>
+                        <p>참가자: ${roomInfo.currentMemberCount}/${roomInfo.maxMembers}명</p>
+                        <p>딥링크: <small><code>${result.data.deepLink}</code></small></p>
+                        <h5>멤버 목록:</h5>
+                        <ul>${memberListHtml}</ul>
+                    `;
+                } else {
+                    document.getElementById('roomInfo').innerHTML = `<p style="color: red;">방 조회 실패: ${result.message}</p>`;
+                }
+            } catch (error) {
+                console.error('방 조회 실패:', error);
+                document.getElementById('roomInfo').innerHTML = `<p style="color: red;">방 조회 실패: ${error.message}</p>`;
+            }
+        }
+
+        function connectWebSocket() {
+            const roomCode = document.getElementById('roomCode').value;
+            if (!roomCode) {
+                alert('방 코드를 입력하세요');
+                return;
+            }
+            
+            // URL 파라미터로 room-code 전달
+            const socket = new SockJS(`${WS_URL}?roomCode=${roomCode}`);
+            stompClient = Stomp.over(socket);
+            
+            // 빈 헤더 (room-code는 URL 파라미터로 전달됨)
+            const headers = {};
+            
+            stompClient.connect(headers, function (frame) {
+                document.getElementById('connectionStatus').innerHTML = '연결됨';
+                console.log('Connected: ' + frame);
+                
+                // 메시지 구독
+                stompClient.subscribe('/sub/location.' + roomCode, function (message) {
+                    const msg = JSON.parse(message.body);
+                    addMessage('받음', JSON.stringify(msg, null, 2));
+                });
+                
+                currentRoomCode = roomCode;
+            }, function(error) {
+                document.getElementById('connectionStatus').innerHTML = '연결 실패: ' + error;
+                console.error('Connection error:', error);
+            });
+        }
+
+        function disconnect() {
+            if (stompClient !== null) {
+                stompClient.disconnect();
+                document.getElementById('connectionStatus').innerHTML = '연결 안됨';
+            }
+        }
+
+        function joinRoom() {
+            if (stompClient && stompClient.connected) {
+                stompClient.send("/pub/location.join", {}, "{}");
+                addMessage('전송', 'JOIN 메시지');
+            } else {
+                alert('먼저 WebSocket에 연결하세요');
+            }
+        }
+
+        function sendLocation() {
+            if (stompClient && stompClient.connected) {
+                const location = {
+                    latitude: 37.5665 + (Math.random() - 0.5) * 0.01,
+                    longitude: 126.9780 + (Math.random() - 0.5) * 0.01,
+                    accuracy: 10.0,
+                    sentAt: new Date().toISOString()
+                };
+                
+                stompClient.send("/pub/location.update", {}, JSON.stringify(location));
+                addMessage('전송', '위치: ' + JSON.stringify(location, null, 2));
+            } else {
+                alert('먼저 WebSocket에 연결하세요');
+            }
+        }
+
+        function leaveRoom() {
+            if (stompClient && stompClient.connected) {
+                stompClient.send("/pub/location.leave", {}, "{}");
+                addMessage('전송', 'LEAVE 메시지');
+            } else {
+                alert('먼저 WebSocket에 연결하세요');
+            }
+        }
+
+        function addMessage(type, content) {
+            const messages = document.getElementById('messages');
+            const timestamp = new Date().toLocaleTimeString();
+            messages.innerHTML += `<div><strong>[${timestamp}] ${type}:</strong><br><pre>${content}</pre><hr></div>`;
+            messages.scrollTop = messages.scrollHeight;
+        }
+    </script>
+</body>
+</html>
