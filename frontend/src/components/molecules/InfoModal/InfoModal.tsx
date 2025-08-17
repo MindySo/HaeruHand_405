@@ -1,7 +1,7 @@
 import { useState, type FC } from 'react';
 import theme from '../../../theme';
 import { Text } from '../../atoms';
-import closeButtonImg from '../../../../public/closeButtonLightGray.png';
+import closeButtonImg from 'closeButtonLightGray.png';
 import styles from './InfoModal.module.css';
 import { banData, type BanRule } from './banData';
 
@@ -423,7 +423,7 @@ export const InfoModal: FC<InfoModalProps> = ({ onClose }) => {
           aria-label="닫기"
         >
           <img
-            src={closeButtonImg}
+            src="/closeButtonLightGray.png"
             alt="close"
             style={{
               // inline 요소인 img 태그를 block 레벨 요소로 변경 -> 레이아웃 및 여백 정리 목적

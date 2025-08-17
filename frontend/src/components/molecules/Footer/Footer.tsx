@@ -12,7 +12,7 @@ export const Footer = () => {
         <Text size="sm" weight="regular" style={{ color: 'gray' }}>
           실시간 위치 공유부터 AI 어종 판별까지 해루질의 모든 것을 담은 스마트 플랫폼,
         </Text>
-        <Text size="md" weight="semiBold" style={{ color: 'gray', margin: '4px 0px 2px 12px' }}>
+        <Text size="md" weight="semiBold" style={{ color: 'gray', margin: '4px 0px 2px 0px' }}>
           해루핸
         </Text>
         <Text size="sm" weight="regular" style={{ color: 'gray' }}>

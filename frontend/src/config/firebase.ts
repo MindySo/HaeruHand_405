@@ -14,6 +14,13 @@ const firebaseConfig = {
 
 // Firebase 초기화
 const app = initializeApp(firebaseConfig);
-const messaging = getMessaging(app);
+const messaging = (() => {
+  try {
+    return getMessaging(app);
+  } catch (error) {
+    console.error('Firebase 초기화 실패:', error);
+    return null;
+  }
+})();
 
 export { messaging, getToken, onMessage };

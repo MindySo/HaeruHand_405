@@ -161,8 +161,8 @@ const BuddyTrackingPage = () => {
   const extractJoinToken = (deepLink: string): string | null => {
     try {
       // HTTPS URL과 seafeet:// 스킴 모두 처리
-      const urlString = deepLink.startsWith('seafeet://') 
-        ? deepLink.replace('seafeet://', 'http://') 
+      const urlString = deepLink.startsWith('seafeet://')
+        ? deepLink.replace('seafeet://', 'http://')
         : deepLink;
       const url = new URL(urlString);
       return url.searchParams.get('token');

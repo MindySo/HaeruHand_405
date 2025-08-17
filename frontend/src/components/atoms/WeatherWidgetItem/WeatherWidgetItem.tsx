@@ -17,7 +17,7 @@ const WeatherWidgetItem: React.FC<WeatherWidgetItemProps> = ({ icon, subtitle, d
           {subtitle}
         </Text>
         <Text
-          responsiveSize={{ default: 'xl', mobile: 'lg' }}
+          responsiveSize={{ default: 'xl', mobile: 'md' }}
           size="xl"
           color="dark"
           weight="bold"
