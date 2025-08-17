@@ -101,10 +101,44 @@ export const useKakaoLogin = () => {
         sessionStorage.setItem('accessTokenExpiresAt', String(expiresAt));
       }
 
-      // 4) 토큰이 완전히 저장된 후 네비게이션
-      setTimeout(() => {
-        navigate({ to: '/map' });
-      }, 100);
+      // 4) 딥링크 처리 확인
+      const pendingDeepLink = sessionStorage.getItem('pendingDeepLink');
+      if (pendingDeepLink) {
+        try {
+          const deepLinkData = JSON.parse(pendingDeepLink);
+          const { code, token, url } = deepLinkData;
+          
+          // 딥링크 정보로 방 설정
+          sessionStorage.setItem(
+            'locationRoom',
+            JSON.stringify({
+              roomId: null,
+              roomCode: code,
+              deepLink: url,
+              joinToken: token,
+            }),
+          );
+          sessionStorage.setItem('isLocationRoomHost', 'false');
+          sessionStorage.removeItem('hostRoomCode');
+          sessionStorage.removeItem('pendingDeepLink');
+          
+          // BuddyTrackingPage로 이동
+          setTimeout(() => {
+            navigate({ to: '/buddy' });
+          }, 100);
+        } catch (error) {
+          console.error('딥링크 처리 실패:', error);
+          // 딥링크 처리 실패시 기본 페이지로 이동
+          setTimeout(() => {
+            navigate({ to: '/map' });
+          }, 100);
+        }
+      } else {
+        // 일반 로그인의 경우 기본 페이지로 이동
+        setTimeout(() => {
+          navigate({ to: '/map' });
+        }, 100);
+      }
     },
     onError: (error) => {
       console.error('로그인 실패:', error);

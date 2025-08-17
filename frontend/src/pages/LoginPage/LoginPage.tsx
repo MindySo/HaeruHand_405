@@ -11,12 +11,43 @@ export const LoginPage: React.FC = () => {
   const { isAuthenticated } = useAuth();
   const navigate = useNavigate();
   const isProcessedRef = useRef(false);
+  
+  // pendingDeepLink 체크
+  const pendingDeepLink = sessionStorage.getItem('pendingDeepLink');
+  const hasPendingDeepLink = Boolean(pendingDeepLink);
 
   // 이미 인증된 사용자는 LocationSelect 페이지로 리다이렉트
   useEffect(() => {
     if (isAuthenticated()) {
       console.log('이미 로그인된 사용자');
-      navigate({ to: '/map' });
+      
+      // 딥링크가 있으면 바로 처리
+      if (hasPendingDeepLink) {
+        try {
+          const deepLinkData = JSON.parse(pendingDeepLink!);
+          const { code, token, url } = deepLinkData;
+          
+          sessionStorage.setItem(
+            'locationRoom',
+            JSON.stringify({
+              roomId: null,
+              roomCode: code,
+              deepLink: url,
+              joinToken: token,
+            }),
+          );
+          sessionStorage.setItem('isLocationRoomHost', 'false');
+          sessionStorage.removeItem('hostRoomCode');
+          sessionStorage.removeItem('pendingDeepLink');
+          
+          navigate({ to: '/buddy' });
+        } catch (error) {
+          console.error('딥링크 처리 실패:', error);
+          navigate({ to: '/map' });
+        }
+      } else {
+        navigate({ to: '/map' });
+      }
       return;
     }
 
@@ -45,7 +76,9 @@ export const LoginPage: React.FC = () => {
       {/* 로고 */}
       <div className={styles.content}>
         <Text size="sm" color="gray" className={styles.text}>
-          즐겁고 안전한 해루질을 위한 스마트 가이드
+          {hasPendingDeepLink 
+            ? '친구와 함께 해루질을 시작하려면 로그인이 필요합니다'
+            : '즐겁고 안전한 해루질을 위한 스마트 가이드'}
         </Text>
         <img src="/haeruhand_logo.svg" alt="해루핸 로고" className={styles.logo} />
       </div>
