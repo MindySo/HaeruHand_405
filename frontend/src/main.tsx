@@ -24,7 +24,7 @@ const queryClient = new QueryClient({
 if ((window as any).Capacitor) {
   CapApp.addListener('appUrlOpen', ({ url }) => {
     console.log('App opened with URL:', url);
-    
+
     try {
       // seafeet://join?code=ABC&token=xyz 처리
       if (url.includes('seafeet://join')) {
@@ -34,12 +34,15 @@ if ((window as any).Capacitor) {
 
         if (code && token) {
           // 세션에 저장
-          sessionStorage.setItem('locationRoom', JSON.stringify({
-            roomId: null,
-            roomCode: code,
-            deepLink: url,
-            joinToken: token
-          }));
+          sessionStorage.setItem(
+            'locationRoom',
+            JSON.stringify({
+              roomId: null,
+              roomCode: code,
+              deepLink: url,
+              joinToken: token,
+            }),
+          );
           sessionStorage.setItem('isLocationRoomHost', 'false');
           sessionStorage.removeItem('hostRoomCode');
 
