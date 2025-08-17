@@ -84,8 +84,8 @@ location:
     destination-prefix: "/sub/location."
   safety:
     stationary-radius-meters: 50.0
-    stationary-minutes: 30
-    stationary-log-count: 150
+    stationary-minutes: 10
+    stationary-log-count: 50
     stationary-min-duration: 25
     distance-threshold-meters: 200.0
   room:
