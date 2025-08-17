@@ -15,7 +15,7 @@ import java.util.Optional;
 @Builder
 @Table(
         name = "tide",
-        uniqueConstraints = @UniqueConstraint(columnNames = {"station_code", "observation_date"})
+        uniqueConstraints = @UniqueConstraint(columnNames = {"observation_date", "station_code"})
 )
 @Entity
 public class Tide {
