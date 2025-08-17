@@ -93,6 +93,8 @@ location:
   room:
     max-members: 4
     join-token-expiry-minutes: 1440
+  deeplink:
+    base-url: "http://localhost:5173"
 
   fishery-weather:
     enabled: true

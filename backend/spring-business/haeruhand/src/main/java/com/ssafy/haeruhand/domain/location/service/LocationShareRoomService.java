@@ -42,6 +42,9 @@ public class LocationShareRoomService {
     
     @Value("${location.room.join-token-expiry-minutes:1440}")
     private int joinTokenExpiryMinutes;
+    
+    @Value("${location.deeplink.base-url:https://i13a405.p.ssafy.io}")
+    private String deeplinkBaseUrl;
 
     @Transactional
     public CreateRoomResponse createRoom(String bearerToken, CreateRoomRequest request) {
@@ -87,7 +90,7 @@ public class LocationShareRoomService {
         String joinToken = jwtProvider.createJoinToken(roomCode, userId, joinTokenExpiryMinutes);
         
         // 딥링크 생성
-        String deepLink = String.format("seafeet://join?code=%s&token=%s", roomCode, joinToken);
+        String deepLink = String.format("%s/join?code=%s&token=%s", deeplinkBaseUrl, roomCode, joinToken);
         
         return CreateRoomResponse.builder()
                 .roomId(room.getId())
@@ -108,7 +111,7 @@ public class LocationShareRoomService {
         
         // joinToken 재생성 (24시간 유효)
         String joinToken = jwtProvider.createJoinToken(roomCode, room.getHostUser().getId(), 1440);
-        String deepLink = String.format("seafeet://join?code=%s&token=%s", roomCode, joinToken);
+        String deepLink = String.format("%s/join?code=%s&token=%s", deeplinkBaseUrl, roomCode, joinToken);
         
         // 멤버 정보 변환
         List<RoomInfoResponse.MemberInfo> memberInfos = members.stream()
