@@ -22,32 +22,48 @@ const queryClient = new QueryClient({
 
 // Capacitor 앱 딥링크 핸들러
 if ((window as any).Capacitor) {
-  CapApp.addListener('appUrlOpen', ({ url }) => {
+  CapApp.addListener('appUrlOpen', ({ url }: { url: string }) => {
     console.log('App opened with URL:', url);
 
     try {
-      // seafeet://join?code=ABC&token=xyz 처리
-      if (url.includes('seafeet://join')) {
+      // seafeet://join 또는 https://i13a405.p.ssafy.io/join 처리
+      if (url.includes('seafeet://join') || url.includes('/join?')) {
         const urlObj = new URL(url);
         const code = urlObj.searchParams.get('code');
         const token = urlObj.searchParams.get('token');
 
         if (code && token) {
-          // 세션에 저장
-          sessionStorage.setItem(
-            'locationRoom',
-            JSON.stringify({
-              roomId: null,
-              roomCode: code,
-              deepLink: url,
-              joinToken: token,
-            }),
-          );
-          sessionStorage.setItem('isLocationRoomHost', 'false');
-          sessionStorage.removeItem('hostRoomCode');
-
-          // BuddyTrackingPage로 이동
-          router.navigate({ to: '/buddy' });
+          // 딥링크 파라미터 저장 (로그인 전에도 유지)
+          sessionStorage.setItem('pendingDeepLink', JSON.stringify({
+            url,
+            code,
+            token,
+            timestamp: Date.now()
+          }));
+          
+          // 로그인 여부 확인
+          const accessToken = sessionStorage.getItem('accessToken') || localStorage.getItem('accessToken');
+          const userInfo = sessionStorage.getItem('userInfo') || localStorage.getItem('userInfo');
+          
+          if (accessToken && userInfo) {
+            // 로그인 상태: 바로 방 정보 설정 후 이동
+            sessionStorage.setItem(
+              'locationRoom',
+              JSON.stringify({
+                roomId: null,
+                roomCode: code,
+                deepLink: url,
+                joinToken: token,
+              }),
+            );
+            sessionStorage.setItem('isLocationRoomHost', 'false');
+            sessionStorage.removeItem('hostRoomCode');
+            sessionStorage.removeItem('pendingDeepLink');
+            router.navigate({ to: '/buddy' });
+          } else {
+            // 비로그인 상태: 로그인 페이지로 이동
+            router.navigate({ to: '/login' });
+          }
         }
       }
 
