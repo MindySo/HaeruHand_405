@@ -11,15 +11,13 @@ public class WeatherAlertEvent extends BaseNotificationEvent {
 
     public WeatherAlertEvent(Long userId, String regionName, String alertLevel) {
         super(
-            userId,
-            "기상 특보가 발령됐어요 ⚠️",
-            regionName + " 지역에 " + alertLevel + " 특보가 발령됐습니다. 안전에 유의하세요.",
-            Map.of(
-                "type", NOTIFICATION_TYPE,
-                "region", regionName,
-                "level", alertLevel,
-                "action", "VIEW_WEATHER_INFO"
-            )
+                userId,
+                "🚨 안전 거리 이탈",
+                "현재 그룹에서 500m 떨어져 있습니다. 안전을 위해 그룹과 합류하세요.",
+                Map.of(
+                        "type", NOTIFICATION_TYPE,
+                        "action", "VIEW_TEAM_LOCATION"
+                )
         );
     }
 
