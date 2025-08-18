@@ -1,17 +1,20 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, HTTPException
 from app.schemas.request import DetectionRequest
 from app.schemas.response import DetectionResponse
-from app.service.gpt import detect_fish
-from app.prompts.fish_detection import get_fish_detection_prompt
+from app.service.fish_detection import detect_fish_name
 
-router = APIRouter()
+router = APIRouter(prefix="/detection", tags=["detection"])
 
 @router.post("/", response_model=DetectionResponse)
 async def detect(request: DetectionRequest):
-    base_prompt = get_fish_detection_prompt()
+    try:
+        name = await detect_fish_name(
+            signed_url=request.image_url,
+            mime_subtype=request.mime_type,
+        )
+        return DetectionResponse(fish_name=name)
 
-    result = await detect_fish(signed_url=request.image_url,
-        prompt=base_prompt,
-        mime_subtype=request.mime_type)
-
-    return DetectionResponse(fish_name=result)
+    except HTTPException:
+        raise
+    except Exception:
+        raise HTTPException(status_code=503, detail="AI서비스를 이용할 수 없습니다.")

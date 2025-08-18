@@ -1,13 +1,12 @@
 package com.ssafy.haeruhand.domain.location.entity;
 
+import com.ssafy.haeruhand.domain.fishery.entity.Fishery;
 import com.ssafy.haeruhand.domain.user.entity.User;
 import com.ssafy.haeruhand.global.domain.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity
 @Table(name = "location_share_room")
@@ -26,6 +25,10 @@ public class LocationShareRoom extends BaseEntity {
     private String roomCode;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "fishery_id", nullable = false)
+    private Fishery fishery;
+
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "host_user_id", nullable = false)
     private User hostUser;
 
@@ -38,16 +41,6 @@ public class LocationShareRoom extends BaseEntity {
 
     @Column(name = "closed_at")
     private LocalDateTime closedAt;
-
-    @OneToMany(mappedBy = "room", cascade = CascadeType.PERSIST)
-    @Builder.Default
-    private List<LocationShareMember> members = new ArrayList<>();
-
-
-    // 편의 메서드: Host User의 ID를 반환
-    public Long getHostUserId() {
-        return hostUser != null ? hostUser.getId() : null;
-    }
 
     public void close() {
         this.isActive = false;

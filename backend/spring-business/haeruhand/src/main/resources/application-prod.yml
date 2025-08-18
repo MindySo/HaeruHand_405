@@ -1,9 +1,11 @@
 spring:
   datasource:
-    url: jdbc:mysql://${MYSQL_HOST}:${MYSQL_PORT}/${MYSQL_DATABASE}?useSSL=false&serverTimezone=Asia/Seoul&allowPublicKeyRetrieval=true
+    url: jdbc:mysql://${MYSQL_HOST}:${MYSQL_PORT}/${MYSQL_DATABASE}?useSSL=false&serverTimezone=Asia/Seoul&allowPublicKeyRetrieval=true&useUnicode=true&characterEncoding=UTF-8&connectionCollation=utf8mb4_unicode_ci&sessionVariables=character_set_client=utf8mb4,character_set_connection=utf8mb4,character_set_results=utf8mb4,time_zone='Asia/Seoul'
     username: ${MYSQL_USER}
     password: ${MYSQL_PASSWORD}
     driver-class-name: com.mysql.cj.jdbc.Driver
+  jackson:
+    time-zone: Asia/Seoul
   data:
     redis:
       host: ${REDIS_HOST}
@@ -22,7 +24,7 @@ spring:
         registration:
           kakao:
             client-id: ${CLIENT_ID}
-            redirect-uri: 'http://http://i13a405.p.ssafy.io/login'
+            redirect-uri: 'https://i13a405.p.ssafy.io/login'
             authorization-grant-type: authorization_code
             scope:
               - profile_nickname
@@ -55,8 +57,57 @@ springdoc:
   swagger-ui:
     path: /swagger-ui.html
     url: /api/v3/api-docs
+khoa:
+  api:
+    key: ${KHOA_API_KEY}
+seatrip:
+  api:
+    key: ${SEATRIP_API_KEY}
+kma:
+  api:
+    key: ${KMA_API_KEY}
 
-logging:
-  level:
-    com.ssafy.haeruhand: DEBUG
-    org.springframework.web.client: DEBUG
+scheduler:
+  tide:
+    enabled: true
+    today-cron: "0 0 2 * * ?" # 매일 새벽 2시 (오늘 데이터)
+    monthly-cron: "0 0 1 1 * ?" # 매월 1일 새벽 1시 (월간 데이터)
+    tomorrow-cron: "0 0 23 * * ?" # 매일 밤 11시 (내일 데이터)
+  fishery-weather:
+    enabled: true
+    current-forecast-cron: "0 0 5,11,17 * * ?" # 매일 5시, 11시, 17시
+    extended-forecast-cron: "0 30 0 * * ?" # 매일 00시 30분 (7일치)
+    forecast-days: 7 # 예보 조회 일수
+    batch-size: 1000 # API 호출 시 데이터 크기
+    api-delay-ms: 200 # API 호출 간 대기시간
+  weather-warning:
+    enabled: true
+    peak-hours-cron: "0 */5 6-22 * * ?" # 주간 6-22시 5분마다
+    night-hours-cron: "0 */15 0-5,23 * * ?" # 야간 0-5시, 23시 15분마다
+
+redis:
+  pubsub:
+    enabled: false # 프로덕션에서는 기본적으로 활성화
+
+location:
+  websocket:
+    channel-prefix: "location:room:"
+    destination-prefix: "/sub/location."
+  safety:
+    stationary-radius-meters: 50.0
+    stationary-minutes: 10
+    stationary-log-count: 50
+    stationary-min-duration: 25
+    distance-threshold-meters: 200.0
+  room:
+    max-members: 4
+    join-token-expiry-minutes: 1440
+  deeplink:
+    base-url: "https://i13a405.p.ssafy.io"
+
+notification:
+  redis:
+    channels:
+      send: "notification:send"
+      retry: "notification:retry"
+      dlq: "notification:dlq"

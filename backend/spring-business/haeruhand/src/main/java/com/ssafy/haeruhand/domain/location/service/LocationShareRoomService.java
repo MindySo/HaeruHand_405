@@ -1,5 +1,8 @@
 package com.ssafy.haeruhand.domain.location.service;
 
+import com.ssafy.haeruhand.domain.fishery.entity.Fishery;
+import com.ssafy.haeruhand.domain.fishery.repository.FisheryRepository;
+import com.ssafy.haeruhand.domain.location.dto.request.CreateRoomRequest;
 import com.ssafy.haeruhand.domain.location.dto.response.CloseRoomResponse;
 import com.ssafy.haeruhand.domain.location.dto.response.CreateRoomResponse;
 import com.ssafy.haeruhand.domain.location.dto.response.RoomInfoResponse;
@@ -15,6 +18,7 @@ import com.ssafy.haeruhand.global.status.ErrorStatus;
 import com.ssafy.haeruhand.domain.location.enums.MemberColor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -33,12 +37,17 @@ public class LocationShareRoomService {
     private final LocationShareRoomRepository roomRepository;
     private final LocationShareMemberRepository memberRepository;
     private final UserRepository userRepository;
+    private final FisheryRepository fisheryRepository;
     private final JwtProvider jwtProvider;
-
-
+    
+    @Value("${location.room.join-token-expiry-minutes:1440}")
+    private int joinTokenExpiryMinutes;
+    
+    @Value("${location.deeplink.base-url:https://i13a405.p.ssafy.io}")
+    private String deeplinkBaseUrl;
 
     @Transactional
-    public CreateRoomResponse createRoom(String bearerToken) {
+    public CreateRoomResponse createRoom(String bearerToken, CreateRoomRequest request) {
         // 토큰에서 사용자 ID 추출
         String accessToken = bearerToken.replace("Bearer ", "");
         Long userId = jwtProvider.validateAndGetUserId(accessToken);
@@ -52,9 +61,14 @@ public class LocationShareRoomService {
         User hostUser = userRepository.findById(userId)
                 .orElseThrow(() -> new GlobalException(ErrorStatus.USER_NOT_FOUND));
         
+        // 어장 조회
+        Fishery fishery = fisheryRepository.findById(request.getFisheryId())
+                .orElseThrow(() -> new GlobalException(ErrorStatus.FISHERY_NOT_FOUND));
+        
         // 방 생성
         LocationShareRoom room = LocationShareRoom.builder()
                 .roomCode(roomCode)
+                .fishery(fishery)
                 .hostUser(hostUser)
                 .startedAt(now)
                 .build();
@@ -72,11 +86,11 @@ public class LocationShareRoomService {
         
         memberRepository.save(hostMember);
         
-        // joinToken 생성 (장기간 유효하게 설정 - 24시간)
-        String joinToken = jwtProvider.createJoinToken(roomCode, userId, 1440);
+        // joinToken 생성 (장기간 유효하게 설정)
+        String joinToken = jwtProvider.createJoinToken(roomCode, userId, joinTokenExpiryMinutes);
         
         // 딥링크 생성
-        String deepLink = String.format("seafeet://join?code=%s&token=%s", roomCode, joinToken);
+        String deepLink = String.format("%s/join?code=%s&token=%s", deeplinkBaseUrl, roomCode, joinToken);
         
         return CreateRoomResponse.builder()
                 .roomId(room.getId())
@@ -96,17 +110,17 @@ public class LocationShareRoomService {
         long elapsedMin = ChronoUnit.MINUTES.between(room.getStartedAt(), LocalDateTime.now());
         
         // joinToken 재생성 (24시간 유효)
-        String joinToken = jwtProvider.createJoinToken(roomCode, room.getHostUserId(), 1440);
-        String deepLink = String.format("seafeet://join?code=%s&token=%s", roomCode, joinToken);
+        String joinToken = jwtProvider.createJoinToken(roomCode, room.getHostUser().getId(), 1440);
+        String deepLink = String.format("%s/join?code=%s&token=%s", deeplinkBaseUrl, roomCode, joinToken);
         
         // 멤버 정보 변환
         List<RoomInfoResponse.MemberInfo> memberInfos = members.stream()
                 .map(member -> {
-                    User user = userRepository.findById(member.getUserId())
+                    User user = userRepository.findById(member.getUser().getId())
                             .orElseThrow(() -> new GlobalException(ErrorStatus.USER_NOT_FOUND));
                     
                     return RoomInfoResponse.MemberInfo.builder()
-                            .userId(member.getUserId())
+                            .userId(member.getUser().getId())
                             .nickname(user.getNickname())
                             .color(member.getColor())
                             .isHost(member.getIsHost())
@@ -119,7 +133,7 @@ public class LocationShareRoomService {
         RoomInfoResponse.RoomInfo roomInfo = RoomInfoResponse.RoomInfo.builder()
                 .roomId(room.getId())
                 .roomCode(room.getRoomCode())
-                .hostUserId(room.getHostUserId())
+                .hostUserId(room.getHostUser().getId())
                 .isActive(room.getIsActive())
                 .startedAt(room.getStartedAt())
                 .elapsedMin(elapsedMin)

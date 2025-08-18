@@ -12,5 +12,5 @@ import lombok.Setter;
 public class KakaoUserInfoDto {
     private Long kakaoSub;
     private String nickname;
-    private String profile_image;
+    private String profileImage;
 }

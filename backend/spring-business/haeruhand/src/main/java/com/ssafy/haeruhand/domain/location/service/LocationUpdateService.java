@@ -11,6 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.PreparedStatement;
 import java.sql.Timestamp;
@@ -23,6 +24,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 @Slf4j
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class LocationUpdateService {
 
     private final UserLocationLogRepository locationLogRepository;
@@ -50,6 +52,7 @@ public class LocationUpdateService {
     
     // 3초마다 배치 처리
     @Scheduled(fixedRate = 3000)
+    @Transactional
     public void flushLocationBatch() {
         List<LocationBatchDto> batch = new ArrayList<>();
         locationQueue.drainTo(batch, 1000); // 최대 1000개
@@ -81,7 +84,7 @@ public class LocationUpdateService {
                 }
             );
             
-            log.info("Batch inserted {} location updates", batch.size());
+            log.debug("Batch inserted {} location updates", batch.size());
         } catch (Exception e) {
             log.error("Failed to batch insert location updates", e);
         }

@@ -3,8 +3,6 @@ package com.ssafy.haeruhand.domain.fishery.entity;
 import com.ssafy.haeruhand.global.domain.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.SQLDelete;
-import org.hibernate.annotations.Where;
 
 import java.math.BigDecimal;
 
@@ -34,5 +32,11 @@ public class Fishery extends BaseEntity {
     private BigDecimal longitude;
 
     @Column(name = "station_code", length = 20)
-    private String stationCode;
+    private String stationCode; // 조석: 'DT_0004', 'SO_1277'
+
+    @Column(name = "region_code", length = 8, nullable = false)
+    private String regionCode; // 특보: RegionSeaArea 'S1323100'
+
+    @Column(name = "area_name", length = 50, nullable = false)
+    private String areaName; // 날씨: '제주북서'
 }

@@ -5,8 +5,9 @@ import com.ssafy.haeruhand.domain.location.dto.websocket.LocationMessage;
 import com.ssafy.haeruhand.domain.location.dto.websocket.LocationUpdateRequest;
 import com.ssafy.haeruhand.domain.location.service.LocationRoomEventService;
 import com.ssafy.haeruhand.domain.location.service.LocationUpdateService;
-import com.ssafy.haeruhand.global.websocket.service.LocationWebSocketMessageService;
-import com.ssafy.haeruhand.global.websocket.service.WebSocketSessionService;
+import com.ssafy.haeruhand.domain.location.websocket.dto.SessionInfo;
+import com.ssafy.haeruhand.domain.location.websocket.service.LocationWebSocketMessageService;
+import com.ssafy.haeruhand.domain.location.websocket.service.LocationWebSocketSessionService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.handler.annotation.Header;
@@ -21,7 +22,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class LocationWebSocketController {
 
-    private final WebSocketSessionService sessionService;
+    private final LocationWebSocketSessionService sessionService;
     private final LocationRoomEventService roomEventService;
     private final LocationWebSocketMessageService messageService;
     private final LocationUpdateService locationUpdateService;
@@ -30,7 +31,7 @@ public class LocationWebSocketController {
     public void handleJoin(@Header("simpSessionAttributes") Map<String, Object> sessionAttributes) {
         try {
             // 세션 정보 추출
-            WebSocketSessionService.SessionInfo sessionInfo = 
+            SessionInfo sessionInfo = 
                     sessionService.extractSessionInfo(sessionAttributes);
             
             log.info("User {} joining room {}", sessionInfo.getUserId(), sessionInfo.getRoomCode());
@@ -62,7 +63,7 @@ public class LocationWebSocketController {
                                     @Payload LocationUpdateRequest request) {
         try {
             // 세션 정보 추출
-            WebSocketSessionService.SessionInfo sessionInfo = 
+            SessionInfo sessionInfo = 
                     sessionService.extractSessionInfo(sessionAttributes);
             
             // 위치 정보를 배치 처리기에 추가
@@ -86,7 +87,7 @@ public class LocationWebSocketController {
     public void handleLeave(@Header("simpSessionAttributes") Map<String, Object> sessionAttributes) {
         try {
             // 세션 정보 추출
-            WebSocketSessionService.SessionInfo sessionInfo = 
+            SessionInfo sessionInfo = 
                     sessionService.extractSessionInfo(sessionAttributes);
             
             log.info("User {} leaving room {}", sessionInfo.getUserId(), sessionInfo.getRoomCode());

@@ -5,3 +5,9 @@ httpx
 google-generativeai
 pydantic
 pydantic-settings
+circuitbreaker
+pinecone>=5.4.0          
+langchain>=0.2.0
+langchain-pinecone>=0.2.11
+langchain-upstage>=0.0.17
+numpy>=1.24
