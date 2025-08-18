@@ -1,0 +1,102 @@
+.container {
+  background-color: #2a2a2a;
+  padding: 1rem;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+}
+
+.title {
+  color: white;
+  margin-bottom: 1rem;
+  font-size: 1.125rem;
+  font-weight: 600;
+}
+
+.status {
+  margin-bottom: 1rem;
+}
+
+.statusItem {
+  color: white;
+  font-size: 0.875rem;
+  margin-bottom: 0.25rem;
+}
+
+.error {
+  color: #ef4444;
+  font-size: 0.875rem;
+  margin-top: 0.25rem;
+}
+
+.section {
+  margin-bottom: 1rem;
+}
+
+.sectionTitle {
+  color: white;
+  margin-bottom: 0.5rem;
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+.inputGroup {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.input {
+  padding: 0.5rem;
+  border-radius: 4px;
+  border: none;
+  background-color: #404040;
+  color: white;
+}
+
+.input:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px #3b82f6;
+}
+
+.formGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.button {
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  border: none;
+  cursor: pointer;
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: background-color 0.2s;
+}
+
+.buttonPrimary {
+  background-color: #3b82f6;
+  color: white;
+}
+
+.buttonPrimary:hover {
+  background-color: #2563eb;
+}
+
+.buttonSecondary {
+  background-color: #6b7280;
+  color: white;
+}
+
+.buttonSecondary:hover {
+  background-color: #4b5563;
+}
+
+.buttonNeutral {
+  background-color: #9ca3af;
+  color: white;
+}
+
+.buttonNeutral:hover {
+  background-color: #6b7280;
+}

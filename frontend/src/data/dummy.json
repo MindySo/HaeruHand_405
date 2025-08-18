@@ -1,0 +1,125 @@
+{
+  "weatherAlerts": [
+    {
+      "id": 1,
+      "type": "폭염주의보",
+      "date": "07월 24일 22시 00분",
+      "location": "제주 앞바다",
+      "status": "발효",
+      "priority": "high"
+    },
+    {
+      "id": 2,
+      "type": "풍랑주의보",
+      "date": "07월 24일 22시 00분",
+      "location": "제주 앞바다",
+      "status": "발효",
+      "priority": "normal"
+    },
+    {
+      "id": 3,
+      "type": "풍랑주의보",
+      "date": "07월 24일 22시 00분",
+      "location": "제주 앞바다",
+      "status": "발효",
+      "priority": "normal"
+    },
+    {
+      "id": 4,
+      "type": "풍랑주의보",
+      "date": "07월 24일 22시 00분",
+      "location": "제주 앞바다",
+      "status": "발효",
+      "priority": "normal"
+    },
+    {
+      "id": 5,
+      "type": "풍랑주의보",
+      "date": "07월 24일 22시 00분",
+      "location": "제주 앞바다",
+      "status": "발효",
+      "priority": "normal"
+    },
+    {
+      "id": 6,
+      "type": "풍랑주의보",
+      "date": "07월 24일 22시 00분",
+      "location": "제주 앞바다",
+      "status": "발효",
+      "priority": "normal"
+    },
+    {
+      "id": 7,
+      "type": "풍랑주의보",
+      "date": "07월 24일 22시 00분",
+      "location": "제주 앞바다",
+      "status": "발효",
+      "priority": "normal"
+    },
+    {
+      "id": 8,
+      "type": "풍랑주의보",
+      "date": "07월 24일 22시 00분",
+      "location": "제주 앞바다",
+      "status": "발효",
+      "priority": "normal"
+    },
+    {
+      "id": 9,
+      "type": "풍랑주의보",
+      "date": "07월 24일 22시 00분",
+      "location": "제주 앞바다",
+      "status": "발효",
+      "priority": "normal"
+    },
+    {
+      "id": 10,
+      "type": "풍랑주의보",
+      "date": "07월 24일 22시 00분",
+      "location": "제주 앞바다",
+      "status": "발효",
+      "priority": "normal"
+    },
+    {
+      "id": 11,
+      "type": "풍랑주의보",
+      "date": "07월 24일 22시 00분",
+      "location": "제주 앞바다",
+      "status": "발효",
+      "priority": "normal"
+    },
+    {
+      "id": 12,
+      "type": "풍랑주의보",
+      "date": "07월 24일 22시 00분",
+      "location": "제주 앞바다",
+      "status": "발효",
+      "priority": "normal"
+    },
+    {
+      "id": 13,
+      "type": "풍랑주의보",
+      "date": "07월 24일 22시 00분",
+      "location": "제주 앞바다",
+      "status": "발효",
+      "priority": "normal"
+    },
+    {
+      "id": 14,
+      "type": "풍랑주의보",
+      "date": "07월 24일 22시 00분",
+      "location": "제주 앞바다",
+      "status": "발효",
+      "priority": "normal"
+    }
+  ],
+  "filters": [
+    { "id": "all", "name": "전체", "active": false },
+    { "id": "gueom", "name": "구엄", "active": false },
+    { "id": "gonae", "name": "고내", "active": false },
+    { "id": "aewol", "name": "애월", "active": true },
+    { "id": "suwon", "name": "수원", "active": false },
+    { "id": "seogwi", "name": "서귀", "active": false },
+    { "id": "namwon", "name": "남원", "active": false }
+  ]
+}

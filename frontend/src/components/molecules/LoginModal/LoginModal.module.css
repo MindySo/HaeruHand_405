@@ -1,0 +1,53 @@
+/* 화면 전체를 덮는 반투명 오버레이 */
+.overlay {
+  position: fixed;
+  /* 화면 꽉 채우기 */
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+}
+
+.modalWindow {
+  position: relative;
+  background-color: whitesmoke;
+  border-radius: 16px;
+  padding: 20px;
+
+  width: 90%;
+  min-width: 290px;
+  max-width: 360px;
+  height: auto;
+
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%); /* 정중앙 위치 */
+  z-index: 1001;
+}
+
+.closeButton {
+  background: none;
+  border: none;
+  cursor: pointer;
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.closeButtonIcon {
+  width: 25px;
+  height: 25px;
+}
+
+.buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}

@@ -1,0 +1,106 @@
+.container {
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  min-width: 280px;
+  padding: 16px 16px 0 16px;
+}
+
+/* A. 고정 영역 */
+.fixedContent {
+  position: sticky;
+  top: 0;
+  flex-shrink: 0;
+  margin-top: 20px;
+  margin-bottom: 12px;
+}
+
+/* Header */
+.header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 16px;
+  flex-shrink: 0;
+  box-sizing: border-box;
+}
+
+.backButton {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 8px;
+  padding-left: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 4px;
+}
+
+.backButtonIcon {
+  width: 12px;
+  height: auto;
+}
+
+.title {
+  flex: 1;
+  margin: 0;
+}
+
+/* Filter Tabs */
+.filterTabs {
+  display: flex;
+  justify-content: space-between;
+  padding: 0 0 8px 0;
+  overflow-x: auto;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+  flex-shrink: 0;
+  box-sizing: border-box;
+}
+
+.filterTabs::-webkit-scrollbar {
+  display: none;
+}
+
+.filterTab {
+  background: none;
+  border: none;
+  padding: 8px 24px;
+  border-radius: 12px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.filterTab.active {
+  background-color: #e7e9ec;
+}
+
+/* B. 스크롤 영역 */
+.scrollContent {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding-bottom: 20px;
+}
+
+.scrollContent::-webkit-scrollbar {
+  display: none;
+}
+
+.alertList {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 0 0 12px 0;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.alertList::-webkit-scrollbar {
+  display: none;
+}
+
+.alertItem {
+  flex-shrink: 0;
+}
