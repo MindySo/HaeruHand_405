@@ -1,0 +1,22 @@
+{
+  "name": "해루핸",
+  "short_name": "해루핸",
+  "description": "해루핸 앱",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#20aeea",
+  "icons": [
+    {
+      "src": "/haeruhand_app.svg",
+      "sizes": "192x192",
+      "type": "image/svg+xml"
+    },
+    {
+      "src": "/haeruhand_app.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ],
+  "gcm_sender_id": "YOUR_SENDER_ID"
+}

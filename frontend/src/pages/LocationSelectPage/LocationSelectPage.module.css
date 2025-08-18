@@ -1,0 +1,193 @@
+.container {
+  width: 100%;
+  height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  min-width: 280px;
+  padding: 0 16px;
+}
+
+/* A. 고정 영역 */
+.fixedContent {
+  position: sticky;
+  top: 0;
+  flex-shrink: 0;
+  margin-bottom: 12px;
+}
+
+.header {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  margin-bottom: 16px;
+  gap: 8px;
+}
+
+/* B. 스크롤 영역 */
+.scrollContent {
+  flex: 1;
+  min-height: 0;
+  overflow-x: unset;
+  padding-bottom: 20px;
+  /* 화면이 커질 때 콘텐츠를 자연스럽게 분산 */
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.scrollContent::-webkit-scrollbar {
+  display: none;
+}
+
+/* Map Section */
+.mapSection {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  position: relative; /* 오버레이를 위한 상대 위치 */
+}
+
+.map {
+  width: 100%;
+  max-width: 380px;
+  height: auto;
+  object-fit: contain;
+  scale: 1.2;
+  transition: opacity 0.3s ease; /* 부드러운 전환 효과 */
+}
+
+.mapDimmed {
+  opacity: 0.3; /* 선택 시 배경 지도를 연하게 */
+}
+
+.hanlimMap {
+  position: absolute;
+  top: 45%;
+  left: 20%;
+  transform: translate(-50%, -50%);
+  width: 160px; /* 배경 지도보다 더 크게 */
+  height: auto;
+  object-fit: contain;
+  z-index: 1; /* 배경 지도 위에 표시 */
+  animation: fadeIn 0.5s ease; /* 나타나는 애니메이션 */
+}
+
+.aewolMap {
+  position: absolute;
+  top: 30%;
+  left: 45%;
+  transform: translate(-50%, -50%);
+  width: 160px;
+  height: auto;
+  object-fit: contain;
+  z-index: 1;
+  animation: fadeIn 0.5s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+
+/* 중간 콘텐츠 영역 */
+.middleContent {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 20px;
+  min-height: 200px; /* 최소 높이 보장 */
+}
+
+.infoSection {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+}
+
+.weatherSection {
+  display: flex;
+  justify-content: center;
+}
+
+/* 기존 스타일에 추가 */
+.locationButtons {
+  display: flex;
+  justify-content: space-between;
+  margin: 20px 0;
+}
+
+.locationButton {
+  padding: 8px 20px;
+  border: 2px solid #20aeea;
+  color: #20aeea;
+  border-radius: 8px;
+  background: white;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 14px;
+  font-weight: 600;
+  box-sizing: border-box;
+}
+
+.locationButton.selected {
+  background: #20aeea;
+  color: white;
+}
+
+.locationButton.selected:hover {
+  background: #20aeea;
+  color: white;
+}
+
+/* 하단 버튼 섹션 */
+.buttonSection {
+  flex-shrink: 0;
+  margin-bottom: 60px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* Button 컴포넌트의 비활성화 상태 스타일 (필요시) */
+.buttonSection button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* 기존 스타일에 추가 */
+.loadingMessage {
+  text-align: center;
+  margin: 20px 0;
+  padding: 12px;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+}
+
+.errorMessage {
+  text-align: center;
+  margin: 20px 0;
+  padding: 12px;
+  background-color: #f8d7da;
+  border: 1px solid #f5c6cb;
+  border-radius: 8px;
+}
+
+.locationButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.warningBanner {
+  width: 100%;
+}

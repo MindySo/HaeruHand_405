@@ -1,0 +1,86 @@
+.container {
+  width: 100%;
+  height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  padding: 0 16px;
+  box-sizing: border-box;
+}
+
+.wrapper {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  pointer-events: none;
+}
+
+.buttonSection {
+  height: 56px;
+}
+
+.backButton {
+  background: none;
+  padding-left: 0;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  margin-top: 11px;
+  pointer-events: auto;
+}
+
+.backButtonIcon {
+  width: 12px;
+  height: auto;
+}
+
+.map {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  pointer-events: auto;
+}
+
+.buttonSection {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  position: absolute;
+  bottom: 120px;
+  width: 100%;
+  pointer-events: auto;
+}
+
+/* 참가자 바(좌측 하단 리스트가 이미 있으면 그걸 사용) */
+.buddyList {
+  position: absolute;
+  bottom: 180px;
+  right: 0;
+  background: rgba(0, 0, 0, 0.55);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 12px;
+  padding: 10px 12px;
+  backdrop-filter: blur(6px);
+  max-width: calc(100% - 32px);
+  z-index: 10;
+}
+
+.buddy {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 4px;
+  padding: 2px 0;
+}
+
+.dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  flex-shrink: 0;
+}

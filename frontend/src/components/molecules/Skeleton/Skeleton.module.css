@@ -1,0 +1,176 @@
+/* 스켈레톤 애니메이션 */
+@keyframes shimmer {
+  0% {
+    background-position: -200px 0;
+  }
+  100% {
+    background-position: calc(200px + 100%) 0;
+  }
+}
+
+.skeletonBase {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200px 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: 8px;
+}
+
+/* 특보 배너 스켈레톤 */
+.skeletonWarningBanner {
+  background: #f8f9fa;
+  border: 1px solid #e9ecef;
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 12px;
+}
+
+.skeletonWarningContent {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.skeletonWarningIcon {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+}
+
+.skeletonWarningText {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.skeletonWarningTitle {
+  height: 16px;
+  width: 60%;
+}
+
+.skeletonWarningSubtitle {
+  height: 14px;
+  width: 40%;
+}
+
+/* 날씨 위젯 스켈레톤 */
+.skeletonWeatherWidget {
+  background: white;
+  border: 1px solid #e9ecef;
+  border-radius: 12px;
+  padding: 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+}
+
+.skeletonWidgetIcon {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+}
+
+.skeletonWidgetContent {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.skeletonWidgetSubtitle {
+  height: 14px;
+  width: 50%;
+}
+
+.skeletonWidgetData {
+  height: 18px;
+  width: 70%;
+}
+
+/* 지도 스켈레톤 */
+.skeletonMap {
+  width: 100%;
+  height: 324px;
+  border: 1px solid #ababab;
+  border-radius: 8px;
+  padding: 8px;
+  position: relative;
+}
+
+.skeletonMapContent {
+  width: 100%;
+  height: 308px;
+  border-radius: 8px;
+  position: relative;
+}
+
+.skeletonMapPlaceholder {
+  width: 100%;
+  height: 100%;
+  background: #f8f9fa;
+  border-radius: 8px;
+}
+
+.skeletonCategoryButtons {
+  position: absolute;
+  top: 16px;
+  left: 20px;
+  display: flex;
+  gap: 8px;
+}
+
+.skeletonCategoryButton {
+  width: 60px;
+  height: 32px;
+  border-radius: 16px;
+}
+
+/* 수확물 버튼 스켈레톤 */
+.skeletonHarvestButton {
+  background: white;
+  border: 2px solid #20aeea;
+  border-radius: 12px;
+  padding: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin: 12px 0;
+}
+
+.skeletonHarvestIcon {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+}
+
+.skeletonHarvestText {
+  height: 18px;
+  width: 120px;
+}
+
+/* 액션 버튼 스켈레톤 */
+.skeletonActionButtons {
+  display: flex;
+  gap: 12px;
+}
+
+.skeletonActionButton {
+  flex: 1;
+  height: 48px;
+  border-radius: 8px;
+}
+
+/* 범용 스켈레톤 컴포넌트 */
+.textSkeleton {
+  height: 16px;
+}
+
+.circleSkeleton {
+  border-radius: 50%;
+}
+
+.rectangleSkeleton {
+  border-radius: 8px;
+}

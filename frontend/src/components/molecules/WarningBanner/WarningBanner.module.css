@@ -1,0 +1,38 @@
+.container {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  /* max-width: 360px; */
+  height: 40px;
+  gap: 12px;
+  padding: 4px 12px;
+  border-radius: 8px;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+.latest {
+  background-color: #ffd5d5;
+}
+
+.past {
+  background-color: #e7e9ec;
+}
+
+.info {
+  background-color: #effaff;
+}
+
+.badge {
+  flex-shrink: 0;
+}
+
+.text {
+  font-size: 14px;
+  color: #333;
+  line-height: 1.2;
+  font-weight: 600;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
