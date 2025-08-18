@@ -16,6 +16,13 @@
 - [핵심 기능](#-핵심-기능)의 개발이 프론트/백엔드 각자 완료되었으며, 연동작업을 진행중입니다.
 - 이번주 주말까지 핵심 기능의 MVP 개발을 완료하고 테스트를 진행할 예정입니다.
 
+## 해루핸 소개 영상
+- [클릭하세요](https://www.youtube.com/watch?v=FFxVQ39SohI)
+
+## 해루핸 확인 링크
+- [앱 다운로드(apk, android 전용)](https://drive.google.com/file/d/152Jmoea39LF5TqL6i0wGG-igsn6igVo4/view?usp=drive_link)
+- [Mobile Web](https://i13a405.p.ssafy.io/login) -> 크롬 환경 권장
+
 ## 📋 목차
 - [프로젝트 소개](#-프로젝트-소개)
 - [핵심 기능](#-핵심-기능)
@@ -35,6 +42,9 @@
 - 해루질 관련 법규 준수를 위한 정보 제공
 
 ## 🚀 핵심 기능
+
+### 시연 영상
+- [해루핸 야외 시연 영상](https://www.youtube.com/watch?si=wPxDjzXD9UWv6Pv6&v=2voowu_bYpE&feature=youtu.be)
 
 
 ### 1. 🗺️ 실시간 위치 공유 시스템
