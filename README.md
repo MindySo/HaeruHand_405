@@ -224,7 +224,7 @@ frontend/
 ### API 문서
 서버 실행 후 Swagger UI 접속:
 ```
-http://i13a405.p.ssafy.io/api/swagger-ui/index.html
+http://haeruhand.o-r.kr/api/swagger-ui/index.html
 ```
 
 ## 📱 모바일 앱 지원

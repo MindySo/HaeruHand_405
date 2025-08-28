@@ -26,7 +26,7 @@ if ((window as any).Capacitor) {
     console.log('App opened with URL:', url);
 
     try {
-      // seafeet://join 또는 https://i13a405.p.ssafy.io/join 처리
+      // seafeet://join 또는 https://haeruhand.o-r.kr/join 처리
       if (url.includes('seafeet://join') || url.includes('/join?')) {
         const urlObj = new URL(url);
         const code = urlObj.searchParams.get('code');

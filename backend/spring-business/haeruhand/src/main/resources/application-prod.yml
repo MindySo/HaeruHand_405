@@ -24,7 +24,7 @@ spring:
         registration:
           kakao:
             client-id: ${CLIENT_ID}
-            redirect-uri: 'https://i13a405.p.ssafy.io/login'
+            redirect-uri: 'https://haeruhand.o-r.kr/login'
             authorization-grant-type: authorization_code
             scope:
               - profile_nickname
@@ -103,7 +103,7 @@ location:
     max-members: 4
     join-token-expiry-minutes: 1440
   deeplink:
-    base-url: "https://i13a405.p.ssafy.io"
+    base-url: "https://haeruhand.o-r.kr"
 
 notification:
   redis:

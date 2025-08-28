@@ -27,7 +27,7 @@ export default function JoinPage() {
     const saveAndNavigate = () => {
       if (isLoggedIn) {
         // 로그인 상태: 바로 방 참여
-        const deepLink = `https://i13a405.p.ssafy.io/join?code=${roomCode}&token=${token}`;
+        const deepLink = `https://haeruhand.o-r.kr/join?code=${roomCode}&token=${token}`;
         sessionStorage.setItem(
           'locationRoom',
           JSON.stringify({ roomId: null, roomCode, deepLink, joinToken: token }),
@@ -38,7 +38,7 @@ export default function JoinPage() {
       } else {
         // 비로그인 상태: pendingDeepLink 저장 후 로그인으로
         sessionStorage.setItem('pendingDeepLink', JSON.stringify({
-          url: `https://i13a405.p.ssafy.io/join?code=${roomCode}&token=${token}`,
+          url: `https://haeruhand.o-r.kr/join?code=${roomCode}&token=${token}`,
           code: roomCode,
           token: token,
           timestamp: Date.now()
