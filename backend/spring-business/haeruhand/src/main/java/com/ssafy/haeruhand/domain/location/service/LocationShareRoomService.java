@@ -43,7 +43,7 @@ public class LocationShareRoomService {
     @Value("${location.room.join-token-expiry-minutes:1440}")
     private int joinTokenExpiryMinutes;
     
-    @Value("${location.deeplink.base-url:https://i13a405.p.ssafy.io}")
+    @Value("${location.deeplink.base-url:https://haeruhand.o-r.kr}")
     private String deeplinkBaseUrl;
 
     @Transactional
