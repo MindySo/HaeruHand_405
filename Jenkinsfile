@@ -130,8 +130,7 @@ pipeline {
         success { echo '✅  배포 성공' }
         failure { echo '❌  배포 실패 — 콘솔 로그를 확인하세요' }
         always  { 
-            sh 'sudo chown -R jenkins:jenkins . || true'
-            cleanWs(deleteDirs: true, disableDeferredWipeout: true)
+            echo '배포 완료 - 워크스페이스 정리 건너뜀'
         }
     }
 }
