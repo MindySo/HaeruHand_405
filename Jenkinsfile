@@ -9,7 +9,7 @@ pipeline {
 
     /* ────── 공통 환경변수 ────── */
     environment {
-        DOCKER_ID    = 'yeriming'
+        DOCKER_ID    = 'mindyso'
         COMPOSE_FILE = 'docker-compose.prod.yml'
         ENV_FILE     = '.env.prod'
         SPRING_RES   = 'backend/spring-business/haeruhand/src/main/resources'
