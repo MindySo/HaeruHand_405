@@ -5,7 +5,7 @@
  */
 pipeline {
     agent any
-    tools   { git 'git-default' }
+    tools   { git 'Default' }
 
     /* ────── 공통 환경변수 ────── */
     environment {
