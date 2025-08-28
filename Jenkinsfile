@@ -129,6 +129,9 @@ pipeline {
     post {
         success { echo '✅  배포 성공' }
         failure { echo '❌  배포 실패 — 콘솔 로그를 확인하세요' }
-        always  { cleanWs(deleteDirs: true, disableDeferredWipeout: true) }
+        always  { 
+            sh 'sudo chown -R jenkins:jenkins . || true'
+            cleanWs(deleteDirs: true, disableDeferredWipeout: true)
+        }
     }
 }
