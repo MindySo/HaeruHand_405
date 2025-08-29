@@ -21,7 +21,7 @@
 
 ## 해루핸 확인 링크
 - [앱 다운로드(apk, android 전용)](https://drive.google.com/file/d/152Jmoea39LF5TqL6i0wGG-igsn6igVo4/view?usp=drive_link)
-- [Mobile Web](https://i13a405.p.ssafy.io/login) -> 크롬 환경 권장
+- [Mobile Web](https://haeruhand.o-r.kr/login) -> 크롬 환경 권장
 
 ## 📋 목차
 - [프로젝트 소개](#-프로젝트-소개)
@@ -234,7 +234,7 @@ frontend/
 ### API 문서
 서버 실행 후 Swagger UI 접속:
 ```
-http://i13a405.p.ssafy.io/api/swagger-ui/index.html
+http://haeruhand.o-r.kr/api/swagger-ui/index.html
 ```
 
 ## 📱 모바일 앱 지원

@@ -113,7 +113,7 @@ public class FishDetectionService {
     public Mono<FishDetectionFastApiResponse> requestFishNameFromFastApi(FishDetectionFastApiRequest apiRequest){
 
         return webClient.post()
-                .uri("https://i13a405.p.ssafy.io/ai/detection/")
+                .uri("https://haeruhand.o-r.kr/ai/detection/")
                 .bodyValue(apiRequest)
                 .retrieve()
                 .bodyToMono(FishDetectionFastApiResponse.class)
