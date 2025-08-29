@@ -74,7 +74,7 @@ export const Footer = () => {
           해루핸 문의
         </Text>
         <Text size="sm" color="gray">
-          ssafy@ssafy.com
+          haeruhand@gmail.com
         </Text>
       </div>
     </div>
