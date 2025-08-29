@@ -5,11 +5,11 @@
  */
 pipeline {
     agent any
-    tools   { git 'git-default' }
+    tools   { git 'Default' }
 
     /* ────── 공통 환경변수 ────── */
     environment {
-        DOCKER_ID    = 'yeriming'
+        DOCKER_ID    = 'mindyso'
         COMPOSE_FILE = 'docker-compose.prod.yml'
         ENV_FILE     = '.env.prod'
         SPRING_RES   = 'backend/spring-business/haeruhand/src/main/resources'
@@ -30,8 +30,8 @@ pipeline {
                     $class: 'GitSCM',
                     branches: [[name: '*/be-develop']],
                     userRemoteConfigs: [[
-                        url: 'https://lab.ssafy.com/s13-webmobile2-sub1/S13P11A405.git',
-                        credentialsId: 'gitlab-jenkins-token'
+                        url: 'https://github.com/MindySo/HaeruHand_405.git',
+                        credentialsId: 'github-jenkins-token'
                     ]]
                 ])
             }
@@ -129,6 +129,8 @@ pipeline {
     post {
         success { echo '✅  배포 성공' }
         failure { echo '❌  배포 실패 — 콘솔 로그를 확인하세요' }
-        always  { cleanWs(deleteDirs: true, disableDeferredWipeout: true) }
+        always  { 
+            echo '배포 완료 - 워크스페이스 정리 건너뜀'
+        }
     }
 }
