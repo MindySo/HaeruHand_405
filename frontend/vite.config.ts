@@ -9,9 +9,9 @@ export default defineConfig({
     port: 5173,
     proxy: {
       // 로컬에서 /api 로 들어오는 요청/웹소켓을
-      // 원격 서버(i13a405.p.ssafy.io)로 프록시
+      // 원격 서버(haeruhand.o-r.kr)로 프록시
       '/api': {
-        target: 'http://i13a405.p.ssafy.io',
+        target: 'http://haeruhand.o-r.kr',
         changeOrigin: true,
         ws: true,
         // 서버가 경로에 이미 /api 를 기대하므로 rewrite는 생략
